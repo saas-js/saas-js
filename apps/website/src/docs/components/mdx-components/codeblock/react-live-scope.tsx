@@ -5,17 +5,8 @@ import * as Icons from '@chakra-ui/icons'
 import * as SaasUI from '@saas-ui/react'
 import * as AppShell from '@saas-ui/app-shell'
 import * as Sidebar from '@saas-ui/sidebar'
-import * as DatePicker from '@saas-ui/date-picker'
-import * as SaasUIPro from '@saas-ui/pro'
-import * as SaasUIFeatures from '@saas-ui/features'
 
-import * as Web3 from '@saas-ui/web3'
-import * as Yup from 'yup'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { yupForm } from '@saas-ui/forms/yup'
 import SaasUILogo from '@/components/saas-ui'
-import SaasUIGlyph from '@/components/saas-ui-glyph'
-import * as sampleData from '@/data/sample-data'
 import FocusLock from 'react-focus-lock'
 
 import {
@@ -108,8 +99,6 @@ const StatusBadge = (props: BadgeProps) => (
   <Badge boxSize="8px" mx="2px" borderRadius="full" {...props} />
 )
 
-const SaasSpinner = () => <SaasUIGlyph width="48px" height="48px" isAnimating />
-
 const ThrowSomeError = () => {
   throw new Error()
 }
@@ -118,27 +107,17 @@ const ReactLiveScope = {
   React,
   ...React,
   ...Chakra,
-  ...SaasUIPro,
   ...SaasUI,
-  ...SaasUIFeatures,
   ...AppShell,
   ...Sidebar,
-  ...DatePicker,
-  ...Web3,
   ...Icons,
-  Yup,
-  yupResolver,
-  yupForm,
   // ...Loaders,
   ...reactIcons,
   StarIcon,
   FocusLock,
   saveHandler,
-  ...sampleData,
   SaasUILogo,
-  SaasUIGlyph,
   StatusBadge,
-  SaasSpinner,
   ThrowSomeError,
 }
 

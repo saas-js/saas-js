@@ -5911,6 +5911,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@saas-ui/props-docs@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "@saas-ui/props-docs@npm:1.7.0"
+  dependencies:
+    "@chakra-ui/react": ^2.4.1
+    "@chakra-ui/styled-system": ^2.3.5
+    glob: ^8.0.3
+    mkdirp: ^1.0.4
+    react-docgen-typescript: ^2.2.2
+    regenerator-runtime: ^0.13.11
+  peerDependencies:
+    "@chakra-ui/system": ">=2.1.0"
+    "@emotion/react": ">=11"
+    "@emotion/styled": ">=11"
+    framer-motion: ">=5.5.0"
+    react: ">=18.0.0"
+    react-dom: ">=18.0.0"
+    typescript: ">=4.5.0"
+  checksum: 199013c372c7b02ad03204f3e104aaef068459b246307917e153e84b03cb60e5518d5288f71be53c10b7ad046e799994eec102fba5bbc40eb27fb6fbbe48cc8e
+  languageName: node
+  linkType: hard
+
 "@saas-ui/provider@npm:1.1.8":
   version: 1.1.8
   resolution: "@saas-ui/provider@npm:1.1.8"
@@ -10950,7 +10972,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^8.0.1":
+"glob@npm:^8.0.1, glob@npm:^8.0.3":
   version: 8.0.3
   resolution: "glob@npm:8.0.3"
   dependencies:
@@ -15796,7 +15818,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-docgen-typescript@npm:^2.1.0":
+"react-docgen-typescript@npm:^2.1.0, react-docgen-typescript@npm:^2.2.2":
   version: 2.2.2
   resolution: "react-docgen-typescript@npm:2.2.2"
   peerDependencies:
@@ -16128,6 +16150,13 @@ __metadata:
   version: 0.13.10
   resolution: "regenerator-runtime@npm:0.13.10"
   checksum: 09893f5a9e82932642d9a999716b6c626dc53ef2a01307c952ebbf8e011802360163a37c304c18a6c358548be5a72b448e37209954a18696f21e438c81cbb4b9
+  languageName: node
+  linkType: hard
+
+"regenerator-runtime@npm:^0.13.11":
+  version: 0.13.11
+  resolution: "regenerator-runtime@npm:0.13.11"
+  checksum: 27481628d22a1c4e3ff551096a683b424242a216fee44685467307f14d58020af1e19660bf2e26064de946bad7eff28950eae9f8209d55723e2d9351e632bbb4
   languageName: node
   linkType: hard
 
@@ -18804,6 +18833,7 @@ __metadata:
     "@next/bundle-analyzer": ^12.3.3
     "@octokit/rest": ^18.12.0
     "@saas-ui/palette": ^1.2.0
+    "@saas-ui/props-docs": ^1.7.0
     "@saas-ui/react": ^1.7.3
     "@saas-ui/sidebar": ^0.6.1
     "@svgr/webpack": ^6.5.1

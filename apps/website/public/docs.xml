@@ -1,0 +1,34 @@
+
+  <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+      <title>Saas.js</title>
+      <link>https://saas-js.dev</link>
+      <description>Toolkit for rapid SaaS development.</description>
+      <language>en_US</language>
+      <managingEditor>hello@saas-ui.dev (Eelco Wiersma)</managingEditor>
+      <webMaster>hello@saas-ui.dev (Eelco Wiersma)</webMaster>
+      <lastBuildDate>Sun, 11 Dec 2022 11:36:08 GMT</lastBuildDate>
+      <atom:link href="https://saas-js.dev/docs.xml" rel="self" type="application/rss+xml"/>
+      
+  <item>
+    <guid>https://saas-js.dev/docs/components</guid>
+    <title>Professionally crafted Chakra UI components</title>
+    <link>https://saas-js.dev/docs/components</link>
+    <description>Professionally crafted Chakra UI components that help you build intuitive React apps with speed.</description>
+    
+    <author>hello@saas-ui.dev (Eelco Wiersma)</author>
+    
+  </item>
+
+  <item>
+    <guid>https://saas-js.dev/docs/introduction</guid>
+    <title>Introduction</title>
+    <link>https://saas-js.dev/docs/introduction</link>
+    <description>An advanced component library built with Chakra UI for building high quality SaaS products at speed.</description>
+    
+    <author>hello@saas-ui.dev (Eelco Wiersma)</author>
+    
+  </item>
+
+    </channel>
+  </rss>

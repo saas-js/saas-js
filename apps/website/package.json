@@ -27,6 +27,7 @@
     "@next/bundle-analyzer": "^12.3.3",
     "@octokit/rest": "^18.12.0",
     "@saas-ui/palette": "^1.2.0",
+    "@saas-ui/props-docs": "^1.7.0",
     "@saas-ui/react": "^1.7.3",
     "@saas-ui/sidebar": "^0.6.1",
     "@svgr/webpack": "^6.5.1",
