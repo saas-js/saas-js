@@ -35,8 +35,8 @@ const siteConfig = {
       locale: 'en_US',
       url: 'https://saas-js.dev',
       title: 'Saas.js',
-      description: 'Toolkit for rapid SaaS development..',
-      site_name: 'Saas.js: Toolkit for rapid SaaS development..',
+      description: 'Toolkit for rapid SaaS development.',
+      site_name: 'Saas.js: Toolkit for rapid SaaS development.',
       images: [
         {
           url: 'https://saas-js.dev/api/og',

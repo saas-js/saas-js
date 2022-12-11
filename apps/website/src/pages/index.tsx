@@ -20,8 +20,8 @@ const Home = () => {
     <Box>
       <SEO
         title="Saas.js"
-        description="The React component library for Startups"
-        titleTemplate="%s - The React component library for Startups"
+        description="Toolkit for rapid SaaS development."
+        titleTemplate="%s - Toolkit for rapid SaaS development."
       />
 
       <Box mb={8} w="full" position="relative" overflow="hidden">
