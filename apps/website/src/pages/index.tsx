@@ -20,8 +20,8 @@ const Home = () => {
     <Box>
       <SEO
         title="Saas.js"
-        description="Toolkit for rapid SaaS development."
-        titleTemplate="%s - Toolkit for rapid SaaS development."
+        description="Building blocks for rapid SaaS development."
+        titleTemplate="%s - Building blocks for rapid SaaS development."
       />
 
       <Box mb={8} w="full" position="relative" overflow="hidden">
@@ -49,14 +49,22 @@ const Home = () => {
                 alignItems="center"
                 textAlign="center"
                 title={
-                  <FallInPlace textAlign="center" initialInView>
-                    Modern ecosystem of tools for rapid SaaS development
+                  <FallInPlace
+                    textAlign="center"
+                    initialInView
+                    background="linear-gradient(to right bottom, rgb(255, 255, 255) 30%, rgba(255, 255, 255, 0.30))"
+                    sx={{
+                      '-webkit-background-clip': 'text',
+                      '-webkit-text-fill-color': 'transparent',
+                    }}
+                  >
+                    Building blocks for rapid SaaS development
                   </FallInPlace>
                 }
                 description={
                   <FallInPlace
                     delay={0.4}
-                    fontWeight="medium"
+                    fontWeight="regular"
                     textAlign="center"
                     initialInView
                   >
