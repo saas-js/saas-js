@@ -23,7 +23,7 @@ const siteConfig = {
   seo: {
     title: 'Saas.js',
     titleTemplate: '%s - Saas.js',
-    description: 'Toolkit for rapid SaaS development.',
+    description: 'Building blocks for rapid SaaS development.',
     siteUrl: 'https://saas-js.dev',
     twitter: {
       handle: '@Pagebakers',
@@ -35,14 +35,14 @@ const siteConfig = {
       locale: 'en_US',
       url: 'https://saas-js.dev',
       title: 'Saas.js',
-      description: 'Toolkit for rapid SaaS development.',
-      site_name: 'Saas.js: Toolkit for rapid SaaS development.',
+      description: 'Building blocks for rapid SaaS development.',
+      site_name: 'Saas.js: Building blocks for rapid SaaS development.',
       images: [
         {
           url: 'https://saas-js.dev/api/og',
           width: 1200,
           height: 630,
-          alt: 'Toolkit for rapid SaaS development.',
+          alt: 'Building blocks for rapid SaaS development.',
         },
       ],
     },
