@@ -73,16 +73,18 @@ const Home = () => {
                   </FallInPlace>
                 }
               ></Hero>
-              <Box
-                width="80vw"
-                maxW="1100px"
-                margin="0 auto"
-                alignItems="center"
-                position="relative"
-                zIndex="2"
-              >
-                <RequestAccess />
-              </Box>
+              <FallInPlace delay={0.5} initialInView>
+                <Box
+                  width="80vw"
+                  maxW="1100px"
+                  margin="0 auto"
+                  alignItems="center"
+                  position="relative"
+                  zIndex="2"
+                >
+                  <RequestAccess />
+                </Box>
+              </FallInPlace>
             </Stack>
             <BackgroundGradientRadial bottom="-20%" opacity="0.2" />
           </Container>
@@ -96,8 +98,8 @@ const RequestAccess = () => {
   return (
     <Container
       borderRadius="md"
-      bg={useColorModeValue('white', 'blackAlpha.200')}
-      backdropFilter="blur(10px) saturate(190%) contrast(70%) brightness(80%)"
+      bg={useColorModeValue('white', 'whiteAlpha.50')}
+      // backdropFilter="blur(10px) saturate(190%) contrast(70%) brightness(80%)"
       borderWidth="1px"
       borderColor={useColorModeValue('gray.300', 'grayAlpha.700')}
       p={8}

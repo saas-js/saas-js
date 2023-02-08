@@ -80,7 +80,7 @@ const Header = () => {
           />
         </Tooltip>
 
-        <ThemeToggle />
+        {/* <ThemeToggle /> */}
 
         <MobileNavButton
           ref={mobileNavBtnRef}

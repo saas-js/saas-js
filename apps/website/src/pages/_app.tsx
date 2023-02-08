@@ -13,7 +13,14 @@ import { useRouter } from 'next/router'
 const MyApp = ({ Component, pageProps }: AppProps<any>) => {
   const router = useRouter()
   return (
-    <SaasProvider theme={theme}>
+    <SaasProvider
+      theme={theme}
+      colorModeManager={{
+        get: () => 'dark',
+        set: () => {},
+        type: 'localStorage',
+      }}
+    >
       <AuthProvider>
         <ModalsProvider>
           <Layout
