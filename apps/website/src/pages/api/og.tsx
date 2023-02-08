@@ -21,7 +21,7 @@ export default async function handler(req: NextRequest) {
     const hasTitle = searchParams.has('title')
     const title = hasTitle
       ? searchParams.get('title')?.slice(0, 100)
-      : 'Rapid development toolkit for SaaS apps'
+      : 'Building blocks for rapid SaaS development'
     const description = hasTitle
       ? searchParams.get('description')?.slice(0, 200)
       : undefined
