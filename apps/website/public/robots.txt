@@ -2,7 +2,3 @@ Sitemap: https://saas-ui.dev/sitemap.xml
 
 User-agent: *
 Allow: /*
-
-Disallow: /api/*
-
-Allow: /api/og
