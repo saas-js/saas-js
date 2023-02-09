@@ -82,16 +82,16 @@ const Header = () => {
 
         {/* <ThemeToggle /> */}
 
-        <MobileNavButton
+        {/* <MobileNavButton
           ref={mobileNavBtnRef}
           aria-label="Open Menu"
           onClick={mobileNav.onOpen}
-        />
+        /> */}
 
-        <MobileNavContent
+        {/* <MobileNavContent
           isOpen={mobileNav.isOpen}
           onClose={mobileNav.onClose}
-        />
+        /> */}
       </HStack>
     </HStack>
   )
