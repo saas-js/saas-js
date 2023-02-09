@@ -7,8 +7,8 @@ import Logo from './saas-ui'
 
 const CustomFooter = () => {
   return (
-    <Footer columns={2}>
-      <Stack spacing="8">
+    <Footer columns={{ base: 1, sm: 2 }}>
+      <Stack flex="1">
         <Stack alignItems="flex-start">
           <Flex width="100px">
             <Logo />
@@ -21,38 +21,48 @@ const CustomFooter = () => {
           </FooterLink>
         </Copyright>
       </Stack>
-      <HStack justify="flex-end" spacing="4" alignSelf="flex-end">
-        <FooterLink href="mailto:hello@saas-ui.dev">Contact</FooterLink>
-        <FooterLink href="/terms">Terms</FooterLink>
-        <FooterLink href="/privacy">Privacy</FooterLink>
+      <Stack flexDirection={{ base: 'column-reverse' }}>
+        <Stack
+          justify="flex-end"
+          spacing="4"
+          alignSelf={{ base: 'flex-start', sm: 'flex-end' }}
+          alignItems={{ base: 'flex-start', sm: 'flex-end' }}
+          direction="row"
+        >
+          <FooterLink href="mailto:hello@saas-ui.dev">Contact</FooterLink>
+          <FooterLink href="/terms">Terms</FooterLink>
+          <FooterLink href="/privacy">Privacy</FooterLink>
+        </Stack>
+        <HStack />
+        <HStack spacing="4" alignSelf={{ base: 'flex-start', sm: 'flex-end' }}>
+          <IconButton
+            variant="ghost"
+            aria-label="discord"
+            icon={<FaDiscord size="14" />}
+            borderRadius="md"
+            as={Link}
+            href="https://discord.gg/4PmJGFcAjX"
+          />
 
-        <IconButton
-          variant="ghost"
-          aria-label="discord"
-          icon={<FaDiscord size="14" />}
-          borderRadius="md"
-          as={Link}
-          href="https://discord.gg/4PmJGFcAjX"
-        />
+          <IconButton
+            variant="ghost"
+            aria-label="twitter"
+            icon={<FaTwitter size="14" />}
+            borderRadius="md"
+            as={Link}
+            href="https://twitter.com/saas_js"
+          />
 
-        <IconButton
-          variant="ghost"
-          aria-label="twitter"
-          icon={<FaTwitter size="14" />}
-          borderRadius="md"
-          as={Link}
-          href="https://twitter.com/saas_js"
-        />
-
-        <IconButton
-          variant="ghost"
-          aria-label="github"
-          icon={<FaGithub size="14" />}
-          borderRadius="md"
-          as={Link}
-          href="https://github.com/saas-js/saas-js"
-        />
-      </HStack>
+          <IconButton
+            variant="ghost"
+            aria-label="github"
+            icon={<FaGithub size="14" />}
+            borderRadius="md"
+            as={Link}
+            href="https://github.com/saas-js/saas-js"
+          />
+        </HStack>
+      </Stack>
     </Footer>
   )
 }

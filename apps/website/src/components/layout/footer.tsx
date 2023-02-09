@@ -1,16 +1,25 @@
-import { Box, BoxProps, SimpleGrid, Container, Text } from '@chakra-ui/layout'
+import {
+  Box,
+  BoxProps,
+  SimpleGrid,
+  Container,
+  Text,
+  ResponsiveValue,
+} from '@chakra-ui/react'
 
 import Link, { LinkProps } from '@/components/link'
 
 export interface FooterProps extends BoxProps {
-  columns?: number
+  columns?: ResponsiveValue<number>
 }
 
 const Footer = ({ children, columns = 4 }: FooterProps) => {
   return (
     <Box>
       <Container maxW="container.2xl" px="8" py="8">
-        <SimpleGrid columns={columns}>{children}</SimpleGrid>
+        <SimpleGrid columns={columns} gap="8">
+          {children}
+        </SimpleGrid>
       </Container>
     </Box>
   )

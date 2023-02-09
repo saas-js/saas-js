@@ -69,7 +69,8 @@ const Home = () => {
                     initialInView
                   >
                     Saas.js is an ecosystem of patterns, tools and packages
-                    <Br /> that help you build modern SaaS products with speed.
+                    <Br hidden={{ base: true, sm: false }} /> that help you
+                    build modern SaaS products with speed.
                   </FallInPlace>
                 }
               ></Hero>
@@ -99,11 +100,10 @@ const RequestAccess = () => {
     <Container
       borderRadius="md"
       bg={useColorModeValue('white', 'whiteAlpha.50')}
-      // backdropFilter="blur(10px) saturate(190%) contrast(70%) brightness(80%)"
       borderWidth="1px"
       borderColor={useColorModeValue('gray.300', 'grayAlpha.700')}
       p={8}
-      width={['90vw', null, 'md']}
+      width={['80vw', null, 'md']}
     >
       <SignupForm />
     </Container>

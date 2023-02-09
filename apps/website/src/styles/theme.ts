@@ -33,7 +33,7 @@ const styles = {
 
 const textStyles = {
   pageTitle: {
-    fontSize: { base: '2xl', sm: '4xl', md: '7xl' },
+    fontSize: { base: '3xl', sm: '4xl', md: '7xl' },
     fontWeight: '500',
     lineHeight: '1.2',
     letterSpacing: '-2%',
