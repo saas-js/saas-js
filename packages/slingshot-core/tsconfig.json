@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@saas-js/slingshot-lambda": ["./aws-lambda/index.ts"],
+      "@saas-js/slingshot/s3": ["./aws-s3/index.ts"]
+    }
+  }
+}
