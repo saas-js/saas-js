@@ -4,20 +4,26 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
+    "prepare": "panda codegen",
     "build": "remix vite:build",
     "dev": "remix vite:dev",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "remix-serve ./build/server/index.js",
     "typecheck": "tsc"
   },
+  "imports": {
+    "#*": "./app/*"
+  },
   "dependencies": {
+    "@ark-ui/react": "^2.2.3",
     "@remix-run/node": "^2.8.0",
     "@remix-run/react": "^2.8.0",
     "@remix-run/serve": "^2.8.0",
+    "@saas-js/slingshot": "workspace:*",
+    "@saas-js/slingshot-aws": "workspace:*",
     "isbot": "^4.1.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "@saas-js/slingshot": "workspace:*"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@remix-run/dev": "^2.8.0",
@@ -33,7 +39,9 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "typescript": "^5.1.6",
     "vite": "^5.1.0",
-    "vite-tsconfig-paths": "^4.2.1"
+    "vite-tsconfig-paths": "^4.2.1",
+    "@pandacss/dev": "^0.36.1",
+    "@park-ui/panda-preset": "^0.36.1"
   },
   "engines": {
     "node": ">=18.0.0"

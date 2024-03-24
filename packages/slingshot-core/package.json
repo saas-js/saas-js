@@ -13,15 +13,16 @@
       "default": "./src/remix-node/index.ts"
     }
   },
-  "scripts": {
-    "build": "esbuild --bundle --outfile=./dist/index.js --platform=node --target=node18 ./src/index.ts",
-    "zip": "zip -j lambda.zip dist/index.js",
-    "update": "aws lambda update-function-code --zip-file fileb://lambda.zip --function-name hello",
-    "deploy": "run-s build zip update"
+  "typesVersions": {
+    "*": {
+      "client": [
+        "src/client.ts"
+      ]
+    }
   },
+  "scripts": {},
   "devDependencies": {
-    "esbuild": "^0.17.11",
-    "npm-run-all2": "^6.1.1"
+    "typescript": "^5.4.2"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.1.11",

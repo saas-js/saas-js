@@ -24,21 +24,7 @@ export const createSlingshotClient = (props: CreateSlingshotClientProps) => {
       });
     },
     request: async (file: File, meta?: UploadSchema["meta"]) => {
-      return slingshot.request.$post({
-        json: {
-          file: {
-            name: file.name,
-            type: file.type,
-            size: file.size,
-          },
-          meta,
-        },
-      });
-    },
-    upload: async (file: File, meta?: UploadSchema["meta"]) => {
-      const formData = new FormData();
-      formData.append("file", file);
-      const { url } = await slingshot.request.$post({
+      const response = await slingshot.request.$post({
         json: {
           file: {
             name: file.name,
@@ -49,10 +35,40 @@ export const createSlingshotClient = (props: CreateSlingshotClientProps) => {
         },
       });
 
-      const response = await fetch(url, {
-        method: "PUT",
-        body: file,
+      if (!response.ok) {
+        throw new Error("Failed to get upload url");
+      }
+
+      return await response.json();
+    },
+    upload: async (file: File, meta?: UploadSchema["meta"]) => {
+      const formData = new FormData();
+
+      formData.append("file", file);
+
+      const response = await slingshot.request.$post({
+        json: {
+          file: {
+            name: file.name,
+            type: file.type,
+            size: file.size,
+          },
+          meta,
+        },
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to get upload url");
+      }
+
+      const data = await response.json();
+
+      //   const response = await fetch(url, {
+      //     method: "PUT",
+      //     body: file,
+      //   });
+
+      return data;
     },
   };
 };

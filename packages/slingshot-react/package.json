@@ -1,0 +1,13 @@
+{
+    "name": "@saas-js/slingshot-react",
+    "version": "0.0.1",
+    "type": "module",
+    "main": "./src/index.ts",
+    "dependencies": {
+    },
+    "peerDependencies": {
+        "@saas-js/slingshot": "workspace:*",
+        "react": ">18",
+        "@ark-ui/react": ">2.2"
+    }
+}
