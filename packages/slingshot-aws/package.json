@@ -9,6 +9,7 @@
   },
   "scripts": {},
   "devDependencies": {
+    "@saas-js/slingshot": "workspace:*",
     "@aws-sdk/s3-request-presigner": "^3.529.1",
     "@smithy/hash-node": "^2.1.4",
     "@smithy/protocol-http": "^3.2.2",

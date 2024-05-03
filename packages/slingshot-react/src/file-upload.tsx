@@ -1,50 +1,56 @@
-import { useState } from 'react'
+import { forwardRef, useState } from 'react'
 
 import { FileUpload as FileUploadBase } from '@ark-ui/react/file-upload'
 import type {
   FileUploadRootProps as FileUploadBaseRootProps,
   FileUploadContext,
 } from '@ark-ui/react/file-upload'
+import { PropTypes, mergeProps } from '@zag-js/react'
 
-import { createSlingshotClient } from '@saas-js/slingshot/client'
+import { Api, createSlingshotClient } from '@saas-js/slingshot/client'
+
+import { useSlingshot } from './use-slingshot'
 
 export interface FileUploadRenderContext extends FileUploadContext {
-  urls: string[]
-  client: ReturnType<typeof createSlingshotClient>
+  slingshot: Api<PropTypes>
 }
 
 export interface FileUploadRootProps extends FileUploadBaseRootProps {
   profile: string
-  baseUrl: string
+  baseUrl?: string
   meta: Record<string, string | number>
+  uploadOnAccept?: boolean
   children: (context: FileUploadRenderContext) => React.ReactNode
 }
 
-export const Root = (props: FileUploadRootProps) => {
-  const { profile, baseUrl, meta, onFileAccept, ...rest } = props
+export const Root = forwardRef<HTMLDivElement, FileUploadRootProps>(
+  (props, forwardedRef) => {
+    const { profile, baseUrl, meta, uploadOnAccept, children, ...rest } = props
 
-  const [client] = useState(createSlingshotClient(props))
+    const [client] = useState(
+      createSlingshotClient({
+        baseUrl,
+        profile,
+      }),
+    )
 
-  const [urls, setUrl] = useState<string[]>([])
+    const context = useSlingshot({
+      client,
+      meta,
+      uploadOnAccept,
+    })
 
-  return (
-    <FileUploadBase.Root
-      maxFiles={1}
-      onFileAccept={(details) => {
-        client.upload(details.files[0], props.meta).then((data) => {
-          setUrl((urls) => urls.concat(data.url))
-        })
-
-        onFileAccept?.(details)
-      }}
-      {...rest}
-    >
-      {(api) => {
-        return props.children({ ...api, urls, client })
-      }}
-    </FileUploadBase.Root>
-  )
-}
+    // TODO fix dir type
+    const { dir, ...rootProps } = mergeProps(context.rootProps, rest)
+    return (
+      <FileUploadBase.Root ref={forwardedRef} {...rootProps}>
+        {(api) => {
+          return children({ ...api, slingshot: context })
+        }}
+      </FileUploadBase.Root>
+    )
+  },
+)
 
 export const Label = FileUploadBase.Label
 export const Dropzone = FileUploadBase.Dropzone

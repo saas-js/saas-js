@@ -11,22 +11,38 @@
     },
     "./remix-node": {
       "default": "./src/remix-node/index.ts"
+    },
+    "./aws-lambda": {
+      "default": "./src/aws-lambda/index.ts"
     }
   },
   "typesVersions": {
     "*": {
+      "*": [
+        "./src/index.ts"
+      ],
       "client": [
         "src/client.ts"
+      ],
+      "remix-node": [
+        "src/remix-node/index.ts"
+      ],
+      "aws-lambda": [
+        "src/aws-lambda/index.ts"
       ]
     }
   },
   "scripts": {},
-  "devDependencies": {
-    "typescript": "^5.4.2"
-  },
   "dependencies": {
     "@hono/zod-validator": "^0.1.11",
     "hono": "^4.0.9",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "@zag-js/core": "0.45.0",
+    "@zag-js/utils": "0.45.0",
+    "@zag-js/file-upload": "0.45.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.2",
+    "@zag-js/types": "0.45.0"
   }
 }

@@ -1,6 +1,11 @@
 {
   "compilerOptions": {
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "bundler",
+    "isolatedModules": true,
+    "esModuleInterop": true,
     "jsx": "react-jsx",
-    "baseUrl": "./src",
+    "baseUrl": "./src"
   }
 }

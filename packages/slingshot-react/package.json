@@ -1,13 +1,17 @@
 {
-    "name": "@saas-js/slingshot-react",
-    "version": "0.0.1",
-    "type": "module",
-    "main": "./src/index.ts",
-    "dependencies": {
-    },
-    "peerDependencies": {
-        "@saas-js/slingshot": "workspace:*",
-        "react": ">18",
-        "@ark-ui/react": ">2.2"
-    }
+  "name": "@saas-js/slingshot-react",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./src/index.ts",
+  "dependencies": {
+    "@zag-js/react": "0.45.0",
+    "@saas-js/slingshot": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "@ark-ui/react": ">=2.2"
+  },
+  "devDependencies": {
+    "@ark-ui/react": "2.2.3"
+  }
 }

@@ -1,20 +1,21 @@
-import { createSlingshot } from ".";
+import s3 from '@saas-js/slingshot-aws'
+import { handle } from '@saas-js/slingshot/aws-lambda'
 
-import { handle } from '@saas-js/slingshot-lambda';
+import { createSlingshotServer } from './create-slingshot-server'
 
-import s3 from '@saas-js/slingshot/s3'
-
-const app = createSlingshot({
-    profile: 'avatar',
-    maxSize: 1024,
-    allowedFileTypes: ['image/png', 'image/jpeg'],
-    key: ({ file }) => `avatar/${file.name}`,
-    adapter: s3({
-        region: 'us-west-2',
-        bucket: 'slingshot',
-    })
+const app = createSlingshotServer({
+  profile: 'avatar',
+  maxSize: 1024,
+  allowedFileTypes: ['image/png', 'image/jpeg'],
+  key: ({ file }) => `avatar/${file.name}`,
+  adapter: s3({
+    region: 'us-west-2',
+    bucket: 'slingshot',
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    },
+  }),
 })
-
-//app.use(authorize)
 
 export const handler = handle(app)
