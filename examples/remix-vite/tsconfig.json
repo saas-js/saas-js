@@ -23,7 +23,11 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "#*": ["./app/*"]
+      "#*": ["./app/*"],
+      "@saas-js/slingshot/*": ["../../packages/slingshot-core/src/*"],
+      "@saas-js/slingshot-react": [
+        "../../packages/slingshot-react/src/index.ts"
+      ]
     },
 
     // Vite takes care of building everything, not tsc.

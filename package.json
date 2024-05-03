@@ -8,5 +8,8 @@
   "workspaces": [
     "packages/*",
     "examples/*"
-  ]
+  ],
+  "resolutions": {
+    "@zag-js/store": "0.45.0"
+  }
 }

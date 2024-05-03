@@ -1,10 +1,10 @@
-import { createSlingshot } from '@saas-js/slingshot'
+import { createSlingshotServer } from '@saas-js/slingshot'
 import s3 from '@saas-js/slingshot-aws'
 import { handle } from '@saas-js/slingshot/remix-node'
 
 import { env } from '../env.mjs'
 
-const slingshot = createSlingshot({
+const slingshot = createSlingshotServer({
   profile: 'avatar',
   maxSize: 1024,
   allowedFileTypes: ['image/png', 'image/jpeg'],
