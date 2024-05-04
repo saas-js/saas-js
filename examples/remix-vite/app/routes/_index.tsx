@@ -1,12 +1,10 @@
 import type { ActionFunctionArgs } from '@remix-run/node'
 import { Form, useActionData } from '@remix-run/react'
 
-import { createSlingshotClient } from '@saas-js/slingshot/client'
-
 import { FileUpload } from '#components/file-upload'
 import { Button } from '#components/ui/button'
 import { Input } from '#components/ui/input'
-import { css } from '#styled-system/css/css.js'
+import { css } from '#styled-system/css'
 import { Container, Stack } from '#styled-system/jsx'
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -20,8 +18,6 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Index() {
-  console.log(createSlingshotClient)
-
   const data = useActionData<typeof action>()
 
   const postId = 1

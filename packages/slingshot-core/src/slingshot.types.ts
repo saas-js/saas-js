@@ -22,3 +22,22 @@ export type AdapterInstance = ReturnType<SlingshotAdapter>
 export type { SlingshotRoutes } from './create-slingshot-server'
 
 export type { FileSchema, UploadSchema } from './slingshot.schema'
+
+export interface SlingshotFile {
+  key?: string
+  url?: string
+  name: string
+  type: string
+  size: number
+  data: File
+  progress?: number
+  error?: string
+  status:
+    | 'authorizing'
+    | 'accepted'
+    | 'rejected'
+    | 'uploading'
+    | 'done'
+    | 'failed'
+    | 'aborted'
+}

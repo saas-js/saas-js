@@ -6,8 +6,11 @@ import { env } from '../env.mjs'
 
 const slingshot = createSlingshotServer({
   profile: 'avatar',
-  maxSize: 1024,
-  allowedFileTypes: ['image/png', 'image/jpeg'],
+  maxSize: 1024 * 1024 * 5, // 5MB
+  allowedFileTypes: new RegExp('image/.*'),
+  authorize: ({ file, meta }) => {
+    console.log('authorizing', file, meta)
+  },
   key: ({ file, meta }) => {
     return `posts/${meta?.postId}/${file.name}`
   },

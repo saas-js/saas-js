@@ -3,17 +3,7 @@ import { CommonProperties, LocaleProperties, RequiredBy } from '@zag-js/types'
 import { compact } from '@zag-js/utils'
 
 import { SlingshotClient } from './create-slingshot-client'
-
-export interface SlingshotFile {
-  key?: string
-  url?: string
-  name: string
-  type: string
-  size: number
-  data: File
-  progress?: number
-  status: 'accepted' | 'uploading' | 'done' | 'failed' | 'aborted'
-}
+import { SlingshotFile } from './slingshot.types'
 
 interface PublicContext extends LocaleProperties, CommonProperties {
   client: SlingshotClient
@@ -98,7 +88,7 @@ export const machine = (userContext: UserDefinedContext) => {
 
           const files = await Promise.all<SlingshotFile>(
             event.files.map(async (file) => {
-              const { key, url } = await ctx.client.request(file, ctx.meta)
+              // set.status(ctx, { key: file.key, status: 'authorizing' })
 
               const fileMeta = {
                 name: file.name,
@@ -107,23 +97,33 @@ export const machine = (userContext: UserDefinedContext) => {
                 data: file,
               }
 
-              if (!key) {
+              try {
+                const { key, url } = await ctx.client.request(file, ctx.meta)
+
+                if (!key) {
+                  return {
+                    ...fileMeta,
+                    status: 'rejected',
+                  }
+                }
+
+                const acceptedFile: SlingshotFile = {
+                  key,
+                  url,
+                  ...fileMeta,
+                  status: 'accepted',
+                }
+
+                ctx.files[key] = acceptedFile
+
+                return acceptedFile
+              } catch (err) {
                 return {
                   ...fileMeta,
                   status: 'rejected',
+                  error: err.message,
                 }
               }
-
-              const acceptedFile: SlingshotFile = {
-                key,
-                url,
-                ...fileMeta,
-                status: 'accepted',
-              }
-
-              ctx.files[key] = acceptedFile
-
-              return acceptedFile
             }),
           )
 
@@ -135,8 +135,7 @@ export const machine = (userContext: UserDefinedContext) => {
             set.status(ctx, { key: file.key, status: 'uploading' })
 
             try {
-              await uploadFile({
-                file,
+              await ctx.client.upload(file.data, file.url, {
                 onProgress: ({ progress }) => {
                   set.progress(ctx, {
                     key: file.key,
@@ -179,52 +178,4 @@ const invoke = {
   onError: (ctx, error) => {
     console.error(error)
   },
-}
-
-const uploadFile = async (args: {
-  file: SlingshotFile
-  onProgress: (args: { progress: number }) => void
-}) => {
-  const file = args.file
-
-  const data = new FormData()
-
-  data.append('file', file.data)
-
-  const response = await new Promise<{ status: number; responseText: string }>(
-    (resolve, reject) => {
-      const xhr = new XMLHttpRequest()
-
-      xhr.upload.addEventListener(
-        'progress',
-        function (event) {
-          if (event.lengthComputable) {
-            args.onProgress({
-              progress: Math.round((event.loaded / event.total) * 100),
-            })
-          }
-        },
-        false,
-      )
-
-      xhr.addEventListener('load', function () {
-        resolve({ status: xhr.status, responseText: xhr.responseText })
-      })
-
-      xhr.addEventListener('error', function (err) {
-        reject(err)
-      })
-
-      xhr.addEventListener('abort', function () {
-        reject(new Error('Aborted'))
-      })
-
-      xhr.open('PUT', args.file.url, true)
-      xhr.send(data)
-    },
-  )
-
-  if (response.status >= 400) {
-    throw new Error(response.responseText)
-  }
 }

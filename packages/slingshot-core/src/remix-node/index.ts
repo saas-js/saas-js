@@ -1,30 +1,42 @@
-import type { Hono } from "hono";
+import type { Hono } from 'hono'
 
 export function handle(app: Hono) {
   return async function action({
     request,
     context,
   }: {
-    request: Request;
-    context: any;
+    request: Request
+    context: any
   }) {
-    const requestInit: RequestInit = {
-      headers: request.headers,
-      method: "POST",
-      body: request.body,
-    };
+    try {
+      const requestInit: RequestInit = {
+        headers: request.headers,
+        method: 'POST',
+        body: request.body,
+      }
 
-    const url = new URL(request.url);
+      const url = new URL(request.url)
 
-    url.pathname = "/request"; // @todo parse the url
+      const pathname = url.pathname.split('/').slice(-1) ?? 'request'
 
-    const response = await app.fetch(
-      new Request(url.toString(), requestInit),
-      context
-    );
+      url.pathname = `/${pathname}`
 
-    const json = await response.json();
+      const response = await app.fetch(
+        new Request(url.toString(), requestInit),
+        context,
+      )
 
-    return json;
-  };
+      const json = await response.json()
+
+      return new Response(JSON.stringify(json), {
+        status: response.status,
+      })
+    } catch (err) {
+      console.error(err)
+
+      return new Response(err.message, {
+        status: 500,
+      })
+    }
+  }
 }

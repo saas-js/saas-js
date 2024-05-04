@@ -8,10 +8,23 @@ import {
   useContext,
 } from 'react'
 
+const splitProps = (props: Record<string, unknown>, splitProps: string[]) => {
+  const otherProps: Record<string, any> = {}
+  const variantProps: Record<string, any> = {}
+  for (const key in props) {
+    if (splitProps.includes(key)) {
+      variantProps[key] = props[key]
+    } else {
+      otherProps[key] = props[key]
+    }
+  }
+  return [otherProps, variantProps]
+}
+
 type GenericProps = Record<string, unknown>
 type StyleRecipe = {
   (props?: GenericProps): Record<string, string>
-  splitVariantProps: (props: GenericProps) => any
+  variantKeys: string[]
 }
 type StyleSlot<R extends StyleRecipe> = keyof ReturnType<R>
 type StyleSlotRecipe<R extends StyleRecipe> = Record<StyleSlot<R>, string>
@@ -35,7 +48,7 @@ export const createStyleContext = <R extends StyleRecipe>(recipe: R) => {
     slot?: StyleSlot<R>,
   ): ComponentVariants<T, R> => {
     const StyledComponent = forwardRef((props: ComponentProps<T>, ref) => {
-      const [variantProps, otherProps] = recipe.splitVariantProps(props)
+      const [otherProps, variantProps] = splitProps(props, recipe.variantKeys)
       const slotStyles = recipe(variantProps) as StyleSlotRecipe<R>
       return (
         <StyleContext.Provider value={slotStyles}>

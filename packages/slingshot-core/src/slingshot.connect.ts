@@ -1,7 +1,8 @@
 import { FileAcceptDetails } from '@zag-js/file-upload'
 import { NormalizeProps, PropTypes } from '@zag-js/types'
 
-import { Send, SlingshotFile, State } from './slingshot.machine'
+import { Send, State } from './slingshot.machine'
+import { SlingshotFile } from './slingshot.types'
 
 export interface MachineApi<T extends PropTypes> {
   upload(files: File[]): void
