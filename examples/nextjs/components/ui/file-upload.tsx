@@ -1,10 +1,11 @@
+'use client'
+
 import type { ComponentProps } from 'react'
 
+import { createStyleContext } from '@/lib/create-style-context'
 import { tv } from 'tailwind-variants'
 
 import { FileUpload } from '@saas-js/slingshot-react'
-
-import { createStyleContext } from '#lib/create-style-context'
 
 const fileUpload = tv({
   slots: {
@@ -24,6 +25,8 @@ const fileUpload = tv({
 
 const { withProvider, withContext } = createStyleContext(fileUpload)
 
+export const Context = FileUpload.Context
+export const HiddenInput = FileUpload.HiddenInput
 export const Root = withProvider(FileUpload.Root, 'root')
 export const Dropzone = withContext(FileUpload.Dropzone, 'dropzone')
 export const Item = withContext(FileUpload.Item, 'item')

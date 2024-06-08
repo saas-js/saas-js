@@ -1,37 +1,38 @@
-import { FileUploadRootProps } from '@saas-js/slingshot-react'
+'use client'
 
-import * as FileUploadBase from '#components/ui/file-upload'
-import { Button } from '#components/ui/button'
+import * as FileUploadBase from '@/components/ui/file-upload'
+import { Button } from '@/components/ui/button'
+
+import { FileUploadRootProps } from '@saas-js/slingshot-react'
 
 import { Progress } from './ui/progress'
 
 export const FileUpload = (props: Omit<FileUploadRootProps, 'children'>) => {
   return (
     <FileUploadBase.Root {...props}>
-      {(api) => {
-        const status = api.slingshot.status
+      Test
+      <FileUploadBase.Context>
+        {(api) => {
+          const status = api.slingshot.status
 
-        const slingshotFiles = api.slingshot.getFiles()
+          const slingshotFiles = api.slingshot.getFiles()
 
-        console.log('slingshotFiles', slingshotFiles)
+          return (
+            <>
+              <FileUploadBase.Dropzone>
+                <FileUploadBase.Label>
+                  Drag your file(s) here
+                </FileUploadBase.Label>
 
-        return (
-          <>
-            <FileUploadBase.Dropzone>
-              <FileUploadBase.Label>
-                Drag your file(s) here
-              </FileUploadBase.Label>
+                <FileUploadBase.Trigger asChild>
+                  <Button>Choose file(s)</Button>
+                </FileUploadBase.Trigger>
+              </FileUploadBase.Dropzone>
 
-              <FileUploadBase.Trigger asChild>
-                <Button>Choose file(s)</Button>
-              </FileUploadBase.Trigger>
-            </FileUploadBase.Dropzone>
+              <div>Status: {status}</div>
 
-            <div>Status: {status}</div>
-
-            <FileUploadBase.ItemGroup>
-              {(files) =>
-                files.map((file, id) => {
+              <FileUploadBase.ItemGroup>
+                {api.acceptedFiles.map((file, id) => {
                   const slingshotFile = api.slingshot
                     .getFiles()
                     ?.find((f) => f.name === file.name)
@@ -46,14 +47,11 @@ export const FileUpload = (props: Omit<FileUploadRootProps, 'children'>) => {
                       <FileUploadBase.ItemPreview type=".*"></FileUploadBase.ItemPreview>
                       <FileUploadBase.ItemName />
                       <FileUploadBase.ItemSizeText />
+
                       <div>
                         {slingshotFile?.progress &&
                           slingshotFile?.status !== 'done' && (
-                            <Progress
-                              value={slingshotFile?.progress}
-                              type="circular"
-                              colorPalette="green"
-                            />
+                            <Progress value={slingshotFile?.progress} />
                           )}
                         {slingshotFile?.status === 'done' ? 'Done' : null}
                       </div>
@@ -63,21 +61,23 @@ export const FileUpload = (props: Omit<FileUploadRootProps, 'children'>) => {
                       </FileUploadBase.ItemDeleteTrigger>
                     </FileUploadBase.Item>
                   )
-                })
-              }
-            </FileUploadBase.ItemGroup>
+                })}
+              </FileUploadBase.ItemGroup>
 
-            {slingshotFiles.map(({ url }) => (
-              <input
-                key={url}
-                type="hidden"
-                name={props.profile}
-                value={url?.split('?')[0]}
-              />
-            ))}
-          </>
-        )
-      }}
+              <FileUploadBase.HiddenInput />
+
+              {slingshotFiles.map(({ url }) => (
+                <input
+                  key={url}
+                  type="hidden"
+                  name={props.profile}
+                  value={url?.split('?')[0]}
+                />
+              ))}
+            </>
+          )
+        }}
+      </FileUploadBase.Context>
     </FileUploadBase.Root>
   )
 }
