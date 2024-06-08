@@ -23,9 +23,22 @@ export interface FileUploadContextProps {
 }
 
 export interface FileUploadRootProps extends FileUploadBaseRootProps {
+  /**
+   * The profile to use for the slingshot client
+   */
   profile: string
+  /**
+   * The base URL for the slingshot client
+   * @default '/slingshot'
+   */
   baseUrl?: string
-  meta: Record<string, string | number>
+  /**
+   * Additional metadata to send with the upload
+   */
+  meta?: Record<string, string | number>
+  /**
+   * Whether to start uploading files when they are accepted
+   */
   uploadOnAccept?: boolean
 }
 

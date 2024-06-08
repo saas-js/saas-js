@@ -26,6 +26,7 @@ export type FileSchema = z.infer<typeof fileSchema>
 
 export interface CreateSlingshotOptions {
   profile: string
+  basePath?: string
   maxSizeBytes?: number
   allowedFileTypes?: string | string[] | RegExp
   authorize?: (ctx: {
@@ -42,7 +43,15 @@ export const createSlingshotServer = (options: CreateSlingshotOptions) => {
     throw new Error('Slingshot adapter is required')
   }
 
-  const app = new Hono()
+  const basePath = options.basePath ?? '/slingshot'
+
+  const app = new Hono().basePath(`${basePath}/${options.profile}`)
+
+  console.log('app', app)
+  app.use(async (c, next) => {
+    console.log(c.req.url)
+    await next()
+  })
 
   const route = app.post(
     '/request',

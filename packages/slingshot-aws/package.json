@@ -12,12 +12,12 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "@saas-js/slingshot": "workspace:*",
     "@aws-sdk/s3-request-presigner": "^3.529.1",
+    "@aws-sdk/util-format-url": "^3.523.0",
+    "@saas-js/slingshot": "workspace:*",
     "@smithy/hash-node": "^2.1.4",
     "@smithy/protocol-http": "^3.2.2",
     "@smithy/url-parser": "^2.1.4",
-    "@aws-sdk/util-format-url": "^3.523.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {

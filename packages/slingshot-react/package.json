@@ -10,16 +10,16 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "@zag-js/react": "0.54.0",
-    "@saas-js/slingshot": "workspace:*"
+    "@saas-js/slingshot": "workspace:*",
+    "@zag-js/react": "0.54.0"
   },
   "peerDependencies": {
-    "react": ">=18",
-    "@ark-ui/react": ">=3.2"
+    "@ark-ui/react": ">=3.2",
+    "react": ">=18"
   },
   "devDependencies": {
     "@ark-ui/react": "3.2.1",
-    "typescript": "^5.4.5",
-    "tsup": "^8.1.0"
+    "tsup": "^8.1.0",
+    "typescript": "^5.4.5"
   }
 }
