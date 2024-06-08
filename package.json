@@ -1,6 +1,8 @@
 {
   "type": "module",
-  "scripts": {},
+  "scripts": {
+    "build": "bun --filter '@saas-js/*' build"
+  },
   "dependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "prettier": "^3.2.5",
@@ -11,6 +13,6 @@
     "examples/*"
   ],
   "resolutions": {
-    "@zag-js/store": "0.45.0"
+    "@zag-js/store": "0.54.0"
   }
 }

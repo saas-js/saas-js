@@ -9,36 +9,41 @@ import { Progress } from './ui/progress'
 export const FileUpload = (props: Omit<FileUploadRootProps, 'children'>) => {
   return (
     <FileUploadBase.Root {...props}>
-      {(api) => {
-        const status = api.slingshot.status
+      Test
+      <FileUploadBase.Context>
+        {(api) => {
+          const status = api.slingshot.status
 
-        const slingshotFiles = api.slingshot.getFiles()
+          const slingshotFiles = api.slingshot.getFiles()
 
-        console.log('slingshotFiles', slingshotFiles)
+          return (
+            <>
+              <FileUploadBase.Dropzone minH="auto">
+                <FileUploadBase.Label>
+                  Drag your file(s) here
+                </FileUploadBase.Label>
 
-        return (
-          <>
-            <FileUploadBase.Dropzone>
-              <FileUploadBase.Label>
-                Drag your file(s) here
-              </FileUploadBase.Label>
+                <FileUploadBase.Trigger asChild>
+                  <Button>Choose file(s)</Button>
+                </FileUploadBase.Trigger>
+              </FileUploadBase.Dropzone>
 
-              <FileUploadBase.Trigger asChild>
-                <Button>Choose file(s)</Button>
-              </FileUploadBase.Trigger>
-            </FileUploadBase.Dropzone>
+              <div>Status: {status}</div>
 
-            <div>Status: {status}</div>
-
-            <FileUploadBase.ItemGroup>
-              {(files) =>
-                files.map((file, id) => {
+              <FileUploadBase.ItemGroup>
+                {api.acceptedFiles.map((file, id) => {
                   const slingshotFile = api.slingshot
                     .getFiles()
                     ?.find((f) => f.name === file.name)
 
                   return (
-                    <FileUploadBase.Item key={id} file={file}>
+                    <FileUploadBase.Item
+                      key={id}
+                      file={file}
+                      gridTemplateAreas="
+                    'preview name status delete'
+                    'preview size status delete'"
+                    >
                       <FileUploadBase.ItemPreview type="image/*">
                         <FileUploadBase.ItemPreviewImage
                           style={{ width: '100px' }}
@@ -47,7 +52,8 @@ export const FileUpload = (props: Omit<FileUploadRootProps, 'children'>) => {
                       <FileUploadBase.ItemPreview type=".*"></FileUploadBase.ItemPreview>
                       <FileUploadBase.ItemName />
                       <FileUploadBase.ItemSizeText />
-                      <Box>
+
+                      <Box gridArea="status">
                         {slingshotFile?.progress &&
                           slingshotFile?.status !== 'done' && (
                             <Progress
@@ -64,21 +70,23 @@ export const FileUpload = (props: Omit<FileUploadRootProps, 'children'>) => {
                       </FileUploadBase.ItemDeleteTrigger>
                     </FileUploadBase.Item>
                   )
-                })
-              }
-            </FileUploadBase.ItemGroup>
+                })}
+              </FileUploadBase.ItemGroup>
 
-            {slingshotFiles.map(({ url }) => (
-              <input
-                key={url}
-                type="hidden"
-                name={props.profile}
-                value={url?.split('?')[0]}
-              />
-            ))}
-          </>
-        )
-      }}
+              <FileUploadBase.HiddenInput />
+
+              {slingshotFiles.map(({ url }) => (
+                <input
+                  key={url}
+                  type="hidden"
+                  name={props.profile}
+                  value={url?.split('?')[0]}
+                />
+              ))}
+            </>
+          )
+        }}
+      </FileUploadBase.Context>
     </FileUploadBase.Root>
   )
 }

@@ -26,8 +26,8 @@ export type FileSchema = z.infer<typeof fileSchema>
 
 export interface CreateSlingshotOptions {
   profile: string
-  maxSize?: number
-  allowedFileTypes?: string[] | RegExp
+  maxSizeBytes?: number
+  allowedFileTypes?: string | string[] | RegExp
   authorize?: (ctx: {
     req: Request
     file: FileSchema
@@ -61,7 +61,7 @@ export const createSlingshotServer = (options: CreateSlingshotOptions) => {
           throw new HTTPException(400, { message: 'File type not allowed' })
         }
 
-        if (!checkFileSize(file.size, options.maxSize)) {
+        if (!checkFileSize(file.size, options.maxSizeBytes)) {
           throw new HTTPException(400, { message: 'File size too large' })
         }
 

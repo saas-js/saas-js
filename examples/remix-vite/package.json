@@ -21,14 +21,14 @@
     ]
   },
   "dependencies": {
-    "@ark-ui/react": "^2.2.3",
+    "@ark-ui/react": "^3.2.1",
     "@remix-run/node": "^2.8.0",
     "@remix-run/react": "^2.8.0",
     "@remix-run/serve": "^2.8.0",
     "@remix-run/css-bundle": "^2.8.0",
     "@saas-js/slingshot": "workspace:*",
     "@saas-js/slingshot-react": "workspace:*",
-    "@saas-js/slingshot-aws": "workspace:*",
+    "@saas-js/slingshot-adapter-s3": "workspace:*",
     "isbot": "^4.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
@@ -48,8 +48,8 @@
     "typescript": "^5.4.5",
     "vite": "^5.1.0",
     "vite-tsconfig-paths": "^4.2.1",
-    "@pandacss/dev": "^0.36.1",
-    "@park-ui/panda-preset": "^0.36.1"
+    "@pandacss/dev": "^0.40.1",
+    "@park-ui/panda-preset": "^0.38.0"
   },
   "engines": {
     "node": ">=18.0.0"

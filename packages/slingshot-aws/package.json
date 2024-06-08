@@ -1,5 +1,5 @@
 {
-  "name": "@saas-js/slingshot-aws",
+  "name": "@saas-js/slingshot-adapter-s3",
   "version": "0.0.1",
   "type": "module",
   "exports": {
@@ -7,17 +7,21 @@
       "default": "./src/index.ts"
     }
   },
-  "scripts": {},
-  "devDependencies": {
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "dependencies": {
     "@saas-js/slingshot": "workspace:*",
     "@aws-sdk/s3-request-presigner": "^3.529.1",
     "@smithy/hash-node": "^2.1.4",
     "@smithy/protocol-http": "^3.2.2",
     "@smithy/url-parser": "^2.1.4",
     "@aws-sdk/util-format-url": "^3.523.0",
-    "typescript": "^5.4.5"
-  },
-  "dependencies": {
     "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "tsup": "^8.1.0",
+    "typescript": "^5.4.5"
   }
 }

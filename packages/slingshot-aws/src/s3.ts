@@ -37,7 +37,7 @@ export const createSignedUrl = async ({
   return formatUrl(signedUrlObject)
 }
 
-export interface SlingshotS3Args {
+export interface S3AdapterArgs {
   credentials: {
     accessKeyId: string
     secretAccessKey: string
@@ -47,11 +47,7 @@ export interface SlingshotS3Args {
   region: string
 }
 
-export const S3Adapter: SlingshotAdapter = ({
-  credentials,
-  bucket,
-  region,
-}) => {
+export const s3: SlingshotAdapter = ({ credentials, bucket, region }) => {
   return {
     createSignedUrl: async (key: string) => ({
       key,

@@ -1,15 +1,15 @@
 import { createSlingshotServer } from '@saas-js/slingshot'
-import s3 from '@saas-js/slingshot-aws'
+import { s3 } from '@saas-js/slingshot-adapter-s3'
 import { handle } from '@saas-js/slingshot/remix-node'
 
 import { env } from '../env.mjs'
 
 const slingshot = createSlingshotServer({
   profile: 'avatar',
-  maxSize: 1024 * 1024 * 5, // 5MB
-  allowedFileTypes: new RegExp('image/.*'),
-  authorize: ({ file, meta }) => {
-    console.log('authorizing', file, meta)
+  maxSizeBytes: 1024 * 1024 * 5, // 5MB
+  allowedFileTypes: 'image/*',
+  authorize: ({ req, file, meta }) => {
+    console.log('authorizing', req.headers.get('Authorization'), file, meta)
   },
   key: ({ file, meta }) => {
     return `posts/${meta?.postId}/${file.name}`

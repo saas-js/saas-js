@@ -45,7 +45,6 @@ export default function Index() {
             baseUrl="/slingshot"
             uploadOnAccept
             meta={{ postId }}
-            // onUploadStart
           />
 
           <Button type="submit" colorPalette="accent">

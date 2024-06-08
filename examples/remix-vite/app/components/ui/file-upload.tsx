@@ -8,6 +8,8 @@ import { fileUpload } from '#styled-system/recipes'
 
 const { withProvider, withContext } = createStyleContext(fileUpload)
 
+export const Context = FileUpload.Context
+export const HiddenInput = FileUpload.HiddenInput
 export const Root = withProvider(styled(FileUpload.Root), 'root')
 export const Dropzone = withContext(styled(FileUpload.Dropzone), 'dropzone')
 export const Item = withContext(styled(FileUpload.Item), 'item')

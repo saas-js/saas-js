@@ -1,18 +1,25 @@
-import { forwardRef, useState } from 'react'
+import { useState } from 'react'
 
 import { FileUpload as FileUploadBase } from '@ark-ui/react/file-upload'
 import type {
   FileUploadRootProps as FileUploadBaseRootProps,
-  FileUploadContext,
+  UseFileUploadContext,
 } from '@ark-ui/react/file-upload'
-import { PropTypes, mergeProps } from '@zag-js/react'
+import { mergeProps } from '@zag-js/react'
 
-import { Api, createSlingshotClient } from '@saas-js/slingshot/client'
+import { createSlingshotClient } from '@saas-js/slingshot/client'
 
+import {
+  SlingshotProvider,
+  UseSlingshotContext,
+  useSlingshotContext,
+} from './slingshot-context'
 import { useSlingshot } from './use-slingshot'
 
-export interface FileUploadRenderContext extends FileUploadContext {
-  slingshot: Api<PropTypes>
+export interface FileUploadContextProps {
+  children: (
+    context: UseFileUploadContext & { slingshot: UseSlingshotContext },
+  ) => JSX.Element
 }
 
 export interface FileUploadRootProps extends FileUploadBaseRootProps {
@@ -20,37 +27,44 @@ export interface FileUploadRootProps extends FileUploadBaseRootProps {
   baseUrl?: string
   meta: Record<string, string | number>
   uploadOnAccept?: boolean
-  children: (context: FileUploadRenderContext) => React.ReactNode
 }
 
-export const Root = forwardRef<HTMLDivElement, FileUploadRootProps>(
-  (props, forwardedRef) => {
-    const { profile, baseUrl, meta, uploadOnAccept, children, ...rest } = props
+export const Root = (props) => {
+  const { profile, baseUrl, meta, uploadOnAccept, ...rest } = props
 
-    const [client] = useState(
-      createSlingshotClient({
-        baseUrl,
-        profile,
-      }),
-    )
+  const [client] = useState(
+    createSlingshotClient({
+      baseUrl,
+      profile,
+    }),
+  )
 
-    const context = useSlingshot({
-      client,
-      meta,
-      uploadOnAccept,
-    })
+  const context = useSlingshot({
+    client,
+    meta,
+    uploadOnAccept,
+  })
 
-    // TODO fix dir type
-    const { dir, ...rootProps } = mergeProps(context.rootProps, rest)
-    return (
-      <FileUploadBase.Root ref={forwardedRef} {...rootProps}>
-        {(api) => {
-          return children({ ...api, slingshot: context })
-        }}
-      </FileUploadBase.Root>
-    )
-  },
-)
+  const rootProps = mergeProps(context.rootProps, rest)
+
+  return (
+    <SlingshotProvider value={context}>
+      <FileUploadBase.Root {...rootProps} />
+    </SlingshotProvider>
+  )
+}
+
+export const Context = (props: FileUploadContextProps) => {
+  const context = useSlingshotContext()
+
+  return (
+    <FileUploadBase.Context>
+      {(api) => {
+        return props.children({ ...api, slingshot: context })
+      }}
+    </FileUploadBase.Context>
+  )
+}
 
 export const Label = FileUploadBase.Label
 export const Dropzone = FileUploadBase.Dropzone
@@ -62,3 +76,4 @@ export const ItemPreviewImage = FileUploadBase.ItemPreviewImage
 export const ItemName = FileUploadBase.ItemName
 export const ItemSizeText = FileUploadBase.ItemSizeText
 export const ItemDeleteTrigger = FileUploadBase.ItemDeleteTrigger
+export const HiddenInput = FileUploadBase.HiddenInput

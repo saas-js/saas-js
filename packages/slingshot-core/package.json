@@ -38,17 +38,21 @@
       ]
     }
   },
-  "scripts": {},
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
   "dependencies": {
     "@hono/zod-validator": "^0.2.1",
     "hono": "^4.0.9",
     "zod": "^3.22.4",
-    "@zag-js/core": "0.45.0",
-    "@zag-js/utils": "0.45.0",
-    "@zag-js/file-upload": "0.45.0"
+    "@zag-js/core": "0.54.0",
+    "@zag-js/utils": "0.54.0",
+    "@zag-js/file-upload": "0.54.0"
   },
   "devDependencies": {
     "typescript": "^5.4.5",
-    "@zag-js/types": "0.45.0"
+    "@zag-js/types": "0.54.0",
+    "tsup": "^8.1.0"
   }
 }
