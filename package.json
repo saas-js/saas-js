@@ -1,7 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "build": "bun --filter '@saas-js/*' build"
+    "build": "yarn workspaces foreach -Rpt --from '@saas-js/*' run build"
   },
   "dependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
@@ -13,6 +13,8 @@
     "examples/*"
   ],
   "resolutions": {
-    "@zag-js/store": "0.54.0"
-  }
+    "@zag-js/store": "0.54.0",
+    "zod-validator": "1.0.1"
+  },
+  "packageManager": "yarn@4.2.2"
 }
