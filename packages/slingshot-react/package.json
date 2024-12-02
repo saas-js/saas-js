@@ -11,15 +11,15 @@
   },
   "dependencies": {
     "@saas-js/slingshot": "workspace:*",
-    "@zag-js/react": "0.54.0"
+    "@zag-js/react": "0.78.0"
   },
   "peerDependencies": {
-    "@ark-ui/react": ">=3.2",
+    "@ark-ui/react": ">=4.0.0",
     "react": ">=18"
   },
   "devDependencies": {
-    "@ark-ui/react": "3.2.1",
-    "tsup": "^8.1.0",
-    "typescript": "^5.4.5"
+    "@ark-ui/react": "4.4.4",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2"
   }
 }

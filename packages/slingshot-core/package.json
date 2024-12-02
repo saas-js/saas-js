@@ -43,16 +43,16 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "@hono/zod-validator": "^0.2.2",
-    "@zag-js/core": "0.54.0",
-    "@zag-js/file-upload": "0.54.0",
-    "@zag-js/utils": "0.54.0",
-    "hono": "^4.4.4",
+    "@hono/zod-validator": "^0.4.1",
+    "@zag-js/core": "0.78.0",
+    "@zag-js/file-upload": "0.78.0",
+    "@zag-js/utils": "0.78.0",
+    "hono": "^4.6.12",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@zag-js/types": "0.54.0",
-    "tsup": "^8.1.0",
-    "typescript": "^5.4.5"
+    "@zag-js/types": "0.78.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2"
   }
 }

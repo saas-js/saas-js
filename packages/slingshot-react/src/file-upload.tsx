@@ -90,3 +90,22 @@ export const ItemName = FileUploadBase.ItemName
 export const ItemSizeText = FileUploadBase.ItemSizeText
 export const ItemDeleteTrigger = FileUploadBase.ItemDeleteTrigger
 export const HiddenInput = FileUploadBase.HiddenInput
+
+export type {
+  FileUploadRootProps as RootProps,
+  FileUploadContextProps as ContextProps,
+  FileUploadLabelProps as LabelProps,
+  FileUploadDropzoneProps as DropzoneProps,
+  FileUploadTriggerProps as TriggerProps,
+  FileUploadItemGroupProps as ItemGroupProps,
+  FileUploadItemProps as ItemProps,
+  FileUploadItemPreviewProps as ItemPreviewProps,
+  FileUploadItemPreviewImageProps as ItemPreviewImageProps,
+  FileUploadItemNameProps as ItemNameProps,
+  FileUploadItemSizeTextProps as ItemSizeTextProps,
+  FileUploadItemDeleteTriggerProps as ItemDeleteTriggerProps,
+  FileUploadHiddenInputProps as HiddenInputProps,
+  FileUploadFileAcceptDetails as FileAcceptDetails,
+  FileUploadFileRejectDetails as FileRejectDetails,
+  FileUploadFileChangeDetails as FileChangeDetails,
+} from '@ark-ui/react'

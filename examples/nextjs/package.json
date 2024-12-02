@@ -10,28 +10,32 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ark-ui/react": "^3.2.1",
-    "@radix-ui/react-progress": "^1.0.3",
-    "@radix-ui/react-slot": "^1.0.2",
+    "@ark-ui/react": "^4.4.4",
+    "@hookform/resolvers": "^3.9.1",
+    "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-progress": "^1.1.0",
+    "@radix-ui/react-slot": "^1.1.0",
     "@saas-js/slingshot": "workspace:*",
     "@saas-js/slingshot-react": "workspace:*",
-    "class-variance-authority": "^0.7.0",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "lucide-react": "^0.390.0",
-    "next": "14.2.3",
-    "react": "^18",
-    "react-dom": "^18",
-    "tailwind-merge": "^2.3.0",
-    "tailwindcss-animate": "^1.0.7"
+    "lucide-react": "^0.462.0",
+    "next": "15.0.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.53.2",
+    "tailwind-merge": "^2.5.5",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.3",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "@types/node": "^20.17.9",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "14.2.18",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "typescript": "^5.7.2"
   }
 }

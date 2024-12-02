@@ -12,16 +12,16 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "@aws-sdk/s3-request-presigner": "^3.529.1",
-    "@aws-sdk/util-format-url": "^3.523.0",
+    "@aws-sdk/s3-request-presigner": "^3.703.0",
+    "@aws-sdk/util-format-url": "^3.696.0",
     "@saas-js/slingshot": "workspace:*",
-    "@smithy/hash-node": "^2.1.4",
-    "@smithy/protocol-http": "^3.2.2",
-    "@smithy/url-parser": "^2.1.4",
-    "zod": "^3.22.4"
+    "@smithy/hash-node": "^3.0.10",
+    "@smithy/protocol-http": "^4.1.7",
+    "@smithy/url-parser": "^3.0.10",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "tsup": "^8.1.0",
-    "typescript": "^5.4.5"
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2"
   }
 }

@@ -1,61 +1,106 @@
 'use client'
 
-import type { ComponentProps } from 'react'
+import { type ComponentProps, forwardRef } from 'react'
 
-import { createStyleContext } from '@/lib/create-style-context'
-import { tv } from 'tailwind-variants'
+import { cn } from '@/lib/utils'
 
 import { FileUpload } from '@saas-js/slingshot-react'
 
-const fileUpload = tv({
-  slots: {
-    root: 'file-upload',
-    dropzone: 'file-upload-dropzone',
-    item: 'file-upload-item',
-    itemDeleteTrigger: 'file-upload-item-delete-trigger',
-    itemGroup: 'file-upload-item-group',
-    itemName: 'file-upload-item-name',
-    itemPreview: 'file-upload-item-preview',
-    itemPreviewImage: 'file-upload-item-preview-image',
-    itemSizeText: 'file-upload-item-size-text',
-    label: 'file-upload-label',
-    trigger: 'file-upload-trigger',
-  },
-})
-
-const { withProvider, withContext } = createStyleContext(fileUpload)
-
 export const Context = FileUpload.Context
 export const HiddenInput = FileUpload.HiddenInput
-export const Root = withProvider(FileUpload.Root, 'root')
-export const Dropzone = withContext(FileUpload.Dropzone, 'dropzone')
-export const Item = withContext(FileUpload.Item, 'item')
-export const ItemDeleteTrigger = withContext(
-  FileUpload.ItemDeleteTrigger,
-  'itemDeleteTrigger',
-)
-export const ItemGroup = withContext(FileUpload.ItemGroup, 'itemGroup')
-export const ItemName = withContext(FileUpload.ItemName, 'itemName')
-export const ItemPreview = withContext(FileUpload.ItemPreview, 'itemPreview')
-export const ItemPreviewImage = withContext(
-  FileUpload.ItemPreviewImage,
-  'itemPreviewImage',
-)
-export const ItemSizeText = withContext(FileUpload.ItemSizeText, 'itemSizeText')
-export const Label = withContext(FileUpload.Label, 'label')
-export const Trigger = withContext(FileUpload.Trigger, 'trigger')
 
-export interface RootProps extends ComponentProps<typeof Root> {}
-export interface DropzoneProps extends ComponentProps<typeof Dropzone> {}
-export interface ItemProps extends ComponentProps<typeof Item> {}
-export interface ItemDeleteTriggerProps
-  extends ComponentProps<typeof ItemDeleteTrigger> {}
-export interface ItemGroupProps extends ComponentProps<typeof ItemGroup> {}
-export interface ItemNameProps extends ComponentProps<typeof ItemName> {}
-export interface ItemPreviewProps extends ComponentProps<typeof ItemPreview> {}
-export interface ItemPreviewImageProps
-  extends ComponentProps<typeof ItemPreviewImage> {}
-export interface ItemSizeTextProps
-  extends ComponentProps<typeof ItemSizeText> {}
-export interface LabelProps extends ComponentProps<typeof Label> {}
-export interface TriggerProps extends ComponentProps<typeof Trigger> {}
+export const Root = forwardRef<
+  HTMLDivElement,
+  ComponentProps<typeof FileUpload.Root>
+>((props, ref) => {
+  const { className, ...rest } = props
+  return <FileUpload.Root {...rest} className={cn('', className)} ref={ref} />
+})
+
+Root.displayName = 'FileUploadRoot'
+
+export const Dropzone = forwardRef<
+  HTMLDivElement,
+  ComponentProps<typeof FileUpload.Dropzone>
+>((props, ref) => {
+  const { className, ...rest } = props
+  return (
+    <FileUpload.Dropzone
+      {...rest}
+      className={cn(
+        'flex flex-col items-center justify-center rounded-md border-dashed border-2 border-gray-300 p-4 gap-4',
+        className,
+      )}
+      ref={ref}
+    />
+  )
+})
+
+Dropzone.displayName = 'FileUploadDropzone'
+
+export const Item = forwardRef<
+  HTMLLIElement,
+  ComponentProps<typeof FileUpload.Item>
+>((props, ref) => {
+  const { className, ...rest } = props
+  return <FileUpload.Item {...rest} className={cn('', className)} ref={ref} />
+})
+
+Item.displayName = 'FileUploadItem'
+
+export const ItemDeleteTrigger = FileUpload.ItemDeleteTrigger
+
+export const ItemGroup = forwardRef<
+  HTMLUListElement,
+  ComponentProps<typeof FileUpload.ItemGroup>
+>((props, ref) => {
+  const { className, ...rest } = props
+  return (
+    <FileUpload.ItemGroup {...rest} className={cn('', className)} ref={ref} />
+  )
+})
+
+ItemGroup.displayName = 'FileUploadItemGroup'
+
+export const ItemName = forwardRef<
+  HTMLSpanElement,
+  ComponentProps<typeof FileUpload.ItemName>
+>((props, ref) => {
+  const { className, ...rest } = props
+  return (
+    <FileUpload.ItemName {...rest} className={cn('', className)} ref={ref} />
+  )
+})
+
+ItemName.displayName = 'FileUploadItemName'
+
+export const ItemPreview = FileUpload.ItemPreview
+export const ItemPreviewImage = FileUpload.ItemPreviewImage
+
+export const ItemSizeText = forwardRef<
+  HTMLDivElement,
+  ComponentProps<typeof FileUpload.ItemSizeText>
+>((props, ref) => {
+  const { className, ...rest } = props
+  return (
+    <FileUpload.ItemSizeText
+      {...rest}
+      className={cn('', className)}
+      ref={ref}
+    />
+  )
+})
+
+ItemSizeText.displayName = 'FileUploadItemSizeText'
+
+export const Label = forwardRef<
+  HTMLLabelElement,
+  ComponentProps<typeof FileUpload.Label>
+>((props, ref) => {
+  const { className, ...rest } = props
+  return <FileUpload.Label {...rest} className={cn('', className)} ref={ref} />
+})
+
+Label.displayName = 'FileUploadLabel'
+
+export const Trigger = FileUpload.Trigger

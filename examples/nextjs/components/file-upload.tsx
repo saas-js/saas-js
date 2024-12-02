@@ -10,7 +10,6 @@ import { Progress } from './ui/progress'
 export const FileUpload = (props: Omit<FileUploadRootProps, 'children'>) => {
   return (
     <FileUploadBase.Root {...props}>
-      Test
       <FileUploadBase.Context>
         {(api) => {
           const status = api.slingshot.status
