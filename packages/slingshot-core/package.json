@@ -1,6 +1,6 @@
 {
   "name": "@saas-js/slingshot",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "exports": {
     ".": {
@@ -29,6 +29,9 @@
       "import": "./dist/aws-lambda/index.js"
     }
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch"

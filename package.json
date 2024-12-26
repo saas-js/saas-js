@@ -1,7 +1,8 @@
 {
   "type": "module",
   "scripts": {
-    "build": "yarn workspaces foreach -Rpt --from '@saas-js/*' run build"
+    "build": "yarn workspaces foreach -Rpt --from '@saas-js/*' run build",
+    "publish": "yarn workspaces foreach -Rpt --from '@saas-js/*' npm publish"
   },
   "dependencies": {
     "@changesets/cli": "^2.27.11",
