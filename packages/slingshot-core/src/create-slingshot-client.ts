@@ -1,20 +1,20 @@
-import { hc } from 'hono/client'
+import { type ClientRequestOptions, hc } from 'hono/client'
 
-import type { SlingshotRoutes, UploadSchema } from './slingshot.types'
+import type { SlingshotApp, UploadSchema } from './slingshot.types'
 
-interface CreateSlingshotClientProps {
+interface CreateSlingshotClientProps extends ClientRequestOptions {
   profile: string
   baseUrl?: string
 }
 
 export const createSlingshotClient = (props: CreateSlingshotClientProps) => {
-  const { profile, baseUrl = '/api/slingshot' } = props
+  const { profile, baseUrl = '/api/slingshot', ...options } = props
 
-  const slingshot = hc<SlingshotRoutes>(`${baseUrl}/${profile}`)
+  const slingshot = hc<SlingshotApp>(`${baseUrl}/${profile}`, options)
 
   return {
     request: async (file: File, meta?: UploadSchema['meta']) => {
-      const response = await slingshot.request.$post({
+      const response = await slingshot.api.request.$post({
         json: {
           file: {
             name: file.name,

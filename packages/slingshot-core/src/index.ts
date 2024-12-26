@@ -1,9 +1,13 @@
 export { createSlingshotServer } from './create-slingshot-server'
 export type {
-  CreateSlingshotProps,
+  CreateSlingshotOptions,
   FileSchema,
   UploadSchema,
-  SlingshotRoutes,
 } from './create-slingshot-server'
 
-export type { SlingshotAdapter, SlingshotAdapterArgs } from './slingshot.types'
+export type {
+  SlingshotAdapter,
+  SlingshotAdapterArgs,
+  SlingshotFile,
+  SlingshotApp,
+} from './slingshot.types'

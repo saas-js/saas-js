@@ -19,7 +19,7 @@ export type SlingshotAdapter<
 
 export type AdapterInstance = ReturnType<SlingshotAdapter>
 
-export type { SlingshotRoutes } from './create-slingshot-server'
+export type { SlingshotApp } from './create-slingshot-server'
 
 export type { FileSchema, UploadSchema } from './slingshot.schema'
 

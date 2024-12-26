@@ -4,38 +4,29 @@
   "type": "module",
   "exports": {
     ".": {
-      "default": "./src/index.ts"
+      "types": "./dist/index.d.ts",
+      "@saas-js": "./src/index.ts",
+      "import": "./dist/index.js"
     },
     "./client": {
-      "default": "./src/client.ts"
+      "types": "./dist/client.d.ts",
+      "@saas-js": "./src/client.ts",
+      "import": "./dist/client.js"
     },
     "./next": {
-      "default": "./src/next/index.ts"
+      "types": "./dist/next/index.d.ts",
+      "@saas-js": "./src/next/index.ts",
+      "import": "./dist/next/index.js"
     },
     "./remix-node": {
-      "default": "./src/remix-node/index.ts"
+      "types": "./dist/remix-node/index.d.ts",
+      "@saas-js": "./src/remix-node/index.ts",
+      "import": "./dist/remix-node/index.js"
     },
     "./aws-lambda": {
-      "default": "./src/aws-lambda/index.ts"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "./src/index.ts"
-      ],
-      "client": [
-        "src/client.ts"
-      ],
-      "next": [
-        " src/next/index.ts"
-      ],
-      "remix-node": [
-        "src/remix-node/index.ts"
-      ],
-      "aws-lambda": [
-        "src/aws-lambda/index.ts"
-      ]
+      "types": "./dist/aws-lambda/index.d.ts",
+      "@saas-js": "./src/aws-lambda/index.ts",
+      "import": "./dist/aws-lambda/index.js"
     }
   },
   "scripts": {
@@ -43,15 +34,15 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "@hono/zod-validator": "^0.4.1",
-    "@zag-js/core": "0.78.0",
-    "@zag-js/file-upload": "0.78.0",
-    "@zag-js/utils": "0.78.0",
-    "hono": "^4.6.12",
-    "zod": "^3.23.8"
+    "@hono/zod-validator": "^0.4.2",
+    "@zag-js/core": "0.79.0",
+    "@zag-js/file-upload": "0.79.0",
+    "@zag-js/utils": "0.79.0",
+    "hono": "^4.6.14",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@zag-js/types": "0.78.0",
+    "@zag-js/types": "0.79.0",
     "tsup": "^8.3.5",
     "typescript": "^5.7.2"
   }

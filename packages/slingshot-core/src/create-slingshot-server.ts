@@ -45,18 +45,9 @@ export const createSlingshotServer = (options: CreateSlingshotOptions) => {
 
   const basePath = options.basePath ?? '/slingshot'
 
-  const app = new Hono().basePath(`${basePath}/${options.profile}`)
-
-  console.log('app', app)
-  app.use(async (c, next) => {
-    console.log(c.req.url)
-    await next()
-  })
-
-  const route = app.post(
-    '/request',
-    zValidator('json', uploadSchema),
-    async (c) => {
+  const app = new Hono()
+    .basePath(basePath + `/${options.profile}`)
+    .post('/request', zValidator('json', uploadSchema), async (c) => {
       try {
         const { file, meta } = await c.req.valid('json')
 
@@ -84,8 +75,7 @@ export const createSlingshotServer = (options: CreateSlingshotOptions) => {
       } catch (err) {
         throw new HTTPException(400, { message: err.message })
       }
-    },
-  )
+    })
 
   app.onError((err, c) => {
     if (err instanceof HTTPException) {
@@ -100,7 +90,7 @@ export const createSlingshotServer = (options: CreateSlingshotOptions) => {
     return c.json({ error: 'Internal server error' }, 500)
   })
 
-  return route
+  return app
 }
 
-export type SlingshotRoutes = ReturnType<typeof createSlingshotServer>
+export type SlingshotApp = ReturnType<typeof createSlingshotServer>

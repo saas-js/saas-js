@@ -3,7 +3,11 @@
   "version": "0.0.1",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "@saas-js": "./dist/index.ts",
+      "import": "./dist/index.js"
+    }
   },
   "scripts": {
     "build": "tsup",
@@ -11,14 +15,15 @@
   },
   "dependencies": {
     "@saas-js/slingshot": "workspace:*",
-    "@zag-js/react": "0.78.0"
+    "@zag-js/react": "0.79.0"
   },
   "peerDependencies": {
     "@ark-ui/react": ">=4.0.0",
-    "react": ">=18"
+    "react": ">=18",
+    "react-dom": ">=18"
   },
   "devDependencies": {
-    "@ark-ui/react": "4.4.4",
+    "@ark-ui/react": "4.5.0",
     "tsup": "^8.3.5",
     "typescript": "^5.7.2"
   }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 import { FileUpload as FileUploadBase } from '@ark-ui/react/file-upload'
 import type {
@@ -19,7 +19,7 @@ import { useSlingshot } from './use-slingshot'
 export interface FileUploadContextProps {
   children: (
     context: UseFileUploadContext & { slingshot: UseSlingshotContext },
-  ) => JSX.Element
+  ) => React.ReactNode
 }
 
 export interface FileUploadRootProps extends FileUploadBaseRootProps {
