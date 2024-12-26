@@ -1,7 +1,7 @@
 node_modules
 dist
 lambda.zip
-.yarn
+.yarn/*
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
