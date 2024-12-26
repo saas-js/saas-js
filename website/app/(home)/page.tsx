@@ -1,19 +1,20 @@
-import Link from 'next/link';
+import Link from 'next/link'
 
 export default function HomePage() {
   return (
     <main className="flex flex-1 flex-col justify-center text-center">
-      <h1 className="mb-4 text-2xl font-bold">Hello World</h1>
-      <p className="text-fd-muted-foreground">
-        You can open{' '}
-        <Link
-          href="/docs"
-          className="text-fd-foreground font-semibold underline"
-        >
-          /docs
-        </Link>{' '}
-        and see the documentation.
+      <div className="flex flex-col items-center justify-center mb-4">
+        <img src="/logo.svg" alt="Saas.js logo" width={140} />
+        <h1 className="mb-4 text-2xl font-bold hidden">Saas.js</h1>
+      </div>
+
+      <p className="text-fd-muted-foreground mb-4">
+        A collection of full-stack React components for building SaaS products.
       </p>
+
+      <Link href="/docs" className="text-fd-foreground font-semibold underline">
+        View Documentation
+      </Link>
     </main>
-  );
+  )
 }

@@ -1,4 +1,4 @@
-import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
+import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared'
 
 /**
  * Shared layout configurations
@@ -9,7 +9,7 @@ import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
  */
 export const baseOptions: BaseLayoutProps = {
   nav: {
-    title: 'My App',
+    title: <img src="/logo.svg" alt="Saas.js logo" width={80} />,
   },
   links: [
     {
@@ -18,4 +18,4 @@ export const baseOptions: BaseLayoutProps = {
       active: 'nested-url',
     },
   ],
-};
+}
