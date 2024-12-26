@@ -43,11 +43,10 @@ export const createSlingshotServer = (options: CreateSlingshotOptions) => {
     throw new Error('Slingshot adapter is required')
   }
 
-  const basePath = options.basePath ?? '/slingshot'
-
-  const app = new Hono()
-    .basePath(basePath + `/${options.profile}`)
-    .post('/request', zValidator('json', uploadSchema), async (c) => {
+  const app = new Hono().post(
+    '/request',
+    zValidator('json', uploadSchema),
+    async (c) => {
       try {
         const { file, meta } = await c.req.valid('json')
 
@@ -75,7 +74,8 @@ export const createSlingshotServer = (options: CreateSlingshotOptions) => {
       } catch (err) {
         throw new HTTPException(400, { message: err.message })
       }
-    })
+    },
+  )
 
   app.onError((err, c) => {
     if (err instanceof HTTPException) {

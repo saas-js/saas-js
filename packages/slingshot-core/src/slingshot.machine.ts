@@ -88,7 +88,7 @@ export const machine = (userContext: UserDefinedContext) => {
 
           const files = await Promise.all<SlingshotFile>(
             event.files.map(async (file) => {
-              // set.status(ctx, { key: file.key, status: 'authorizing' })
+              set.status(ctx, { key: file.key, status: 'authorizing' })
 
               const fileMeta = {
                 name: file.name,
@@ -171,11 +171,5 @@ const set = {
   status(ctx, { key, status, error = null }) {
     ctx.files[key].status = status
     ctx.files[key].error = error
-  },
-}
-
-const invoke = {
-  onError: (ctx, error) => {
-    console.error(error)
   },
 }

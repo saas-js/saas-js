@@ -4788,15 +4788,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^19.0.2":
-  version: 19.0.2
-  resolution: "@types/react-dom@npm:19.0.2"
-  peerDependencies:
-    "@types/react": ^19.0.0
-  checksum: 10/d2ae81ec0b8eee7a4bf31918796fdaa34e8db68f69682163bc212d759de76783e6ffcc02c02722dcf508429067148841e6da81414cc730ca2a28c9c2b350c880
-  languageName: node
-  linkType: hard
-
 "@types/react@npm:^18.3.18":
   version: 18.3.18
   resolution: "@types/react@npm:18.3.18"
@@ -4804,15 +4795,6 @@ __metadata:
     "@types/prop-types": "npm:*"
     csstype: "npm:^3.0.2"
   checksum: 10/7fdd8b853e0d291d4138133f93f8d5c333da918e5804afcea61a923aab4bdfc9bb15eb21a5640959b452972b8715ddf10ffb12b3bd071898b9e37738636463f2
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:^19.0.2":
-  version: 19.0.2
-  resolution: "@types/react@npm:19.0.2"
-  dependencies:
-    csstype: "npm:^3.0.2"
-  checksum: 10/b355cfa22814e934b381c4f6de67c66652255377c3ddc6a757ea195ccbd0e7095aadfe1a28713d8ab1221222b8f2ec237903f4ec0e54eaf656ac832782d25dd2
   languageName: node
   linkType: hard
 
@@ -6578,12 +6560,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zag-js/store@npm:0.54.0":
-  version: 0.54.0
-  resolution: "@zag-js/store@npm:0.54.0"
+"@zag-js/store@npm:0.62.1":
+  version: 0.62.1
+  resolution: "@zag-js/store@npm:0.62.1"
   dependencies:
     proxy-compare: "npm:3.0.0"
-  checksum: 10/b830ffb3cbb96bc89f1f9d80f35b0dae4c741118cdb4a41a2d9c0648b2c0e3f842c08a33615cce9b5d595cbb753f4f0e7167abebf5eae0f58a8790b764fd9e6c
+  checksum: 10/1e344e1cd80c9281e05bfea685cca0d21afff9cd5992a7841fa3a23ff667085a27932e72ac1c664273d1f0108d92a7a3584862826888d59a50061ed71b18c37c
+  languageName: node
+  linkType: hard
+
+"@zag-js/store@npm:0.78.2":
+  version: 0.78.2
+  resolution: "@zag-js/store@npm:0.78.2"
+  dependencies:
+    proxy-compare: "npm:3.0.1"
+  checksum: 10/ea4a4ae12e3a13b5ee646232784873a40e3e17d6ea36a64fa6f3dc34a152c16a08f0a52077cd63c0ee503655939edacab953edb47ec469b899be86a60afe739b
+  languageName: node
+  linkType: hard
+
+"@zag-js/store@npm:0.79.0":
+  version: 0.79.0
+  resolution: "@zag-js/store@npm:0.79.0"
+  dependencies:
+    proxy-compare: "npm:3.0.1"
+  checksum: 10/d4da5b6283ba04bc2fb1e60a2b37cf35a8dee57a38eef2469808d71a4920d329312cf188e29d03c02edaafefea00e5e14c373a02b725cd5e1f8b93c81d7bb075
   languageName: node
   linkType: hard
 
@@ -15058,17 +15058,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^19.0.0":
-  version: 19.0.0
-  resolution: "react-dom@npm:19.0.0"
-  dependencies:
-    scheduler: "npm:^0.25.0"
-  peerDependencies:
-    react: ^19.0.0
-  checksum: 10/aa64a2f1991042f516260e8b0eca0ae777b6c8f1aa2b5ae096e80bbb6ac9b005aef2bca697969841d34f7e1819556263476bdfea36c35092e8d9aefde3de2d9a
-  languageName: node
-  linkType: hard
-
 "react-hook-form@npm:^7.54.2":
   version: 7.54.2
   resolution: "react-hook-form@npm:7.54.2"
@@ -15183,13 +15172,6 @@ __metadata:
   dependencies:
     loose-envify: "npm:^1.1.0"
   checksum: 10/261137d3f3993eaa2368a83110466fc0e558bc2c7f7ae7ca52d94f03aac945f45146bd85e5f481044db1758a1dbb57879e2fcdd33924e2dde1bdc550ce73f7bf
-  languageName: node
-  linkType: hard
-
-"react@npm:^19.0.0":
-  version: 19.0.0
-  resolution: "react@npm:19.0.0"
-  checksum: 10/2490969c503f644703c88990d20e4011fa6119ddeca451e9de48f6d7ab058d670d2852a5fcd3aa3cd90a923ab2815d532637bd4a814add402ae5c0d4f129ee71
   languageName: node
   linkType: hard
 
@@ -16018,13 +16000,6 @@ __metadata:
   dependencies:
     loose-envify: "npm:^1.1.0"
   checksum: 10/e8d68b89d18d5b028223edf090092846868a765a591944760942b77ea1f69b17235f7e956696efbb62c8130ab90af7e0949bfb8eba7896335507317236966bc9
-  languageName: node
-  linkType: hard
-
-"scheduler@npm:^0.25.0":
-  version: 0.25.0
-  resolution: "scheduler@npm:0.25.0"
-  checksum: 10/e661e38503ab29a153429a99203fefa764f28b35c079719eb5efdd2c1c1086522f6653d8ffce388209682c23891a6d1d32fa6badf53c35fb5b9cd0c55ace42de
   languageName: node
   linkType: hard
 
@@ -18024,8 +17999,8 @@ __metadata:
     "@fumadocs/content-collections": "npm:1.1.6"
     "@saas-js/slingshot-react": "workspace:*"
     "@types/node": "npm:22.10.2"
-    "@types/react": "npm:^19.0.2"
-    "@types/react-dom": "npm:^19.0.2"
+    "@types/react": "npm:^18.3.18"
+    "@types/react-dom": "npm:^18.3.5"
     autoprefixer: "npm:^10.4.20"
     eslint: "npm:^8.57.1"
     eslint-config-next: "npm:15.1.2"
@@ -18033,8 +18008,8 @@ __metadata:
     fumadocs-ui: "npm:14.6.4"
     next: "npm:15.1.2"
     postcss: "npm:^8.4.49"
-    react: "npm:^19.0.0"
-    react-dom: "npm:^19.0.0"
+    react: "npm:^18.3.1"
+    react-dom: "npm:^18.3.1"
     tailwindcss: "npm:^3.4.17"
     typescript: "npm:^5.7.2"
   languageName: unknown

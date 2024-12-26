@@ -13,9 +13,5 @@
     "packages/*",
     "examples/*"
   ],
-  "resolutions": {
-    "@zag-js/store": "0.54.0",
-    "zod-validator": "1.0.1"
-  },
   "packageManager": "yarn@4.2.2"
 }

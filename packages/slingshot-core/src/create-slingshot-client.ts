@@ -14,7 +14,7 @@ export const createSlingshotClient = (props: CreateSlingshotClientProps) => {
 
   return {
     request: async (file: File, meta?: UploadSchema['meta']) => {
-      const response = await slingshot.api.request.$post({
+      const response = await slingshot.request.$post({
         json: {
           file: {
             name: file.name,

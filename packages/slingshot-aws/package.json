@@ -4,7 +4,9 @@
   "type": "module",
   "exports": {
     ".": {
-      "default": "./src/index.ts"
+      "types": "./dist/index.d.ts",
+      "@saas-js": "./src/index.ts",
+      "import": "./dist/index.js"
     }
   },
   "scripts": {
