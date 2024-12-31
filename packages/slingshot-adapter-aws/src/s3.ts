@@ -6,16 +6,7 @@ import { parseUrl } from '@smithy/url-parser'
 
 import type { SlingshotAdapter } from '@saas-js/slingshot'
 
-interface CreateSignedUrlArgs {
-  credentials: {
-    accessKeyId: string
-    secretAccessKey: string
-    sessionToken?: string
-  }
-  bucket: string
-  region: string
-  key: string
-}
+import type { CreateSignedUrlArgs } from './types.ts'
 
 export const createSignedUrl = async ({
   credentials,
@@ -35,16 +26,6 @@ export const createSignedUrl = async ({
   )
 
   return formatUrl(signedUrlObject)
-}
-
-export interface S3AdapterArgs {
-  credentials: {
-    accessKeyId: string
-    secretAccessKey: string
-    sessionToken?: string
-  }
-  bucket: string
-  region: string
 }
 
 export const s3: SlingshotAdapter = ({ credentials, bucket, region }) => {

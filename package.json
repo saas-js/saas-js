@@ -15,5 +15,8 @@
     "packages/*",
     "examples/*"
   ],
-  "packageManager": "bun@1.1.42"
+  "packageManager": "bun@1.1.42",
+  "resolutions": {
+    "bun-types": "1.1.42-canary.20241231T140524"
+  }
 }

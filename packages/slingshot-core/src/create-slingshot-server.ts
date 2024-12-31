@@ -43,39 +43,43 @@ export const createSlingshotServer = (options: CreateSlingshotOptions) => {
     throw new Error('Slingshot adapter is required')
   }
 
-  const app = new Hono().post(
-    '/request',
-    zValidator('json', uploadSchema),
-    async (c) => {
-      try {
-        const { file, meta } = await c.req.valid('json')
-
-        await options.authorize?.({
-          req: c.req.raw,
-          file,
-          meta,
-        })
-
-        if (!checkFileType(file.type, options.allowedFileTypes)) {
-          throw new HTTPException(400, { message: 'File type not allowed' })
-        }
-
-        if (!checkFileSize(file.size, options.maxSizeBytes)) {
-          throw new HTTPException(400, { message: 'File size too large' })
-        }
-
-        const key = options.key
-          ? options.key({ file, meta })
-          : `${options.profile}/${file.name}`
-
-        const signedResult = await options.adapter.createSignedUrl(key)
-
-        return c.json(signedResult, 200)
-      } catch (err) {
-        throw new HTTPException(400, { message: err.message })
-      }
+  const app = new Hono({
+    // we use getPath here, since using basePath will break our types.
+    getPath: (req) => {
+      const url = new URL(req.url)
+      return url.pathname.replace(`${options.basePath}/${options.profile}`, '')
     },
-  )
+  }).post('/request', zValidator('json', uploadSchema), async (c) => {
+    try {
+      const { file, meta } = await c.req.valid('json')
+
+      await options.authorize?.({
+        req: c.req.raw,
+        file,
+        meta,
+      })
+
+      if (!checkFileType(file.type, options.allowedFileTypes)) {
+        throw new HTTPException(400, { message: 'File type not allowed' })
+      }
+
+      if (!checkFileSize(file.size, options.maxSizeBytes)) {
+        throw new HTTPException(400, { message: 'File size too large' })
+      }
+
+      const key = options.key
+        ? options.key({ file, meta })
+        : `${options.profile}/${file.name}`
+
+      const signedResult = await options.adapter.createSignedUrl(key)
+
+      console.log(key, signedResult)
+
+      return c.json(signedResult, 200)
+    } catch (err) {
+      throw new HTTPException(400, { message: err.message })
+    }
+  })
 
   app.onError((err, c) => {
     if (err instanceof HTTPException) {
