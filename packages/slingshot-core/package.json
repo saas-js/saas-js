@@ -37,6 +37,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "release": "bun publish",
     "dev": "tsup --watch"
   },
   "dependencies": {

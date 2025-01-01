@@ -2,7 +2,7 @@
   "type": "module",
   "scripts": {
     "build": "bun --filter '@saas-js/*' build",
-    "publish": "bun --filter '@saas-js/*' publish"
+    "release": "bun --filter '@saas-js/*' release"
   },
   "dependencies": {
     "@changesets/cli": "^2.27.11",
