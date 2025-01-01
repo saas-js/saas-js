@@ -1,6 +1,6 @@
 {
   "name": "@saas-js/slingshot-adapter-bun",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "publishConfig": {
     "access": "public"
