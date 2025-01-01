@@ -1,5 +1,13 @@
 # @saas-js/slingshot-adapter-s3
 
+## 0.1.1
+
+### Patch Changes
+
+- Bump versions
+- Updated dependencies
+  - @saas-js/slingshot@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
