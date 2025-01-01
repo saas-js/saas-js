@@ -12,8 +12,6 @@ export const FileUpload = (props: Omit<FileUploadRootProps, 'children'>) => {
     <FileUploadBase.Root {...props}>
       <FileUploadBase.Context>
         {(api) => {
-          const status = api.slingshot.status
-
           const slingshotFiles = api.slingshot.getFiles()
 
           return (
@@ -28,35 +26,47 @@ export const FileUpload = (props: Omit<FileUploadRootProps, 'children'>) => {
                 </FileUploadBase.Trigger>
               </FileUploadBase.Dropzone>
 
-              <div>Status: {status}</div>
-
               <FileUploadBase.ItemGroup>
-                {api.acceptedFiles.map((file, id) => {
+                {api.acceptedFiles.map((file) => {
                   const slingshotFile = api.slingshot
                     .getFiles()
                     ?.find((f) => f.name === file.name)
 
                   return (
-                    <FileUploadBase.Item key={id} file={file}>
+                    <FileUploadBase.Item
+                      key={file.name}
+                      file={file}
+                      className="relative items-center"
+                    >
                       <FileUploadBase.ItemPreview type="image/*">
-                        <FileUploadBase.ItemPreviewImage
-                          style={{ width: '100px' }}
-                        />
+                        <FileUploadBase.ItemPreviewImage />
                       </FileUploadBase.ItemPreview>
-                      <FileUploadBase.ItemPreview type=".*"></FileUploadBase.ItemPreview>
-                      <FileUploadBase.ItemName />
-                      <FileUploadBase.ItemSizeText />
-
-                      <div>
-                        {slingshotFile?.progress &&
-                          slingshotFile?.status !== 'done' && (
-                            <Progress value={slingshotFile?.progress} />
-                          )}
-                        {slingshotFile?.status === 'done' ? 'Done' : null}
+                      <div className="flex flex-col flex-1">
+                        <FileUploadBase.ItemName />
+                        <FileUploadBase.ItemSizeText />
                       </div>
 
-                      <FileUploadBase.ItemDeleteTrigger>
-                        ✕
+                      <div className="text-xs text-gray-500">
+                        {slingshotFile?.progress &&
+                          (slingshotFile?.status === 'done' ? (
+                            <span>Done</span>
+                          ) : (
+                            <span>{slingshotFile?.progress}%</span>
+                          ))}
+                      </div>
+
+                      {slingshotFile?.progress &&
+                        slingshotFile?.status !== 'done' && (
+                          <Progress
+                            value={slingshotFile?.progress ?? 0}
+                            className="absolute bottom-0 right-0 left-0 h-1"
+                          />
+                        )}
+
+                      <FileUploadBase.ItemDeleteTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          ✕
+                        </Button>
                       </FileUploadBase.ItemDeleteTrigger>
                     </FileUploadBase.Item>
                   )

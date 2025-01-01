@@ -9,6 +9,8 @@ export const createSignedUrl = ({
   bucket,
   region,
   key,
+  method = 'PUT',
+  expiresIn = 3600,
 }: CreateSignedUrlArgs) => {
   const file = s3(key, {
     bucket,
@@ -17,14 +19,25 @@ export const createSignedUrl = ({
     secretAccessKey: credentials.secretAccessKey,
   })
 
-  return file.presign()
+  return file.presign({
+    method,
+    endpoint: `https://${bucket}.s3.${region}.amazonaws.com`,
+    expiresIn: expiresIn,
+  })
 }
 
 export const adapter: SlingshotAdapter = ({ credentials, bucket, region }) => {
   return {
-    createSignedUrl: async (key: string) => ({
+    createSignedUrl: async ({ key, method = 'PUT', expiresIn = 3600 }) => ({
       key,
-      url: createSignedUrl({ credentials, bucket, region, key }),
+      url: createSignedUrl({
+        credentials,
+        bucket,
+        region,
+        key,
+        method,
+        expiresIn,
+      }),
     }),
   }
 }

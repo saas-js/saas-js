@@ -7,6 +7,8 @@ export interface CreateSignedUrlArgs {
   bucket: string
   region: string
   key: string
+  method?: 'PUT' | 'GET'
+  expiresIn?: number
 }
 
 export interface S3AdapterArgs {

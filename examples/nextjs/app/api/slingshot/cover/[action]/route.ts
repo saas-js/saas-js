@@ -9,8 +9,13 @@ const slingshot = createSlingshotServer({
   basePath: '/api/slingshot',
   maxSizeBytes: 1024 * 1024 * 5, // 5MB
   allowedFileTypes: 'image/*',
-  authorize: ({ req, file, meta }) => {
-    console.log('authorizing', req.headers.get('Authorization'), file, meta)
+  authorize: ({ req, file, meta, key }) => {
+    const token = req.headers.get('Authorization')
+    if (req.method === 'POST') {
+      console.log('authorizing upload', token, file, meta)
+    } else {
+      console.log('authorizing fetch', token, key)
+    }
   },
   key: ({ file, meta }) => {
     return `posts/${meta?.postId}/${file.name}`
@@ -26,3 +31,4 @@ const slingshot = createSlingshotServer({
 })
 
 export const POST = handle(slingshot)
+export const GET = handle(slingshot)

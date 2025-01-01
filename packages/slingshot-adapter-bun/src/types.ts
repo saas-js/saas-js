@@ -6,6 +6,8 @@ export interface CreateSignedUrlArgs {
   bucket: string
   region: string
   key: string
+  method?: 'PUT' | 'GET'
+  expiresIn?: number
 }
 
 export interface BunS3AdapterArgs {

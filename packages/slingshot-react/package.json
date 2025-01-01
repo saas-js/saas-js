@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@saas-js/slingshot": "workspace:*",
-    "@zag-js/react": "0.79.0"
+    "@zag-js/react": "0.79.3"
   },
   "peerDependencies": {
     "@ark-ui/react": ">=4.0.0",
@@ -29,7 +29,7 @@
     "react-dom": ">=18"
   },
   "devDependencies": {
-    "@ark-ui/react": "4.5.0",
+    "@ark-ui/react": "4.6.0",
     "tsup": "^8.3.5",
     "typescript": "^5.7.2"
   }

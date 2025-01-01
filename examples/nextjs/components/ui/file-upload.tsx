@@ -14,7 +14,13 @@ export const Root = forwardRef<
   ComponentProps<typeof FileUpload.Root>
 >((props, ref) => {
   const { className, ...rest } = props
-  return <FileUpload.Root {...rest} className={cn('', className)} ref={ref} />
+  return (
+    <FileUpload.Root
+      {...rest}
+      className={cn('flex flex-col gap-4', className)}
+      ref={ref}
+    />
+  )
 })
 
 Root.displayName = 'FileUploadRoot'
@@ -28,7 +34,7 @@ export const Dropzone = forwardRef<
     <FileUpload.Dropzone
       {...rest}
       className={cn(
-        'flex flex-col items-center justify-center rounded-md border-dashed border-2 border-gray-300 p-4 gap-4',
+        'flex flex-col items-center justify-center rounded-md border-dashed border border-gray-300 p-4 gap-4',
         className,
       )}
       ref={ref}
@@ -43,7 +49,13 @@ export const Item = forwardRef<
   ComponentProps<typeof FileUpload.Item>
 >((props, ref) => {
   const { className, ...rest } = props
-  return <FileUpload.Item {...rest} className={cn('', className)} ref={ref} />
+  return (
+    <FileUpload.Item
+      {...rest}
+      className={cn('flex flex-row gap-2 p-2 border rounded-md', className)}
+      ref={ref}
+    />
+  )
 })
 
 Item.displayName = 'FileUploadItem'
@@ -56,26 +68,49 @@ export const ItemGroup = forwardRef<
 >((props, ref) => {
   const { className, ...rest } = props
   return (
-    <FileUpload.ItemGroup {...rest} className={cn('', className)} ref={ref} />
+    <FileUpload.ItemGroup
+      {...rest}
+      className={cn('flex flex-col gap-2', className)}
+      ref={ref}
+    />
   )
 })
 
 ItemGroup.displayName = 'FileUploadItemGroup'
 
 export const ItemName = forwardRef<
-  HTMLSpanElement,
+  HTMLDivElement,
   ComponentProps<typeof FileUpload.ItemName>
 >((props, ref) => {
   const { className, ...rest } = props
   return (
-    <FileUpload.ItemName {...rest} className={cn('', className)} ref={ref} />
+    <FileUpload.ItemName
+      {...rest}
+      className={cn('text-sm', className)}
+      ref={ref}
+    />
   )
 })
 
 ItemName.displayName = 'FileUploadItemName'
 
 export const ItemPreview = FileUpload.ItemPreview
-export const ItemPreviewImage = FileUpload.ItemPreviewImage
+export const ItemPreviewImage = forwardRef<
+  HTMLImageElement,
+  ComponentProps<typeof FileUpload.ItemPreviewImage>
+>((props, ref) => {
+  const { className, ...rest } = props
+
+  return (
+    <FileUpload.ItemPreviewImage
+      {...rest}
+      className={cn('w-10 rounded-sm', className)}
+      ref={ref}
+    />
+  )
+})
+
+ItemPreviewImage.displayName = 'FileUploadItemPreviewImage'
 
 export const ItemSizeText = forwardRef<
   HTMLDivElement,
@@ -85,7 +120,7 @@ export const ItemSizeText = forwardRef<
   return (
     <FileUpload.ItemSizeText
       {...rest}
-      className={cn('', className)}
+      className={cn('text-xs text-gray-500', className)}
       ref={ref}
     />
   )
@@ -98,7 +133,13 @@ export const Label = forwardRef<
   ComponentProps<typeof FileUpload.Label>
 >((props, ref) => {
   const { className, ...rest } = props
-  return <FileUpload.Label {...rest} className={cn('', className)} ref={ref} />
+  return (
+    <FileUpload.Label
+      {...rest}
+      className={cn('text-sm', className)}
+      ref={ref}
+    />
+  )
 })
 
 Label.displayName = 'FileUploadLabel'
