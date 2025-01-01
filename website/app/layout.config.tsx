@@ -18,5 +18,5 @@ export const baseOptions: BaseLayoutProps = {
       active: 'nested-url',
     },
   ],
-  githubUrl: 'https://github.com/saas-js/slingshot',
+  githubUrl: 'https://github.com/saas-js/saas-js',
 }
