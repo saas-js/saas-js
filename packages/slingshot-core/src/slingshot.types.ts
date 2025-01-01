@@ -11,7 +11,20 @@ export interface SlingshotAdapterArgs {
 export type SlingshotAdapter<
   Args extends SlingshotAdapterArgs = SlingshotAdapterArgs,
 > = (args: Args) => {
-  createSignedUrl: (key: string) => Promise<{
+  createSignedUrl: (options: {
+    /**
+     * The key to use for the signed URL.
+     */
+    key: string
+    /**
+     * The method to use for the signed URL.
+     */
+    method: 'PUT' | 'GET'
+    /**
+     * The number of seconds the signed URL should be valid for.
+     */
+    expiresIn?: number
+  }) => Promise<{
     key: string
     url: string
   }>

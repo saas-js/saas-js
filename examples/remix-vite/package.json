@@ -21,7 +21,7 @@
     ]
   },
   "dependencies": {
-    "@ark-ui/react": "^4.5.0",
+    "@ark-ui/react": "^4.6.0",
     "@remix-run/css-bundle": "^2.15.2",
     "@remix-run/node": "^2.15.2",
     "@remix-run/react": "^2.15.2",

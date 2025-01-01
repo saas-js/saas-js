@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { forwardRef, useMemo } from 'react'
 
 import { FileUpload as FileUploadBase } from '@ark-ui/react/file-upload'
 import type {
@@ -42,30 +42,34 @@ export interface FileUploadRootProps extends FileUploadBaseRootProps {
   uploadOnAccept?: boolean
 }
 
-export const Root = (props) => {
-  const { profile, baseUrl, meta, uploadOnAccept, ...rest } = props
+export const Root = forwardRef<HTMLDivElement, FileUploadRootProps>(
+  (props, ref) => {
+    const { profile, baseUrl, meta, uploadOnAccept, ...rest } = props
 
-  const [client] = useState(
-    createSlingshotClient({
-      baseUrl,
-      profile,
-    }),
-  )
+    const client = useMemo(
+      () =>
+        createSlingshotClient({
+          baseUrl,
+          profile,
+        }),
+      [baseUrl, profile],
+    )
 
-  const context = useSlingshot({
-    client,
-    meta,
-    uploadOnAccept,
-  })
+    const context = useSlingshot({
+      client,
+      meta,
+      uploadOnAccept,
+    })
 
-  const rootProps = mergeProps(context.rootProps, rest)
+    const rootProps = mergeProps(context.rootProps, rest)
 
-  return (
-    <SlingshotProvider value={context}>
-      <FileUploadBase.Root {...rootProps} />
-    </SlingshotProvider>
-  )
-}
+    return (
+      <SlingshotProvider value={context}>
+        <FileUploadBase.Root ref={ref} {...rootProps} />
+      </SlingshotProvider>
+    )
+  },
+)
 
 export const Context = (props: FileUploadContextProps) => {
   const context = useSlingshotContext()

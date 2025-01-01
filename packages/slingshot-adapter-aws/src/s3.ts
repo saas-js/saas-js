@@ -6,22 +6,15 @@ import { parseUrl } from '@smithy/url-parser'
 
 import type { SlingshotAdapter } from '@saas-js/slingshot'
 
-interface CreateSignedUrlArgs {
-  credentials: {
-    accessKeyId: string
-    secretAccessKey: string
-    sessionToken?: string
-  }
-  bucket: string
-  region: string
-  key: string
-}
+import type { CreateSignedUrlArgs } from './types.ts'
 
 export const createSignedUrl = async ({
   credentials,
   bucket,
   region,
   key,
+  method = 'PUT',
+  expiresIn = 3600,
 }: CreateSignedUrlArgs) => {
   const url = parseUrl(`https://${bucket}.s3.${region}.amazonaws.com/${key}`)
   const presigner = new S3RequestPresigner({
@@ -31,27 +24,27 @@ export const createSignedUrl = async ({
   })
 
   const signedUrlObject = await presigner.presign(
-    new HttpRequest({ ...url, method: 'PUT' }),
+    new HttpRequest({ ...url, method }),
+    {
+      expiresIn,
+    },
   )
 
   return formatUrl(signedUrlObject)
 }
 
-export interface S3AdapterArgs {
-  credentials: {
-    accessKeyId: string
-    secretAccessKey: string
-    sessionToken?: string
-  }
-  bucket: string
-  region: string
-}
-
 export const s3: SlingshotAdapter = ({ credentials, bucket, region }) => {
   return {
-    createSignedUrl: async (key: string) => ({
+    createSignedUrl: async ({ key, method = 'PUT', expiresIn = 3600 }) => ({
       key,
-      url: await createSignedUrl({ credentials, bucket, region, key }),
+      url: await createSignedUrl({
+        credentials,
+        bucket,
+        region,
+        key,
+        method,
+        expiresIn,
+      }),
     }),
   }
 }

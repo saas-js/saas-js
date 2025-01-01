@@ -1,6 +1,6 @@
 {
   "name": "nextjs",
-  "version": "0.1.1",
+  "version": "0.1.4",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,7 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ark-ui/react": "^4.5.0",
+    "@ark-ui/react": "^4.6.0",
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-label": "^2.1.1",
     "@radix-ui/react-progress": "^1.1.1",
