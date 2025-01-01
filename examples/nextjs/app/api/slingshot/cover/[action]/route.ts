@@ -24,6 +24,7 @@ const slingshot = createSlingshotServer({
     credentials: {
       accessKeyId: env.AWS_ACCESS_KEY_ID,
       secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+      sessionToken: env.AWS_SESSION_TOKEN,
     },
     region: env.AWS_REGION,
     bucket: env.AWS_BUCKET,
