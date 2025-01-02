@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 
 export async function GET() {
   const content = await fs.readFile(
-    process.cwd() + '/app/r/components/file-upload.tsx',
+    process.cwd() + '/app/r/components/file-upload.txt',
     'utf-8',
   )
 
