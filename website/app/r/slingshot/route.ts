@@ -1,11 +1,4 @@
-import { promises as fs } from 'fs'
-
 export async function GET() {
-  const content = await fs.readFile(
-    process.cwd() + '/app/r/components/file-upload.txt',
-    'utf-8',
-  )
-
   return Response.json({
     name: 'slingshot',
     type: 'registry:ui',
@@ -13,7 +6,8 @@ export async function GET() {
     files: [
       {
         path: '/components/ui/file-upload.tsx',
-        content,
+        content:
+          "'use client'\n\nimport { type ComponentProps, forwardRef } from 'react'\n\nimport { cn } from '@/lib/utils'\n\nimport { FileUpload } from '@saas-js/slingshot-react'\n\nexport const Context = FileUpload.Context\nexport const HiddenInput = FileUpload.HiddenInput\n\nexport const Root = forwardRef<\n  HTMLDivElement,\n  ComponentProps<typeof FileUpload.Root>\n>((props, ref) => {\n  const { className, ...rest } = props\n  return (\n    <FileUpload.Root\n      {...rest}\n      className={cn('flex flex-col gap-4', className)}\n      ref={ref}\n    />\n  )\n})\n\nRoot.displayName = 'FileUploadRoot'\n\nexport const Dropzone = forwardRef<\n  HTMLDivElement,\n  ComponentProps<typeof FileUpload.Dropzone>\n>((props, ref) => {\n  const { className, ...rest } = props\n  return (\n    <FileUpload.Dropzone\n      {...rest}\n      className={cn(\n        'flex flex-col items-center justify-center rounded-md border-dashed border border-gray-300 p-4 gap-4',\n        className,\n      )}\n      ref={ref}\n    />\n  )\n})\n\nDropzone.displayName = 'FileUploadDropzone'\n\nexport const Item = forwardRef<\n  HTMLLIElement,\n  ComponentProps<typeof FileUpload.Item>\n>((props, ref) => {\n  const { className, ...rest } = props\n  return (\n    <FileUpload.Item\n      {...rest}\n      className={cn('flex flex-row gap-2 p-2 border rounded-md', className)}\n      ref={ref}\n    />\n  )\n})\n\nItem.displayName = 'FileUploadItem'\n\nexport const ItemDeleteTrigger = FileUpload.ItemDeleteTrigger\n\nexport const ItemGroup = forwardRef<\n  HTMLUListElement,\n  ComponentProps<typeof FileUpload.ItemGroup>\n>((props, ref) => {\n  const { className, ...rest } = props\n  return (\n    <FileUpload.ItemGroup\n      {...rest}\n      className={cn('flex flex-col gap-2', className)}\n      ref={ref}\n    />\n  )\n})\n\nItemGroup.displayName = 'FileUploadItemGroup'\n\nexport const ItemName = forwardRef<\n  HTMLDivElement,\n  ComponentProps<typeof FileUpload.ItemName>\n>((props, ref) => {\n  const { className, ...rest } = props\n  return (\n    <FileUpload.ItemName\n      {...rest}\n      className={cn('text-sm', className)}\n      ref={ref}\n    />\n  )\n})\n\nItemName.displayName = 'FileUploadItemName'\n\nexport const ItemPreview = FileUpload.ItemPreview\nexport const ItemPreviewImage = forwardRef<\n  HTMLImageElement,\n  ComponentProps<typeof FileUpload.ItemPreviewImage>\n>((props, ref) => {\n  const { className, ...rest } = props\n\n  return (\n    <FileUpload.ItemPreviewImage\n      {...rest}\n      className={cn('w-10 rounded-sm', className)}\n      ref={ref}\n    />\n  )\n})\n\nItemPreviewImage.displayName = 'FileUploadItemPreviewImage'\n\nexport const ItemSizeText = forwardRef<\n  HTMLDivElement,\n  ComponentProps<typeof FileUpload.ItemSizeText>\n>((props, ref) => {\n  const { className, ...rest } = props\n  return (\n    <FileUpload.ItemSizeText\n      {...rest}\n      className={cn('text-xs text-gray-500', className)}\n      ref={ref}\n    />\n  )\n})\n\nItemSizeText.displayName = 'FileUploadItemSizeText'\n\nexport const Label = forwardRef<\n  HTMLLabelElement,\n  ComponentProps<typeof FileUpload.Label>\n>((props, ref) => {\n  const { className, ...rest } = props\n  return (\n    <FileUpload.Label\n      {...rest}\n      className={cn('text-sm', className)}\n      ref={ref}\n    />\n  )\n})\n\nLabel.displayName = 'FileUploadLabel'\n\nexport const Trigger = FileUpload.Trigger\n",
         type: 'registry:ui',
         target: '',
       },
