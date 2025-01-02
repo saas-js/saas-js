@@ -1,6 +1,9 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 
 export default function HomePage() {
+  redirect('/docs')
+
   return (
     <main className="flex flex-1 flex-col justify-center text-center">
       <div className="flex flex-col items-center justify-center mb-4">

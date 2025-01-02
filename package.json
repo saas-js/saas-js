@@ -1,6 +1,7 @@
 {
   "type": "module",
   "scripts": {
+    "dev:website": "bun --filter website dev",
     "build": "bun --filter '@saas-js/*' build",
     "release": "bun --filter '@saas-js/*' release"
   },

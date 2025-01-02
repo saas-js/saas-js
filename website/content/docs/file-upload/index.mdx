@@ -7,7 +7,7 @@ Slingshot is a full-stack file upload component with support for drag-and-drop, 
 
 Upload files fast and securely to any S3-compatible storage with a simple API that runs on any Javascript server runtime.
 
-## Next.js + Tailwind (Shadcn/UI) example
+## Example (Next.js)
 
 <Tabs items={['page.tsx', 'components/file-upload.tsx', 'api/slingshot/avatar/[action]/route.ts']}>
   <Tab value="page.tsx">
@@ -125,7 +125,8 @@ const slingshot = createSlingshotServer({
 })
 
 export const POST = handle(slingshot)
-```
+````
+
   </Tab>
 </Tabs>
 
@@ -133,4 +134,20 @@ export const POST = handle(slingshot)
 
 ```bash
 npm install @saas-js/slingshot @saas-js/slingshot-react
-````
+```
+
+## Sponsors
+
+- [Appulse Software](https://appulse.net)
+
+## Acknowledgements
+
+This library would not be possible without the following libraries:
+
+- [Slingshot for Meteor.js](https://github.com/CulturalMe/meteor-slingshot) the original inspiration for this library.
+- [Ark UI](https://ark-ui.com/) for the React components.
+- [Shadcn](https://ui.shadcn.com/) for the component registry and CLI.
+
+## License
+
+Apache 2.0
