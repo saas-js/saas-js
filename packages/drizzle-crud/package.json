@@ -1,0 +1,32 @@
+{
+  "name": "drizzle-crud",
+  "version": "0.0.1",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Eelco Wiersma <eelco@appulse.nl>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/saas-js/saas-js.git"
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.json"
+  },
+  "exports": {
+    "sjs": "./src/index.ts",
+    "types": "./dist/index.d.ts",
+    "import": "./dist/index.js"
+  },
+  "peerDependencies": {
+    "drizzle-orm": "^0.44.2",
+    "drizzle-zod": "^0.8.2",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "drizzle-orm": "^0.44.2",
+    "drizzle-zod": "^0.8.2",
+    "zod": "^3.25.67",
+    "typescript": "^5.7.3",
+    "@trpc/server": "^11.4.2",
+    "hono": "^4.8.2"
+  }
+}
