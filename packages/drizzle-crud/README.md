@@ -320,19 +320,22 @@ Use the `skipValidation` property to disable schema validation when calling oper
 For example in tRPC or Hono RPC procedures where input data is already validated.
 
 ```ts
-const { findById } = createCrud(users)
+const { update } = createCrud(users)
 
 export const usersRouter = createTRPCRouter({
-  byId: workspaceProcedure
+  updateById: protectedProcedure
     .input(
       z.object({
         id: z.string(),
+        name: z.string(),
       }),
     )
     .query(async ({ input, ctx }) => {
-      const user = await findById(
+      const user = await update(
         input.id,
-        {},
+        {
+          name: input.name,
+        },
         {
           actor: {
             type: 'user',
@@ -345,7 +348,7 @@ export const usersRouter = createTRPCRouter({
         },
       )
 
-      if (!contact) {
+      if (!user) {
         throw new TRPCError({ code: 'NOT_FOUND' })
       }
 
