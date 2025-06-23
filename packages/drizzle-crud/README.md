@@ -2,6 +2,10 @@
 
 A powerful TypeScript package that automatically generates CRUD operations for your Drizzle ORM schemas with built-in validation, filtering, pagination, soft deletes, and access control.
 
+> [!IMPORTANT]
+> This is an early preview version while we are working out details.
+> We love to hear what you think @ https://x.com/saas_js or open a [Discussion](https://github.com/saas-js/saas-js/discussions)
+
 ## Features
 
 - 🚀 **Auto-generated CRUD operations** from Drizzle schemas
@@ -14,6 +18,22 @@ A powerful TypeScript package that automatically generates CRUD operations for y
 - 🪝 **Lifecycle hooks** for custom business logic
 - 📊 **Bulk operations** for efficient data manipulation
 - 🎯 **Type-safe** with full TypeScript support
+
+## Integrations (TBD)
+
+- **tRPC** generate crud procedures
+- **Hono RPC** generate hono RPC procedures
+- **oRPC** generate oRPC procedures
+- **Tanstack Table** Integrate pagination and filtering
+
+## Roadmap
+
+- Support all Drizzle dialects (currently only PG)
+- Expose utilities for filters and pagination
+- Define custom operations
+- Standard schema support (Not sure yet, since we depend on drizzle-zod)
+
+- More ideas?
 
 ## Installation
 
