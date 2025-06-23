@@ -247,7 +247,7 @@ const userCrud = createCrud(users, {
 })
 ```
 
-### Custom Validation
+### Custom Zod Schemas
 
 Override default Zod schemas:
 
@@ -311,6 +311,46 @@ const postCrud = createCrud(posts, {
     deletedValue: true,
     notDeletedValue: false,
   },
+})
+```
+
+## Skip Validation
+
+Use the `skipValidation` property to disable schema validation when calling operators from trusted sources.
+For example in tRPC or Hono RPC procedures where input data is already validated.
+
+```ts
+const { findById } = createCrud(users)
+
+export const usersRouter = createTRPCRouter({
+  byId: workspaceProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const user = await findById(
+        input.id,
+        {},
+        {
+          actor: {
+            type: 'user',
+            properties: {
+              id: ctx.session.user.id,
+              workspaceId: ctx.workspace.id,
+            },
+          },
+          skipValidation: true,
+        },
+      )
+
+      if (!contact) {
+        throw new TRPCError({ code: 'NOT_FOUND' })
+      }
+
+      return user
+    }),
 })
 ```
 
