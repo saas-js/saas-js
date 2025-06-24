@@ -9,7 +9,8 @@
     "@changesets/cli": "^2.27.11",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "prettier": "^3.4.2",
-    "tailwind-variants": "^0.3.0"
+    "tailwind-variants": "^0.3.0",
+    "vitest": "^3.2.4"
   },
   "workspaces": [
     "website",

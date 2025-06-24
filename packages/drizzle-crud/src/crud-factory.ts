@@ -1,6 +1,4 @@
-import * as z from 'zod/v4'
 import {
-  type Column,
   SQL,
   and,
   asc,
@@ -17,159 +15,64 @@ import {
   ne,
   or,
 } from 'drizzle-orm'
+
+import { type StandardSchemaV1, standardValidate } from './standard-schema.ts'
 import type {
-  PgColumn,
-  PgDatabase,
-  PgTable,
-  PgTransaction,
-} from 'drizzle-orm/pg-core'
-import { createInsertSchema, createUpdateSchema } from 'drizzle-zod'
+  Actor,
+  ColumnsSelection,
+  CrudOperation,
+  CrudOptions,
+  DrizzleColumn,
+  DrizzleDatabase,
+  DrizzleTableWithId,
+  Filters,
+  FindByIdParams,
+  ListParams,
+  ListSchemaOptions,
+  OperationContext,
+  ScopeFilters,
+  ValidationAdapter,
+} from './types.ts'
 
-export type FilterOperator =
-  | 'eq'
-  | 'ne'
-  | 'gt'
-  | 'gte'
-  | 'lt'
-  | 'lte'
-  | 'in'
-  | 'like'
-  | 'ilike'
-
-export type FilterValue<T> =
-  | T
-  | {
-      op: FilterOperator
-      value: T | T[]
+function createSchemas<
+  TDatabase extends DrizzleDatabase,
+  T extends DrizzleTableWithId,
+  TActor extends Actor = Actor,
+  TScopeFilters extends ScopeFilters<T, TActor> = ScopeFilters<T, TActor>,
+  TValidation extends ValidationAdapter<T> = ValidationAdapter<T>,
+>(
+  table: T,
+  options: CrudOptions<TDatabase, T, TActor, TScopeFilters>,
+  validation?: TValidation,
+) {
+  if (!validation) {
+    return {
+      insertSchema: undefined,
+      updateSchema: undefined,
+      listSchema: undefined,
+      idSchema: undefined,
     }
-
-type ColumnsSelection<T extends PgTable> = Record<
-  keyof T['$inferSelect'],
-  boolean
->
-
-type WithRelations<T extends PgTable> = Record<
-  string,
-  true | { columns?: ColumnsSelection<T>; with?: WithRelations<T> }
->
-
-export type SoftDeleteConfig<T extends PgTable> = {
-  field: keyof T['$inferSelect'] // e.g., 'deletedAt' or 'isDeleted'
-  deletedValue?: any // What to set when soft deleting (defaults to new Date() for timestamps, true for booleans)
-  notDeletedValue?: any // What represents "not deleted" (defaults to null for timestamps, false for booleans)
-}
-
-export type CrudOperation =
-  | 'create'
-  | 'update'
-  | 'findById'
-  | 'list'
-  | 'deleteOne'
-  | 'restore'
-  | 'permanentDelete'
-  | 'bulkCreate'
-  | 'bulkDelete'
-  | 'bulkRestore'
-
-export type CrudOptions<
-  TDatabase extends PgDatabase<any, any, any> | PgTransaction<any, any, any>,
-  T extends PgTable,
-  TActor extends Actor = Actor,
-  TScopeFilters extends ScopeFilters<T, TActor> = ScopeFilters<T, TActor>,
-> = {
-  searchFields?: (keyof T['$inferSelect'])[]
-  defaultLimit?: number
-  maxLimit?: number
-  allowedFilters?: (keyof T['$inferSelect'])[]
-  softDelete?: SoftDeleteConfig<T>
-  scopeFilters?: TScopeFilters // e.g., { workspaceId: (value) => eq(table.workspaceId, value) }
-  hooks?: {
-    validate?: (params: {
-      data: any
-      context: OperationContext<TDatabase, T, TActor, TScopeFilters>
-      operation: CrudOperation | 'custom'
-    }) => boolean
-    beforeCreate?: (data: T['$inferInsert']) => T['$inferInsert']
-    afterCreate?: (result: T['$inferSelect']) => any
-    beforeUpdate?: (
-      data: Partial<T['$inferInsert']>,
-    ) => Partial<T['$inferInsert']>
-    afterUpdate?: (result: T['$inferSelect']) => any
-    afterRead?: (result: T['$inferSelect']) => any
   }
-  validation?: {
-    create?: z.ZodType<T['$inferInsert']>
-    update?: z.ZodType<Partial<T['$inferInsert']>>
+
+  const listOptions: ListSchemaOptions<T> = {
+    searchFields: options.searchFields,
+    allowedFilters: options.allowedFilters,
+    defaultLimit: options.defaultLimit,
+    maxLimit: options.maxLimit,
+    allowIncludeDeleted: !!options.softDelete,
   }
-}
 
-export type Filters<T extends PgTable> = {
-  [K in keyof T['$inferSelect']]?: FilterValue<T['$inferSelect'][K]>
-}
-
-export type ListParams<T extends PgTable> = {
-  page?: number
-  limit?: number
-  search?: string
-  columns?: ColumnsSelection<T>
-  filters?: Filters<T>
-  orderBy?: {
-    field: keyof T['$inferSelect']
-    direction: 'asc' | 'desc'
-  }[]
-  with?: WithRelations<T>
-  includeDeleted?: boolean
-}
-
-export type FindByIdParams<T extends PgTableWithId> = {
-  columns?: ColumnsSelection<T>
-  with?: WithRelations<T>
-  includeDeleted?: boolean
-}
-
-export interface Actor<
-  T extends string = string,
-  TProperties extends Record<string, any> = Record<string, any>,
-  TMetadata extends Record<string, any> = Record<string, any>,
-> {
-  type: T
-  properties: TProperties
-  metadata?: TMetadata
-}
-
-export type ScopeFilters<
-  T extends PgTable,
-  TActor extends Actor = Actor,
-> = Partial<{
-  [K in keyof T['$inferSelect']]: (
-    value: T['$inferSelect'][K],
-    actor: TActor,
-  ) => SQL | undefined
-}> &
-  Record<string, (value: any, actor: TActor) => SQL | undefined>
-
-type ScopeFromFilters<T> =
-  T extends Record<infer K, any> ? Partial<Record<K, any>> : Record<string, any>
-
-export type OperationContext<
-  TDatabase extends PgDatabase<any, any, any> | PgTransaction<any, any, any>,
-  T extends PgTable,
-  TActor extends Actor = Actor,
-  TScopeFilters extends ScopeFilters<T, TActor> = ScopeFilters<T, TActor>,
-> = {
-  db?: TDatabase
-  scope?: ScopeFromFilters<TScopeFilters> // Context-based filters like { workspaceId: 'workspace-123' }
-  actor?: TActor
-  skipValidation?: boolean
-}
-
-export type PgTableWithId = PgTable & {
-  id: PgColumn<any>
+  return {
+    insertSchema: validation.createInsertSchema(table),
+    updateSchema: validation.createUpdateSchema(table),
+    listSchema: validation.createListSchema(table, listOptions),
+    idSchema: validation.createIdSchema(table),
+  }
 }
 
 export function crudFactory<
-  TDatabase extends PgDatabase<any, any, any>,
-  T extends PgTableWithId,
+  TDatabase extends DrizzleDatabase,
+  T extends DrizzleTableWithId,
   TActor extends Actor = Actor,
   TScopeFilters extends ScopeFilters<T, TActor> = ScopeFilters<T, TActor>,
 >(
@@ -188,68 +91,7 @@ export function crudFactory<
     validation,
   } = options
 
-  const createSchema = validation?.create ?? createInsertSchema(table)
-  const updateSchema = validation?.update ?? createUpdateSchema(table)
-
-  const idSchema = z.custom<T['$inferSelect']['id']>((value) => {
-    return typeof value === 'string' || typeof value === 'number'
-  })
-
-  const paginationSchema = z.object({
-    page: z.number().int().positive().optional().default(1),
-    limit: z
-      .number()
-      .int()
-      .positive()
-      .max(maxLimit)
-      .optional()
-      .default(defaultLimit),
-  })
-
-  const filterSchema = options.allowedFilters
-    ? z
-        .object(
-          Object.fromEntries(
-            options.allowedFilters.map((field) => [
-              field,
-              z
-                .union([
-                  z.any(),
-                  z.object({
-                    op: z.enum([
-                      'eq',
-                      'ne',
-                      'gt',
-                      'gte',
-                      'lt',
-                      'lte',
-                      'in',
-                      'like',
-                      'ilike',
-                    ]),
-                    value: z.any(),
-                  }),
-                ])
-                .optional(),
-            ]),
-          ),
-        )
-        .optional()
-    : z.object({}).optional()
-
-  const listSchema = paginationSchema.extend({
-    search: z.string().optional(),
-    includeDeleted: z.boolean().optional(),
-    orderBy: z
-      .array(
-        z.object({
-          field: z.enum(Object.keys(table) as [string, ...string[]]),
-          direction: z.enum(['asc', 'desc']).default('asc'),
-        }),
-      )
-      .optional(),
-    filters: filterSchema,
-  })
+  const schemas = createSchemas(table, options, validation)
 
   // Helper to get the correct database instance
   const getDb = (
@@ -257,7 +99,7 @@ export function crudFactory<
   ) => context?.db || db
 
   const getColumn = (key: keyof T['$inferInsert']) => {
-    return table[key as keyof T] as Column<any, any, any>
+    return table[key as keyof T] as DrizzleColumn<any, any, any>
   }
 
   // Helper to build Drizzle-style columns object
@@ -390,18 +232,14 @@ export function crudFactory<
       return context?.skipValidation ?? true
     })
 
-  const validate = <
-    TSchema extends z.ZodSchema,
-    TInput,
-    TOutput = z.infer<TSchema>,
-  >(
+  const validate = async <TInput, TOutput>(
     operation: CrudOperation,
     data: TInput,
-    schema: TSchema,
+    schema?: StandardSchemaV1<TInput, TOutput>,
     context: OperationContext<TDatabase, T, TActor, TScopeFilters> = {},
   ) => {
-    if (validateHook({ operation, data, context })) {
-      return schema.parse(data) as TOutput
+    if (schema && validateHook({ operation, data, context })) {
+      return standardValidate(schema, data)
     }
 
     return data
@@ -411,7 +249,12 @@ export function crudFactory<
     data: T['$inferInsert'],
     context?: OperationContext<TDatabase, T, TActor, TScopeFilters>,
   ) => {
-    const validatedData = validate('create', data, createSchema, context)
+    const validatedData = await validate(
+      'create',
+      data,
+      schemas.insertSchema,
+      context,
+    )
 
     const transformed = hooks.beforeCreate?.(validatedData) ?? validatedData
 
@@ -419,13 +262,11 @@ export function crudFactory<
 
     const [result] = await dbInstance
       .insert(table)
-      .values(transformed as any)
+      .values(transformed)
       .returning()
 
     return hooks.afterCreate?.(result) ?? result
   }
-
-  create.inputSchema = createSchema
 
   const findById = async (
     id: T['$inferSelect']['id'],
@@ -457,8 +298,6 @@ export function crudFactory<
     return params?.columns ? result : (hooks.afterRead?.(result) ?? result)
   }
 
-  findById.inputSchema = idSchema
-
   const list = async (
     params: ListParams<T> = {},
     context?: OperationContext<TDatabase, T, TActor, TScopeFilters>,
@@ -466,7 +305,12 @@ export function crudFactory<
     const dbInstance = getDb(context)
     const columnsSelection = buildColumnsSelection(params.columns)
 
-    const validatedParams = validate('list', params, listSchema, context)
+    const validatedParams = await validate(
+      'list',
+      params,
+      schemas.listSchema,
+      context,
+    )
 
     // Build where conditions
     const conditions: SQL[] = []
@@ -522,14 +366,17 @@ export function crudFactory<
     }
   }
 
-  list.paramsSchema = listSchema
-
   const update = async (
     id: T['$inferSelect']['id'],
     updates: Partial<T['$inferInsert']>,
     context?: OperationContext<TDatabase, T, TActor, TScopeFilters>,
   ) => {
-    const validatedData = validate('update', updates, updateSchema, context)
+    const validatedData = await validate(
+      'update',
+      updates,
+      schemas.updateSchema,
+      context,
+    )
 
     const transformed = hooks.beforeUpdate?.(validatedData) ?? validatedData
     const dbInstance = getDb(context)
@@ -550,11 +397,6 @@ export function crudFactory<
 
     return hooks.afterUpdate?.(result) ?? result
   }
-
-  update.inputSchema = z.object({
-    id: idSchema,
-    updates: updateSchema,
-  })
 
   const deleteOne = async (
     id: T['$inferSelect']['id'],
@@ -586,8 +428,6 @@ export function crudFactory<
     return { success: true }
   }
 
-  deleteOne.inputSchema = z.custom<T['$inferSelect']['id']>()
-
   const restore = async (
     id: T['$inferSelect']['id'],
     context?: Omit<
@@ -617,8 +457,6 @@ export function crudFactory<
     return { success: !!result }
   }
 
-  restore.inputSchema = z.custom<T['$inferSelect']['id']>()
-
   const permanentDelete = async (
     id: T['$inferSelect']['id'],
     context?: Omit<
@@ -638,35 +476,32 @@ export function crudFactory<
     return { success: true }
   }
 
-  permanentDelete.inputSchema = z.string()
-
   const bulkCreate = async (
     data: T['$inferInsert'][],
     context?: OperationContext<TDatabase, T, TActor, TScopeFilters>,
   ) => {
     const dbInstance = getDb(context)
 
-    let validatedData = data
-    if (
-      createSchema &&
-      !validateHook({ operation: 'bulkCreate', data, context: context ?? {} })
-    ) {
-      validatedData = data.map((item) => createSchema.parse(item))
-    }
+    const transformedData = await Promise.all(
+      data.map(async (item) => {
+        const validated = await validate(
+          'bulkCreate',
+          item,
+          schemas.insertSchema,
+          context,
+        )
 
-    const transformedData = validatedData.map(
-      (item) => hooks.beforeCreate?.(item) ?? item,
+        return hooks.beforeCreate?.(validated) ?? validated
+      }),
     )
 
-    const results = await dbInstance
-      .insert(table)
-      .values(transformedData)
-      .returning()
+    await dbInstance.insert(table).values(transformedData)
 
-    return results.map((result: any) => hooks.afterCreate?.(result) ?? result)
+    return {
+      success: true,
+      count: transformedData.length,
+    }
   }
-
-  bulkCreate.inputSchema = z.array(createSchema)
 
   const bulkDelete = async (
     ids: T['$inferSelect']['id'][],
@@ -697,8 +532,6 @@ export function crudFactory<
       return { success: true, count: result.rowCount || ids.length }
     }
   }
-
-  bulkDelete.inputSchema = z.array(z.string())
 
   const bulkRestore = async (
     ids: T['$inferSelect']['id'][],
@@ -731,8 +564,6 @@ export function crudFactory<
 
     return { success: true, count: result.rowCount || ids.length }
   }
-
-  bulkRestore.inputSchema = z.array(z.string())
 
   return {
     create,

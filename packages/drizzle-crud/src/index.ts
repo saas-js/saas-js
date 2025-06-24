@@ -1,34 +1,36 @@
-import type { PgDatabase } from 'drizzle-orm/pg-core'
-
-import {
-  type Actor,
-  type CrudOptions,
-  type PgTableWithId,
-  type ScopeFilters,
-  crudFactory,
-} from './crud-factory.ts'
-
-export type {
-  CrudOperation,
-  CrudOptions,
-  ListParams,
-  FindByIdParams,
+import { crudFactory } from './crud-factory.ts'
+import type {
   Actor,
+  CrudOptions,
+  DrizzleCrudOptions,
+  DrizzleDatabase,
+  DrizzleTableWithId,
   ScopeFilters,
-  OperationContext,
-  FilterOperator,
-  FilterValue,
-  SoftDeleteConfig,
-} from './crud-factory.ts'
+  ValidationAdapter,
+} from './types.ts'
 
-export function drizzleCrud<TDatabase extends PgDatabase<any, any, any>>(
+export type * from './types.ts'
+
+export function drizzleCrud<TDatabase extends DrizzleDatabase>(
   db: TDatabase,
+  options: DrizzleCrudOptions<TDatabase> = {},
 ) {
   return function createCrud<
-    T extends PgTableWithId,
+    T extends DrizzleTableWithId,
     TActor extends Actor = Actor,
     TScopeFilters extends ScopeFilters<T, TActor> = ScopeFilters<T, TActor>,
-  >(table: T, options: CrudOptions<TDatabase, T, TActor, TScopeFilters> = {}) {
-    return crudFactory(db, table, options)
+  >(
+    table: T,
+    crudOptions: CrudOptions<TDatabase, T, TActor, TScopeFilters> = {},
+  ) {
+    const validation = {
+      ...options.validation,
+      ...crudOptions.validation,
+    } as ValidationAdapter<T>
+
+    return crudFactory(db, table, {
+      ...options,
+      validation,
+    })
   }
 }
