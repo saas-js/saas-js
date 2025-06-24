@@ -84,18 +84,14 @@ export type CrudOptions<
       operation: CrudOperation | 'custom'
     }) => boolean
     beforeCreate?: (data: T['$inferInsert']) => T['$inferInsert']
-    afterCreate?: (result: T['$inferSelect']) => any
+    afterCreate?: <Data>(result: T['$inferSelect']) => Data
     beforeUpdate?: (
       data: Partial<T['$inferInsert']>,
     ) => Partial<T['$inferInsert']>
-    afterUpdate?: (result: T['$inferSelect']) => any
-    afterRead?: (result: T['$inferSelect']) => any
+    afterUpdate?: <Data>(result: T['$inferSelect']) => Data
+    afterRead?: <Data>(result: T['$inferSelect']) => Data
   }
   validation?: ValidationAdapter<T>
-}
-
-export type Filters<T extends DrizzleTable> = {
-  [K in keyof T['$inferSelect']]?: FilterValue<T['$inferSelect'][K]>
 }
 
 export type ListParams<T extends DrizzleTableWithId> = {
@@ -103,7 +99,7 @@ export type ListParams<T extends DrizzleTableWithId> = {
   limit?: number
   search?: string
   columns?: ColumnsSelection<T>
-  filters?: Filters<T>
+  filters?: FilterParams<T['$inferSelect']>
   orderBy?: {
     field: keyof T['$inferSelect']
     direction: 'asc' | 'desc'
@@ -164,8 +160,23 @@ export type OrderByParams<T extends DrizzleTable> = {
   direction: 'asc' | 'desc'
 }
 
-export type FilterParams<T extends DrizzleTableWithId> = {
-  [K in keyof T['$inferSelect']]?: FilterValue<T['$inferSelect'][K]>
+export type Filter<T = any> = {
+  equals?: T
+  not?: T
+  gt?: T
+  gte?: T
+  lt?: T
+  lte?: T
+  in?: T[]
+  like?: string
+  ilike?: string
+}
+
+export type FilterParams<T extends Record<string, any>> = {
+  [K in keyof T]?: T[K] | Filter<T[K]>
+} & {
+  AND?: FilterParams<T>[]
+  OR?: FilterParams<T>[]
 }
 
 export interface ValidationAdapter<

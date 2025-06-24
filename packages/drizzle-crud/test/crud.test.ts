@@ -130,4 +130,45 @@ describe('drizzleCrud', () => {
       email: 'john.doe@example.com',
     })
   })
+
+  it('should apply filters', async () => {
+    const createCrud = drizzleCrud(db, {
+      validation: zod(),
+    })
+
+    const users = createCrud(usersTable)
+
+    const list = await users.list({
+      filters: {
+        OR: [
+          {
+            email: {
+              equals: 'john.doe@example.com',
+            },
+          },
+          {
+            email: {
+              equals: 'jane.doe@example.com',
+            },
+          },
+        ],
+        AND: [
+          {
+            id: {
+              not: 1337,
+            },
+          },
+          {
+            name: 'Johnny',
+          },
+        ],
+      },
+    })
+
+    expect(list.results).toEqual({
+      id: 1,
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+    })
+  })
 })

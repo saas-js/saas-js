@@ -1,21 +1,6 @@
-import {
-  SQL,
-  and,
-  asc,
-  count,
-  desc,
-  eq,
-  gt,
-  gte,
-  ilike,
-  inArray,
-  like,
-  lt,
-  lte,
-  ne,
-  or,
-} from 'drizzle-orm'
+import { SQL, and, asc, count, desc, eq, ilike, inArray, or } from 'drizzle-orm'
 
+import { parseFilters } from './filters.ts'
 import { type StandardSchemaV1, standardValidate } from './standard-schema.ts'
 import type {
   Actor,
@@ -25,7 +10,7 @@ import type {
   DrizzleColumn,
   DrizzleDatabase,
   DrizzleTableWithId,
-  Filters,
+  FilterParams,
   FindByIdParams,
   ListParams,
   ListSchemaOptions,
@@ -119,65 +104,13 @@ export function crudFactory<
     return Object.keys(selection).length > 0 ? selection : undefined
   }
 
-  const applyFilters = (conditions: SQL[], filters?: Filters<T>) => {
-    if (!filters) return
+  const applyFilters = (
+    conditions: SQL[],
+    filters?: FilterParams<T['$inferSelect']>,
+  ) => {
+    const parsedFilters = parseFilters(table, filters, allowedFilters)
 
-    Object.entries(filters).forEach(([key, filterValue]) => {
-      if (
-        !allowedFilters.includes(key as keyof T['$inferSelect']) ||
-        filterValue === undefined
-      ) {
-        return
-      }
-
-      const column = getColumn(key as keyof T['$inferInsert'])
-
-      if (
-        typeof filterValue === 'object' &&
-        filterValue !== null &&
-        'op' in filterValue &&
-        'value' in filterValue
-      ) {
-        const { op, value } = filterValue as {
-          op: string
-          value: unknown
-        }
-
-        switch (op) {
-          case 'eq':
-            conditions.push(eq(column, value))
-            break
-          case 'ne':
-            conditions.push(ne(column, value))
-            break
-          case 'gt':
-            conditions.push(gt(column, value))
-            break
-          case 'gte':
-            conditions.push(gte(column, value))
-            break
-          case 'lt':
-            conditions.push(lt(column, value))
-            break
-          case 'lte':
-            conditions.push(lte(column, value))
-            break
-          case 'in':
-            conditions.push(
-              inArray(column, Array.isArray(value) ? value : [value]),
-            )
-            break
-          case 'like':
-            conditions.push(like(column, value as string))
-            break
-          case 'ilike':
-            conditions.push(ilike(column, value as string))
-            break
-        }
-      } else {
-        conditions.push(eq(column, filterValue))
-      }
-    })
+    conditions.push(...parsedFilters)
   }
 
   const applySearch = (conditions: SQL[], search?: string) => {
@@ -331,14 +264,14 @@ export function crudFactory<
       return direction === 'desc' ? desc(column) : asc(column)
     })
 
-    const data = await (dbInstance as any).query[table._.name].findMany({
+    const data = (await (dbInstance as any).query[table._.name].findMany({
       columns: columnsSelection,
       with: params.with,
       where: whereClause,
       orderBy,
       limit,
       offset,
-    })
+    })) as T['$inferSelect'][] // TODO: infer types from drizzle-orm
 
     let countQuery = (dbInstance as any).select({ count: count() }).from(table)
 
@@ -354,12 +287,14 @@ export function crudFactory<
     }
 
     const totalResult = await countQuery
-    const total = totalResult[0].count
+    const total = totalResult[0].count as number
+
+    const results = hooks.afterRead
+      ? data.map((item) => hooks.afterRead!(item))
+      : data
 
     return {
-      results: params.columns
-        ? data
-        : data.map((item: any) => hooks.afterRead?.(item) ?? item),
+      results,
       page,
       limit,
       total,
