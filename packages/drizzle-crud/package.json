@@ -1,6 +1,6 @@
 {
   "name": "drizzle-crud",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "type": "module",
   "license": "Apache-2.0",
   "author": "Eelco Wiersma <eelco@appulse.nl>",
@@ -12,9 +12,16 @@
     "build": "tsc --project tsconfig.json"
   },
   "exports": {
-    "sjs": "./src/index.ts",
-    "types": "./dist/index.d.ts",
-    "import": "./dist/index.js"
+    ".": {
+      "sjs": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./zod": {
+      "sjs": "./src/zod.ts",
+      "types": "./dist/zod.d.ts",
+      "import": "./dist/zod.js"
+    }
   },
   "peerDependencies": {
     "drizzle-orm": "^0.44.2",

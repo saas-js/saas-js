@@ -49,6 +49,7 @@ pnpm add drizzle-crud
 
 ```typescript
 import { drizzleCrud } from 'drizzle-crud'
+import { zod } from 'drizzle-crud/zod'
 import { boolean, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
 import { drizzle } from 'drizzle-orm/postgres-js'
 
@@ -72,7 +73,9 @@ const posts = pgTable('posts', {
 
 // Initialize database and CRUD factory
 const db = drizzle(/* your database connection */)
-const createCrud = drizzleCrud(db)
+const createCrud = drizzleCrud(db, {
+  validation: zod(),
+})
 
 // Create CRUD operations for each table
 const userCrud = createCrud(users, {
@@ -267,27 +270,54 @@ const userCrud = createCrud(users, {
 })
 ```
 
-### Custom Zod Schemas
+### Custom Schemas
 
-Override default Zod schemas:
+Override schemas
 
 ```typescript
+import { drizzleCrud } from 'drizzle-crud'
+import { zod } from 'drizzle-crud/zod'
 import { z } from 'zod'
 
-const createCrud = drizzleCrud(db)
+const createCrud = drizzleCrud(db, {
+  // Add default schemas
+  validation: zod(),
+})
 
 const userCrud = createCrud(users, {
-  validation: {
-    create: z.object({
-      name: z.string().min(2).max(50),
-      email: z.string().email(),
-      age: z.number().min(13).optional(),
-    }),
-    update: z.object({
-      name: z.string().min(2).max(50).optional(),
-      email: z.string().email().optional(),
-    }),
-  },
+  // Override table schemas
+  validation: zod({
+    insert: () =>
+      z.object({
+        name: z.string().min(2).max(50),
+        email: z.string().email(),
+        age: z.number().min(13).optional(),
+      }),
+    update: () =>
+      z.object({
+        name: z.string().min(2).max(50).optional(),
+        email: z.string().email().optional(),
+      }),
+  }),
+})
+```
+
+### Validation Adapters
+
+You can create custom adapters for other Standard Schema compatible
+validation libraries by implementing the `ValidationAdapter` interface.
+
+```ts
+import type { ValidationAdapter } from 'drizzle-crud'
+
+function arktype(): ValidationAdapter {
+  return {
+    ...
+  }
+}
+
+const createCrud = drizzleCrud(db, {
+  validation: arktype()
 })
 ```
 
