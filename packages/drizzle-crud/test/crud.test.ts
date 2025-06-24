@@ -66,7 +66,7 @@ describe('drizzleCrud', () => {
       insert: () =>
         z.object({
           name: z.string(),
-          email: z.string().email(),
+          email: z.email(),
         }),
       pagination(options) {
         return z.object({
@@ -91,6 +91,33 @@ describe('drizzleCrud', () => {
     })
 
     const users = createCrud(usersTable)
+
+    const user = await users.create({
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+    })
+
+    expect(user).toEqual({
+      id: 1,
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+    })
+  })
+
+  it('should validate with custom local zod schemas', async () => {
+    const createCrud = drizzleCrud(db, {
+      validation: zod(),
+    })
+
+    const users = createCrud(usersTable, {
+      validation: zod({
+        insert: () =>
+          z.object({
+            name: z.string().optional(),
+            email: z.email().optional().nullable(),
+          }),
+      }),
+    })
 
     const user = await users.create({
       name: 'John Doe',

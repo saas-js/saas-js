@@ -14,7 +14,7 @@ A powerful TypeScript package that automatically generates CRUD operations for y
 - 🔎 **Full-text search** across specified fields
 - 🗑️ **Soft delete support** with restore functionality
 - 🔐 **Access control** with actor-based permissions and scope filters
-- ✅ **Zod validation** with customizable schemas
+- ✅ **Standard schema validation** with customizable schemas
 - 🪝 **Lifecycle hooks** for custom business logic
 - 📊 **Bulk operations** for efficient data manipulation
 - 🎯 **Type-safe** with full TypeScript support
@@ -28,10 +28,10 @@ A powerful TypeScript package that automatically generates CRUD operations for y
 
 ## Roadmap
 
-- Support all Drizzle dialects (currently only PG)
-- Expose utilities for filters and pagination
-- Define custom operations
-- Standard schema support (Not sure yet, since we depend on drizzle-zod)
+- [ ] Support all Drizzle dialects (currently only PG)
+- [ ] Expose utilities for filters and pagination
+- [ ] Define custom operations
+- [x] Standard schema support
 
 - More ideas?
 
