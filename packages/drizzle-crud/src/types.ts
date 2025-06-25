@@ -33,9 +33,8 @@ export type FilterValue<T> =
       value: T | T[]
     }
 
-export type ColumnsSelection<T extends DrizzleTableWithId> = Record<
-  keyof T['$inferSelect'],
-  boolean
+export type ColumnsSelection<T extends DrizzleTableWithId> = Partial<
+  Record<keyof T['$inferSelect'], boolean>
 >
 
 type WithRelations<T extends DrizzleTableWithId> = Record<
@@ -98,19 +97,15 @@ export type ListParams<T extends DrizzleTableWithId> = {
   page?: number
   limit?: number
   search?: string
-  columns?: ColumnsSelection<T>
   filters?: FilterParams<T['$inferSelect']>
   orderBy?: {
     field: keyof T['$inferSelect']
     direction: 'asc' | 'desc'
   }[]
-  with?: WithRelations<T>
   includeDeleted?: boolean
 }
 
-export type FindByIdParams<T extends DrizzleTableWithId> = {
-  columns?: ColumnsSelection<T>
-  with?: WithRelations<T>
+export type FindByIdParams = {
   includeDeleted?: boolean
 }
 

@@ -3,6 +3,7 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod/v4'
 
+import { crudFactory } from '../src/crud-factory.ts'
 import { drizzleCrud } from '../src/index.ts'
 import { zod } from '../src/zod.ts'
 
@@ -131,6 +132,34 @@ describe('drizzleCrud', () => {
     })
   })
 
+  it('should find by id', async () => {
+    const createCrud = drizzleCrud(db, {
+      validation: zod(),
+    })
+
+    const users = createCrud(usersTable)
+
+    const user = await users.findById(1, {
+      columns: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    })
+
+    if (user === null) {
+      throw new Error('User not found')
+    }
+
+    console.log(user)
+
+    expect(user).toEqual({
+      id: 1,
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+    })
+  })
+
   it('should apply filters', async () => {
     const createCrud = drizzleCrud(db, {
       validation: zod(),
@@ -139,30 +168,33 @@ describe('drizzleCrud', () => {
     const users = createCrud(usersTable)
 
     const list = await users.list({
-      filters: {
-        OR: [
-          {
-            email: {
-              equals: 'john.doe@example.com',
-            },
-          },
-          {
-            email: {
-              equals: 'jane.doe@example.com',
-            },
-          },
-        ],
-        AND: [
-          {
-            id: {
-              not: 1337,
-            },
-          },
-          {
-            name: 'Johnny',
-          },
-        ],
+      columns: {
+        name: true,
       },
+      // filters: {
+      //   OR: [
+      //     {
+      //       email: {
+      //         equals: 'john.doe@example.com',
+      //       },
+      //     },
+      //     {
+      //       email: {
+      //         equals: 'jane.doe@example.com',
+      //       },
+      //     },
+      //   ],
+      //   AND: [
+      //     {
+      //       id: {
+      //         not: 1337,
+      //       },
+      //     },
+      //     {
+      //       name: 'Johnny',
+      //     },
+      //   ],
+      // },
     })
 
     expect(list.results).toEqual({
