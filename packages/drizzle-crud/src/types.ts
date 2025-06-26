@@ -83,12 +83,9 @@ export type CrudOptions<
       operation: CrudOperation | 'custom'
     }) => boolean
     beforeCreate?: (data: T['$inferInsert']) => T['$inferInsert']
-    afterCreate?: <Data>(result: T['$inferSelect']) => Data
     beforeUpdate?: (
       data: Partial<T['$inferInsert']>,
     ) => Partial<T['$inferInsert']>
-    afterUpdate?: <Data>(result: T['$inferSelect']) => Data
-    afterRead?: <Data>(result: T['$inferSelect']) => Data
   }
   validation?: ValidationAdapter<T>
 }

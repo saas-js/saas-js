@@ -3,8 +3,7 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod/v4'
 
-import { crudFactory } from '../src/crud-factory.ts'
-import { drizzleCrud } from '../src/index.ts'
+import { drizzleCrud, filtersToWhere } from '../src/index.ts'
 import { zod } from '../src/zod.ts'
 
 const usersTable = pgTable('users', {
@@ -167,40 +166,79 @@ describe('drizzleCrud', () => {
 
     const users = createCrud(usersTable)
 
-    const list = await users.list({
-      columns: {
-        name: true,
-      },
-      // filters: {
-      //   OR: [
-      //     {
-      //       email: {
-      //         equals: 'john.doe@example.com',
-      //       },
-      //     },
-      //     {
-      //       email: {
-      //         equals: 'jane.doe@example.com',
-      //       },
-      //     },
-      //   ],
-      //   AND: [
-      //     {
-      //       id: {
-      //         not: 1337,
-      //       },
-      //     },
-      //     {
-      //       name: 'Johnny',
-      //     },
-      //   ],
-      // },
+    const where = filtersToWhere(usersTable, {
+      OR: [
+        {
+          email: {
+            equals: 'john.doe@example.com',
+          },
+        },
+        {
+          email: {
+            equals: 'jane.doe@example.com',
+          },
+        },
+      ],
+      AND: [
+        {
+          id: {
+            not: 1337,
+          },
+        },
+        {
+          name: 'Johnny',
+        },
+      ],
     })
 
-    expect(list.results).toEqual({
-      id: 1,
-      name: 'John Doe',
-      email: 'john.doe@example.com',
+    const list = await users.list({
+      columns: {
+        id: true,
+      },
+      where,
     })
+
+    expect(list.results).toEqual([
+      {
+        id: 1,
+      },
+    ])
+  })
+
+  it('should accept filters', async () => {
+    const createCrud = drizzleCrud(db, {
+      validation: zod(),
+    })
+
+    const users = createCrud(usersTable)
+
+    const list = await users.list({
+      columns: {
+        id: true,
+        name: true,
+      },
+      filters: {
+        id: {
+          equals: 1,
+        },
+        OR: [
+          {
+            email: {
+              equals: 'john.doe@example.com',
+            },
+          },
+          {
+            name: 'Johnny',
+          },
+        ],
+      },
+    })
+
+    expect(list.results).toEqual([
+      {
+        id: 1,
+        name: 'John Doe',
+      },
+    ])
   })
 })

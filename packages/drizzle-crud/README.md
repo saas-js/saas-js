@@ -126,15 +126,25 @@ const user = await userCrud.findById('123', {
 
 ### List with Filtering & Pagination
 
+The list operation accepts a JSON serializable filters object that gets converted to SQL WHERE conditions.
+Root-level properties are combined with AND logic, while nested OR/AND arrays allow for complex boolean expressions.
+
 ```typescript
 const result = await userCrud.list({
   search: 'john',
   filters: {
     isActive: true,
     createdAt: {
-      op: 'gte',
-      value: new Date('2024-01-01'),
+      gte: new Date('2024-01-01'),
     },
+    OR: [
+      {
+        name: 'john',
+      },
+      {
+        name: 'John',
+      },
+    ],
   },
   orderBy: [{ field: 'createdAt', direction: 'desc' }],
   page: 1,
@@ -250,12 +260,6 @@ const userCrud = createCrud(users, {
       email: data.email.toLowerCase(),
       createdAt: new Date(),
     }),
-
-    afterCreate: async (user) => {
-      // Send welcome email
-      await sendWelcomeEmail(user.email)
-      return user
-    },
 
     beforeUpdate: (data) => ({
       ...data,
@@ -477,6 +481,7 @@ Saas UI B.V.
 Netherlands.
 
 https://x.com/saas_js
+
 https://saas-ui.dev
 
 ## License

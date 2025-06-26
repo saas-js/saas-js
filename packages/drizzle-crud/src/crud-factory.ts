@@ -11,14 +11,15 @@ import {
   or,
 } from 'drizzle-orm'
 import { RelationalQueryBuilder } from 'drizzle-orm/pg-core/query-builders/query'
-import type { BuildQueryResult, DBQueryConfig } from 'drizzle-orm/relations'
-import type { ExtractTablesWithRelations } from 'drizzle-orm/relations'
+import type {
+  DBQueryConfig,
+  ExtractTablesWithRelations,
+} from 'drizzle-orm/relations'
 
 import { parseFilters } from './filters.ts'
 import { type StandardSchemaV1, standardValidate } from './standard-schema.ts'
 import type {
   Actor,
-  ColumnsSelection,
   CrudOperation,
   CrudOptions,
   DrizzleColumn,
@@ -90,54 +91,25 @@ export function crudFactory<
     validation,
   } = options
 
-  const tableName = table._.name
+  const tableName = table._.name as keyof TDatabase['_']['fullSchema']
 
-  type TSchema = TDatabase['_']['fullSchema']
+  type TSchema = ExtractTablesWithRelations<TDatabase['_']['fullSchema']>
   type TFields = TSchema[typeof tableName]
 
   type QueryOneGeneric = DBQueryConfig<'one', true, TSchema, TFields>
   type QueryManyGeneric = DBQueryConfig<'many', true, TSchema, TFields>
 
-  type QueryOneInput<TInput extends QueryOneGeneric> = KnownKeysOnly<
-    TInput,
+  type QueryOneInput<TSelections extends QueryOneGeneric> = KnownKeysOnly<
+    TSelections,
     QueryOneGeneric
   >
-  type QueryManyInput<TInput extends QueryManyGeneric> = KnownKeysOnly<
-    TInput,
+  type QueryManyInput<TSelections extends QueryManyGeneric> = KnownKeysOnly<
+    TSelections,
     QueryManyGeneric
   >
 
-  type QueryOneResult<TInput extends QueryOneGeneric> = BuildQueryResult<
-    TSchema,
-    TFields,
-    TInput
-  >
-
-  type QueryManyResult<TInput extends QueryManyGeneric> =
-    TInput extends QueryManyGeneric
-      ? BuildQueryResult<TSchema, TFields, TInput>[]
-      : never
-
-  type AfterReadResult<TResult> = typeof hooks.afterRead extends (
-    result: any,
-  ) => infer R
-    ? R
-    : TResult
-
-  type FindByIdResult<TQueryConfig extends QueryOneGeneric> = AfterReadResult<
-    QueryOneResult<TQueryConfig>
-  > | null
-
-  type ListResult<TQueryConfig extends QueryManyGeneric> = {
-    results: QueryManyResult<TQueryConfig>
-    page: number
-    limit: number
-    total: number
-  }
-
   const schemas = createSchemas(table, options, validation)
 
-  // Helper to get the correct database instance
   const getDb = (
     context?: OperationContext<TDatabase, T, TActor, TScopeFilters>,
   ) => context?.db || db
@@ -153,23 +125,6 @@ export function crudFactory<
 
   const getColumn = (key: keyof T['$inferInsert']) => {
     return table[key as keyof T] as DrizzleColumn<any, any, any>
-  }
-
-  // Helper to build Drizzle-style columns object
-  const buildColumnsSelection = (columns?: ColumnsSelection<T>) => {
-    if (!columns) return undefined
-
-    // Transform user columns to actual table columns
-    const selection: Record<string, any> = {}
-    Object.entries(columns).forEach(([key, value]) => {
-      if (typeof value === 'boolean' && value && table[key as keyof T]) {
-        selection[key] = table[key as keyof T]
-      } else if (value && table[key as keyof T]) {
-        selection[key] = table[key as keyof T]
-      }
-    })
-
-    return Object.keys(selection).length > 0 ? selection : undefined
   }
 
   const applyFilters = (
@@ -266,21 +221,17 @@ export function crudFactory<
       .values(transformed)
       .returning()
 
-    // return hooks.afterCreate?.(result) ?? result
-
     return result
   }
 
   const findById = async <TInput extends QueryOneGeneric>(
     id: T['$inferSelect']['id'],
-    params?: FindByIdParams & QueryOneInput<TInput>,
+    params?: QueryOneInput<TInput> & FindByIdParams,
     context?: Omit<
       OperationContext<TDatabase, T, TActor, TScopeFilters>,
       'skipValidation'
     >,
-  ): Promise<
-    FindByIdResult<TInput & { where: { id: T['$inferSelect']['id'] } }>
-  > => {
+  ) => {
     const builder = getQueryBuilder(context)
 
     const conditions: SQL[] = [eq(table.id, id)]
@@ -291,23 +242,17 @@ export function crudFactory<
     const whereClause =
       conditions.length > 1 ? and(...conditions) : conditions[0]
 
-    const result = await builder.findFirst({
+    return await builder.findFirst({
       columns: params?.columns,
       with: params?.with,
       where: whereClause,
     })
-
-    if (!result) return null
-
-    return (
-      params?.columns ? result : (hooks.afterRead?.(result) ?? result)
-    ) as any
   }
 
   const list = async <TInput extends QueryManyGeneric>(
-    params: ListParams<T> & QueryManyInput<TInput>,
+    params: ListParams<T> & Omit<QueryManyInput<TInput>, 'offset'>,
     context?: OperationContext<TDatabase, T, TActor, TScopeFilters>,
-  ): Promise<ListResult<TInput>> => {
+  ) => {
     const dbInstance = getDb(context)
     const builder = getQueryBuilder(context)
 
@@ -362,12 +307,8 @@ export function crudFactory<
     const totalResult = await countQuery
     const total = totalResult[0].count as number
 
-    const results = hooks.afterRead
-      ? data.map((item) => hooks.afterRead!(item))
-      : data
-
     return {
-      results: results as any,
+      results: data,
       page,
       limit,
       total,
@@ -403,7 +344,7 @@ export function crudFactory<
       .where(whereClause)
       .returning()
 
-    return hooks.afterUpdate?.(result) ?? result
+    return result
   }
 
   const deleteOne = async (

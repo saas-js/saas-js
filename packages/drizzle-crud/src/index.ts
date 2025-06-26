@@ -11,7 +11,7 @@ import type {
 
 export type * from './types.ts'
 
-export { parseFilters, parseFilterGroup } from './filters.ts'
+export { filtersToWhere } from './filters.ts'
 
 export function drizzleCrud<TDatabase extends DrizzleDatabase>(
   db: TDatabase,

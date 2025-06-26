@@ -19,6 +19,16 @@ import type {
   FilterParams,
 } from './types.ts'
 
+export function filtersToWhere<T extends DrizzleTableWithId>(
+  table: T,
+  filters?: FilterParams<T['$inferSelect']>,
+  allowedFilters: (keyof T['$inferSelect'])[] = [],
+): SQL | undefined {
+  const conditions = parseFilters(table, filters, allowedFilters)
+
+  return conditions.length > 0 ? and(...conditions) : undefined
+}
+
 export function parseFilters<T extends DrizzleTableWithId>(
   table: T,
   filters?: FilterParams<T['$inferSelect']>,
