@@ -12,6 +12,7 @@ import {
 } from 'drizzle-orm'
 import { RelationalQueryBuilder } from 'drizzle-orm/pg-core/query-builders/query'
 import type {
+  BuildQueryResult,
   DBQueryConfig,
   ExtractTablesWithRelations,
 } from 'drizzle-orm/relations'
@@ -107,6 +108,18 @@ export function crudFactory<
     TSelections,
     QueryManyGeneric
   >
+
+  type QueryOneResult<TSelections extends QueryOneGeneric> = BuildQueryResult<
+    TSchema,
+    TFields,
+    TSelections
+  >
+
+  type QueryManyResult<TSelections extends QueryManyGeneric> = BuildQueryResult<
+    TSchema,
+    TFields,
+    TSelections
+  >[]
 
   const schemas = createSchemas(table, options, validation)
 
@@ -224,9 +237,9 @@ export function crudFactory<
     return result
   }
 
-  const findById = async <TInput extends QueryOneGeneric>(
+  const findById = async <TSelections extends QueryOneGeneric>(
     id: T['$inferSelect']['id'],
-    params?: QueryOneInput<TInput> & FindByIdParams,
+    params?: QueryOneInput<TSelections> & FindByIdParams,
     context?: Omit<
       OperationContext<TDatabase, T, TActor, TScopeFilters>,
       'skipValidation'
@@ -242,15 +255,21 @@ export function crudFactory<
     const whereClause =
       conditions.length > 1 ? and(...conditions) : conditions[0]
 
-    return await builder.findFirst({
+    const result = await builder.findFirst({
       columns: params?.columns,
       with: params?.with,
       where: whereClause,
+      extras: params?.extras,
     })
+
+    return result as QueryOneResult<TSelections> | null
   }
 
-  const list = async <TInput extends QueryManyGeneric>(
-    params: ListParams<T> & Omit<QueryManyInput<TInput>, 'offset'>,
+  const list = async <TSelections extends QueryManyGeneric>(
+    params: ListParams<T> &
+      Omit<QueryManyInput<TSelections>, 'offset' | 'where'> & {
+        where?: SQL
+      },
     context?: OperationContext<TDatabase, T, TActor, TScopeFilters>,
   ) => {
     const dbInstance = getDb(context)
@@ -265,6 +284,10 @@ export function crudFactory<
 
     // Build where conditions
     const conditions: SQL[] = []
+
+    if (params.where) {
+      conditions.push(params.where)
+    }
 
     applyFilters(conditions, validatedParams.filters)
     applySearch(conditions, validatedParams.search)
@@ -289,22 +312,19 @@ export function crudFactory<
       orderBy,
       limit,
       offset,
+      extras: params.extras,
     })
 
     let countQuery = (dbInstance as any).select({ count: count() }).from(table)
 
-    const countConditions: SQL[] = []
-
-    applyFilters(countConditions, validatedParams.filters)
-    applySearch(countConditions, validatedParams.search)
-    applyScopeFilters(countConditions, context)
-    applySoftDeleteFilter(countConditions, params.includeDeleted)
+    const countConditions: SQL[] = [...conditions]
 
     if (countConditions.length > 0) {
       countQuery = countQuery.where(and(...countConditions))
     }
 
     const totalResult = await countQuery
+
     const total = totalResult[0].count as number
 
     return {
@@ -312,6 +332,11 @@ export function crudFactory<
       page,
       limit,
       total,
+    } as {
+      results: QueryManyResult<TSelections>
+      page: number
+      limit: number
+      total: number
     }
   }
 

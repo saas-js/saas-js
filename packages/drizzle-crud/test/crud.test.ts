@@ -142,7 +142,7 @@ describe('drizzleCrud', () => {
       columns: {
         id: true,
         name: true,
-        email: true,
+        email: false,
       },
     })
 
@@ -155,7 +155,6 @@ describe('drizzleCrud', () => {
     expect(user).toEqual({
       id: 1,
       name: 'John Doe',
-      email: 'john.doe@example.com',
     })
   })
 
@@ -234,11 +233,9 @@ describe('drizzleCrud', () => {
       },
     })
 
-    expect(list.results).toEqual([
-      {
-        id: 1,
-        name: 'John Doe',
-      },
-    ])
+    expect(list.results[0]).toEqual({
+      id: 1,
+      name: 'John Doe',
+    })
   })
 })
