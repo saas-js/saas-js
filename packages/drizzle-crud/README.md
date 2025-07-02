@@ -31,6 +31,7 @@ A powerful TypeScript package that automatically generates CRUD operations for y
 - [ ] Support all Drizzle dialects (currently only PG)
 - [ ] Expose utilities for filters and pagination
 - [ ] Define custom operations
+- [ ] Automatic re-ordering on insert or update (fractional/shift sorting)
 - [x] Standard schema support
 
 - More ideas?
@@ -184,6 +185,21 @@ await userCrud.permanentDelete('123') // Hard delete
 ```
 
 ## Advanced Features
+
+### Transactions
+
+Transaction instances can be passed to the operation context to run them in a tx.
+
+```typescript
+const result = await db.transaction((tx) => {
+  const updatedUser = await userCrud.update('123', {
+    name: 'John Updated',
+    isActive: false,
+  }, {
+   db: tx
+  })
+})
+```
 
 ### Filter Operators
 
