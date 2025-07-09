@@ -1,0 +1,32 @@
+{
+  "name": "iconify-react",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:cli": "bun build --target node --outdir dist src/cli.ts",
+    "build:mcp": "bun build --target node --outdir dist src/mcp-server.ts",
+    "build": "bun build --target node --outdir dist src/index.ts",
+    "dev": "bun run ./src/cli.ts",
+    "dev:mcp": "bun run ./src/mcp-server.ts"
+  },
+  "bin": {
+    "iconify-react": "./dist/cli.js"
+  },
+  "exports": {
+    "sjs": "./src/index.ts",
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "src",
+    "dist",
+    "package.json"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.15.0",
+    "commander": "^14.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}
