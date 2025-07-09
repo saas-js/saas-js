@@ -15,6 +15,9 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+
       - name: Setup Node.js 20.x
         uses: actions/setup-node@v3
         with:
@@ -26,6 +29,7 @@ jobs:
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
+
         with:
           # This expects you to have a script called release which does a build for your packages and calls changeset publish
           publish: bun run release
