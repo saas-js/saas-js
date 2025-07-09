@@ -3,7 +3,8 @@
   "scripts": {
     "dev:website": "bun --filter website dev",
     "build": "bun --filter '@saas-js/*' build",
-    "release": "bun --filter '@saas-js/*' release"
+    "release": "bun --filter '@saas-js/*' release",
+    "copy-schema": "tsx scripts/copy-schema.ts"
   },
   "dependencies": {
     "@changesets/cli": "^2.27.11",
