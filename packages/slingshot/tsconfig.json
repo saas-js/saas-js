@@ -3,9 +3,10 @@
     "module": "esnext",
     "target": "esnext",
     "moduleResolution": "bundler",
+    "skipLibCheck": true,
     "isolatedModules": true,
     "esModuleInterop": true
   },
   "include": ["src"],
-  "exclude": ["node_modules"]
+  "exclude": ["**/node_modules"]
 }
