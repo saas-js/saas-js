@@ -13,6 +13,32 @@ A CLI tool for fetching and generating type-safe React icon components from the 
 - 🎨 Customizable icon size with runtime override support
 - 🏷️ Icon aliasing for better naming conventions
 
+This package wouldn't be possible without the great work of [Vjacheslav Trushkin](https://x.com/slava_trushkin).
+
+### Why does this exist?
+
+**Problems with existing solutions:**
+
+- **Iconify web components** require an internet connection and don't work offline
+- **react-icons** is heavy (~2MB+), has poor tree-shaking, and causes performance issues in Next.js
+- **Icon fonts** are outdated, not accessible, and hard to customize
+- **Manual SVG copying or sprites** is tedious and hard to maintain
+
+**Our approach:**
+
+Similar to [shadcn/ui](https://ui.shadcn.com/) or [sly-cli](https://sly-cli.fly.dev/), we generate the actual source code that you own and control. But instead of a limited set of components, you get access to **200,000+ icons** from the entire Iconify ecosystem.
+
+**Benefits:**
+
+- ✅ **RSC** - Works with React Server Components
+- ✅ **Offline-first** - Icons work without internet connection
+- ✅ **Perfect tree-shaking** - Only bundle the icons you actually use
+- ✅ **Full ownership** - Generated code lives in your codebase
+- ✅ **Type-safe** - Complete TypeScript support with proper interfaces
+- ✅ **Massive library** - 150+ icon sets vs limited selection in other tools
+
+While there are definitely downsides to using [SVG-in-JS](https://kurtextrem.de/posts/svg-in-js), we feel like the benefits outweight the cons when building React apps and only use a dozen of icons on any screen.
+
 ## Installation
 
 ```bash
