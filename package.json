@@ -2,7 +2,7 @@
   "type": "module",
   "scripts": {
     "dev:website": "bun --filter website dev",
-    "build:packages": "bun --filter 'packages/**' build",
+    "build:packages": "bun --filter './packages/**' build",
     "release": "bun run build:packages && bun changeset publish",
     "copy-schema": "bun run scripts/copy-schema.ts"
   },
