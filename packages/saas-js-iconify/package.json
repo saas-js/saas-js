@@ -1,13 +1,16 @@
 {
   "name": "@saas-js/iconify",
   "version": "0.0.2",
-  "private": true,
   "type": "module",
   "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Eelco Wiersma <eelco@saas-ui.dev>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/saas-js/saas-js/tree/main/packages/iconify-react"
+    "url": "git+https://github.com/saas-js/saas-js.git",
+    "directory": "packages/saas-js-iconify"
   },
   "scripts": {
     "build": "bun build ./src/index.ts ./src/cli.ts ./src/mcp-server.ts --outdir dist --target node && bun run build:types",
