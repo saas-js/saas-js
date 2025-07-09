@@ -2,9 +2,9 @@
   "type": "module",
   "scripts": {
     "dev:website": "bun --filter website dev",
-    "build": "bun --filter '@saas-js/*' build",
-    "release": "bun --filter '@saas-js/*' release",
-    "copy-schema": "tsx scripts/copy-schema.ts"
+    "build:packages": "bun --filter 'packages/*' build",
+    "release": "bun run build:packages && bun changeset publish",
+    "copy-schema": "bun run scripts/copy-schema.ts"
   },
   "dependencies": {
     "@changesets/cli": "^2.27.11",
