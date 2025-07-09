@@ -9,3 +9,5 @@ lambda.zip
 !.yarn/versions
 .env
 .env.*
+
+**/test/.output

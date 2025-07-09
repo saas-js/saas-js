@@ -1,0 +1,41 @@
+{
+  "name": "@saas-js/iconify",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Eelco Wiersma <eelco@saas-ui.dev>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/saas-js/saas-js/tree/main/packages/iconify-react"
+  },
+  "scripts": {
+    "build": "bun build ./src/index.ts ./src/cli.ts ./src/mcp-server.ts --outdir dist --target node && bun run build:types",
+    "build:types": "tsc --project tsconfig.json --emitDeclarationOnly --outDir dist",
+    "dev": "bun run ./src/cli.ts",
+    "dev:mcp": "bun run ./src/mcp-server.ts"
+  },
+  "bin": {
+    "icons": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "sjs": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "src",
+    "dist",
+    "package.json"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.15.0",
+    "commander": "^14.0.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}

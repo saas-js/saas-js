@@ -3,12 +3,14 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod'
 
-import { fetchAndWriteIcons } from './icons.ts'
+import pkg from '../package.json' with { type: 'json' }
+
+import { fetchAndWriteIcons } from './fetch-icons.ts'
 
 /** Create server instance */
 const server = new McpServer({
-  name: 'saas-ui-mcp',
-  version: '1.0.0',
+  name: 'iconify-mcp',
+  version: pkg.version,
   capabilities: {
     tools: {},
   },
@@ -71,17 +73,29 @@ server.tool(
   {
     iconSet: z
       .string()
-      .default('tabler')
-      .describe("The icon set to use. E.g. 'tabler'"),
+      .optional()
+      .describe("The icon set to use. E.g. 'tabler' (optional if defaultIconSet is configured)"),
     iconNames: z
       .array(z.string())
       .min(1)
       .describe("The icon names to add. E.g. 'home'"),
+    outputDir: z
+      .string()
+      .optional()
+      .describe("Output directory for generated icons (optional)"),
   },
   async (args) => {
-    const { iconSet, iconNames } = args
+    const { iconSet, iconNames, outputDir } = args as {
+      iconSet?: string
+      iconNames: string[]
+      outputDir?: string
+    }
 
-    const addedIconNames = await fetchAndWriteIcons(iconSet, iconNames)
+    const addedIconNames = await fetchAndWriteIcons(
+      iconSet,
+      iconNames,
+      outputDir,
+    )
 
     return {
       content: [

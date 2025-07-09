@@ -24,7 +24,7 @@ export async function addCommand({
   iconNames,
   outputDir,
 }: {
-  iconSet: string
+  iconSet?: string
   iconNames: string[]
   outputDir?: string
 }) {

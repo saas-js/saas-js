@@ -20,13 +20,13 @@ program
 program
   .command('add')
   .description('Add icons to the project')
-  .argument('<icon-set>', 'The icon set to use, e.g. "lucide"')
   .argument('<icon-names...>', 'The icon names to add, e.g. "home user"')
+  .option('-s, --set <icon-set>', 'The icon set to use, e.g. "lucide" (optional if defaultIconSet is configured)')
   .option('-o, --outdir <path>', 'Output directory for generated icons')
-  .action(async (iconSet: string, iconNames: string[], options: { outdir?: string }) => {
+  .action(async (iconNames: string[], options: { set?: string; outdir?: string }) => {
     const { addCommand } = await import('./commands/add.ts')
 
-    await addCommand({ iconSet, iconNames, outputDir: options.outdir })
+    await addCommand({ iconSet: options.set, iconNames, outputDir: options.outdir })
   })
 
 program
