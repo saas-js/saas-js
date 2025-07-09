@@ -4,7 +4,10 @@ import readline from 'readline'
 
 import type { IconifyConfig } from '../types.ts'
 
-async function prompt(question: string, defaultValue?: string): Promise<string> {
+async function prompt(
+  question: string,
+  defaultValue?: string,
+): Promise<string> {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -41,7 +44,7 @@ export async function initCommand() {
   // Output directory
   const outputDir = await prompt(
     'Output directory for generated icons',
-    '/src/components/icons'
+    '/src/components/icons',
   )
   if (outputDir) {
     config.outputDir = outputDir
@@ -50,27 +53,29 @@ export async function initCommand() {
   // Default icon set
   const defaultIconSet = await prompt(
     'Default icon set (e.g., lucide, tabler, heroicons)',
-    'lucide'
+    'lucide',
   )
   if (defaultIconSet) {
     config.defaultIconSet = defaultIconSet
   }
 
   // Icon size
-  const iconSize = await prompt(
-    'Default icon size',
-    '1em'
-  )
+  const iconSize = await prompt('Default icon size', '1em')
   if (iconSize) {
     config.iconSize = iconSize
   }
 
   // Write config file
   try {
-    await fs.writeFile(configPath, JSON.stringify(config, null, 2))
+    const configWithSchema = {
+      $schema: 'https://saas-js.dev/icons/schema.json',
+      ...config,
+    }
+
+    await fs.writeFile(configPath, JSON.stringify(configWithSchema, null, 2))
     console.log('\n✅ icons.json created successfully!')
     console.log('Configuration:')
-    console.log(JSON.stringify(config, null, 2))
+    console.log(JSON.stringify(configWithSchema, null, 2))
   } catch (error) {
     console.error('Error creating icons.json:', error)
     process.exit(1)

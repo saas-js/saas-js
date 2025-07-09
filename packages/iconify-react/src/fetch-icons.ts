@@ -54,6 +54,11 @@ async function readIconsConfig(): Promise<IconifyConfig> {
   }
 }
 
+function resolveIconAliases(iconNames: string[], aliases: Record<string, string> = {}): string[] {
+  // No resolution needed - we search for the requested icon name directly
+  return iconNames
+}
+
 export async function fetchAndWriteIcons(
   iconSet: string,
   iconNames: string[],
@@ -65,6 +70,9 @@ export async function fetchAndWriteIcons(
   const config = await readIconsConfig()
   const finalOutputDir = outputDir || config.outputDir || '/src/components/icons'
   const resolvedOutputDir = path.join(process.cwd(), finalOutputDir)
+  
+  // Resolve icon aliases
+  const resolvedIconNames = resolveIconAliases(iconNames, config.aliases)
 
   console.log(`Output directory: ${resolvedOutputDir}`)
 
@@ -76,12 +84,15 @@ export async function fetchAndWriteIcons(
   const iconSetData = await fetchIconSet(iconSet)
 
   // Fetch and generate components for the icon set
-  const iconData = await fetchIconData(iconSet, iconNames)
+  const iconData = await fetchIconData(iconSet, resolvedIconNames)
 
   for (const iconName of iconNames) {
     if (iconData.icons[iconName]) {
+      // Use alias as output name if it exists, otherwise use the requested name
+      const outputName = config.aliases?.[iconName] || iconName
+      
       const componentCode = generateIconComponent(
-        iconName,
+        outputName,
         iconData.icons[iconName],
         iconSetData,
         iconData.width,
@@ -89,7 +100,7 @@ export async function fetchAndWriteIcons(
         config.iconSize,
       )
 
-      const fileName = iconName
+      const fileName = outputName
       const filePath = path.join(resolvedOutputDir, `${fileName}-icon.tsx`)
 
       // Check if file already exists
@@ -106,8 +117,8 @@ export async function fetchAndWriteIcons(
 
       await fs.writeFile(filePath, componentCode)
 
-      allIconNames.push(iconName)
-      console.log(`Generated ${fileName}-icon.tsx`)
+      allIconNames.push(outputName)
+      console.log(`Generated ${fileName}-icon.tsx${outputName !== iconName ? ` (${iconName} -> ${outputName})` : ''}`)
     } else {
       console.warn(`Icon ${iconName} not found in ${iconSet}`)
     }
