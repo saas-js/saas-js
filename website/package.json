@@ -8,14 +8,15 @@
     "start": "next start"
   },
   "dependencies": {
-    "@content-collections/core": "^0.8.0",
-    "@content-collections/mdx": "^0.2.0",
-    "@content-collections/next": "^0.2.4",
-    "@fumadocs/content-collections": "1.1.6",
+    "@content-collections/core": "^0.10.0",
+    "@content-collections/mdx": "^0.2.2",
+    "@content-collections/next": "^0.2.6",
+    "@fumadocs/content-collections": "1.2.1",
     "@saas-js/slingshot-react": "workspace:*",
-    "fumadocs-core": "14.6.4",
-    "fumadocs-ui": "14.6.4",
-    "next": "15.1.2",
+    "@tailwindcss/postcss": "^4.1.11",
+    "fumadocs-core": "15.6.3",
+    "fumadocs-ui": "15.6.3",
+    "next": "15.3.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
@@ -26,8 +27,8 @@
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.1",
     "eslint-config-next": "15.1.2",
-    "postcss": "^8.4.49",
-    "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.2"
+    "postcss": "^8.5.6",
+    "tailwindcss": "4.1.11",
+    "typescript": "^5.8.3"
   }
 }
