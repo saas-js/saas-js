@@ -71,11 +71,34 @@ export type CrudOptions<
   TScopeFilters extends ScopeFilters<T, TActor> = ScopeFilters<T, TActor>,
 > = {
   searchFields?: (keyof T['$inferSelect'])[]
+  /**
+   * The default limit of items returned.
+   * @default 20
+   */
   defaultLimit?: number
+  /**
+   * The max limit of items returned.
+   * @default 100
+   */
   maxLimit?: number
+  /**
+   * The allowed fields to be used in the filters parameter.
+   * e.g., ['name', 'email']
+   */
   allowedFilters?: (keyof T['$inferSelect'])[]
+  /**
+   * Enable soft delete for the table.
+   * e.g., { field: 'deletedAt', deletedValue: new Date(), notDeletedValue: null }
+   */
   softDelete?: SoftDeleteConfig<T>
-  scopeFilters?: TScopeFilters // e.g., { workspaceId: (value) => eq(table.workspaceId, value) }
+  /**
+   * Scope filters are used to filter the data based on the actor.
+   * e.g., { workspaceId: (value) => eq(table.workspaceId, value) }
+   */
+  scopeFilters?: TScopeFilters
+  /**
+   * Hooks are used to run code before crud operations.
+   */
   hooks?: {
     validate?: (params: {
       data: any
@@ -87,6 +110,9 @@ export type CrudOptions<
       data: Partial<T['$inferInsert']>,
     ) => Partial<T['$inferInsert']>
   }
+  /**
+   * Validation adapter is used to validate the data.
+   */
   validation?: ValidationAdapter<T>
 }
 
