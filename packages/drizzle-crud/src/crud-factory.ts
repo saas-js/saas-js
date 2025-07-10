@@ -100,22 +100,28 @@ export function crudFactory<
   type QueryOneGeneric = DBQueryConfig<'one', true, TSchema, TFields>
   type QueryManyGeneric = DBQueryConfig<'many', true, TSchema, TFields>
 
-  type QueryOneInput<TSelections extends QueryOneGeneric> = KnownKeysOnly<
+  type FindOneInput<TSelections extends QueryOneGeneric> = KnownKeysOnly<
     TSelections,
     QueryOneGeneric
   >
-  type QueryManyInput<TSelections extends QueryManyGeneric> = KnownKeysOnly<
+
+  type ListGeneric = Omit<QueryManyGeneric, 'offset' | 'where'> &
+    ListParams<T> & {
+      where?: SQL
+    }
+
+  type ListInput<TSelections extends ListGeneric> = KnownKeysOnly<
     TSelections,
-    QueryManyGeneric
+    ListGeneric
   >
 
-  type QueryOneResult<TSelections extends QueryOneGeneric> = BuildQueryResult<
+  type FindOneResult<TSelections extends QueryOneGeneric> = BuildQueryResult<
     TSchema,
     TFields,
     TSelections
   >
 
-  type QueryManyResult<TSelections extends QueryManyGeneric> = BuildQueryResult<
+  type ListResult<TSelections extends QueryManyGeneric> = BuildQueryResult<
     TSchema,
     TFields,
     TSelections
@@ -239,7 +245,7 @@ export function crudFactory<
 
   const findById = async <TSelections extends QueryOneGeneric>(
     id: T['$inferSelect']['id'],
-    params?: QueryOneInput<TSelections> & FindByIdParams,
+    params?: FindOneInput<TSelections> & FindByIdParams,
     context?: Omit<
       OperationContext<TDatabase, T, TActor, TScopeFilters>,
       'skipValidation'
@@ -262,14 +268,11 @@ export function crudFactory<
       extras: params?.extras,
     })
 
-    return result as QueryOneResult<TSelections> | null
+    return result as FindOneResult<TSelections> | null
   }
 
-  const list = async <TSelections extends QueryManyGeneric>(
-    params: ListParams<T> &
-      Omit<QueryManyInput<TSelections>, 'offset' | 'where'> & {
-        where?: SQL
-      },
+  const list = async <TSelections extends ListGeneric>(
+    params: ListInput<TSelections>,
     context?: OperationContext<TDatabase, T, TActor, TScopeFilters>,
   ) => {
     const dbInstance = getDb(context)
@@ -333,7 +336,7 @@ export function crudFactory<
       limit,
       total,
     } as {
-      results: QueryManyResult<TSelections>
+      results: ListResult<TSelections>
       page: number
       limit: number
       total: number
