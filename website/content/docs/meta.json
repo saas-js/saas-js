@@ -1,0 +1,11 @@
+{
+  "title": "Saas.js",
+  "description": "Saas.js is a collection of utilities and full-stack React components for building SaaS products.",
+  "pages": [
+    "---Utilities---",
+    "drizzle-crud",
+    "saas-js-iconify",
+    "---Components---",
+    "file-upload"
+  ]
+}
