@@ -11,12 +11,5 @@ export const baseOptions: BaseLayoutProps = {
   nav: {
     title: <img src="/logo.svg" alt="Saas.js logo" width={80} />,
   },
-  links: [
-    {
-      text: 'Documentation',
-      url: '/docs',
-      active: 'nested-url',
-    },
-  ],
   githubUrl: 'https://github.com/saas-js/saas-js',
 }
