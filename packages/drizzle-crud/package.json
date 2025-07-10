@@ -4,9 +4,13 @@
   "type": "module",
   "license": "Apache-2.0",
   "author": "Eelco Wiersma <eelco@appulse.nl>",
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/saas-js/saas-js.git"
+    "url": "https://github.com/saas-js/saas-js.git",
+    "directory": "packages/drizzle-crud"
   },
   "scripts": {
     "build": "tsc --project tsconfig.json"
