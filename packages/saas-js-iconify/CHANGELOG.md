@@ -1,5 +1,11 @@
 # @saas-js/iconify
 
+## 0.0.4
+
+### Patch Changes
+
+- e2e523d: Updated internal api for better composability
+
 ## 0.0.3
 
 ### Patch Changes
