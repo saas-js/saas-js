@@ -1,6 +1,6 @@
 import readline from 'readline'
 
-import { fetchAndWriteIcons } from '../fetch-icons.ts'
+import { fetchAndWriteIcons, readIconsConfig } from '../fetch-icons.ts'
 
 async function promptOverwrite(fileName: string): Promise<boolean> {
   const rl = readline.createInterface({
@@ -29,14 +29,18 @@ export async function addCommand({
   outputDir?: string
 }) {
   try {
-    const allIconNames = await fetchAndWriteIcons(
-      iconSet,
+    const config = await readIconsConfig()
+
+    const allIconNames = await fetchAndWriteIcons({
+      iconSet: iconSet ?? config.defaultIconSet,
       iconNames,
-      outputDir,
-      async (fileName: string) => {
+      iconSize: config.iconSize,
+      outputDir: outputDir ?? config.outputDir,
+      aliases: config.aliases,
+      shouldOverwrite: async (fileName: string) => {
         return promptOverwrite(fileName)
       },
-    )
+    })
 
     console.log(
       `\nSuccessfully generated ${allIconNames.length} icon components!`,

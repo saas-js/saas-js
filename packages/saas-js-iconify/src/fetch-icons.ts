@@ -2,9 +2,9 @@ import fs from 'fs/promises'
 import path from 'path'
 
 import { generateIconComponent } from './generate-icon-component.ts'
-import type { IconifyIcon, IconifyIconSet, IconifyConfig } from './types.ts'
+import type { IconifyConfig, IconifyIcon, IconifyIconSet } from './types.ts'
 
-async function fetchIconSet(prefix: string): Promise<IconifyIconSet> {
+export async function fetchIconSet(prefix: string): Promise<IconifyIconSet> {
   const url = `https://api.iconify.design/collections?prefix=${prefix}`
 
   const response = await fetch(url)
@@ -18,13 +18,13 @@ async function fetchIconSet(prefix: string): Promise<IconifyIconSet> {
   }
 }
 
-interface IconifyResponse {
+export interface IconifyResponse {
   icons: Record<string, IconifyIcon>
   width?: number
   height?: number
 }
 
-async function fetchIconData(
+export async function fetchIconData(
   iconSet: string,
   iconNames: string[],
 ): Promise<IconifyResponse> {
@@ -42,9 +42,9 @@ async function fetchIconData(
   }
 }
 
-async function readIconsConfig(): Promise<IconifyConfig> {
+export async function readIconsConfig(): Promise<IconifyConfig> {
   const configPath = path.join(process.cwd(), 'icons.json')
-  
+
   try {
     const configContent = await fs.readFile(configPath, 'utf-8')
     return JSON.parse(configContent)
@@ -54,31 +54,38 @@ async function readIconsConfig(): Promise<IconifyConfig> {
   }
 }
 
-function resolveIconAliases(iconNames: string[], aliases: Record<string, string> = {}): string[] {
+function resolveIconAliases(
+  iconNames: string[],
+  aliases: Record<string, string> = {},
+): string[] {
   // No resolution needed - we search for the requested icon name directly
   return iconNames
 }
 
-export async function fetchAndWriteIcons(
-  iconSet: string | undefined,
-  iconNames: string[],
-  outputDir?: string,
-  shouldOverwrite?: (fileName: string) => Promise<boolean>,
-): Promise<string[]> {
-  const config = await readIconsConfig()
-  const finalIconSet = iconSet || config.defaultIconSet
-  
-  if (!finalIconSet) {
-    throw new Error('No icon set specified and no defaultIconSet configured in icons.json')
+export async function fetchAndWriteIcons(args: {
+  iconSet: string | undefined
+  iconNames: string[]
+  outputDir?: string
+  iconSize?: string | number
+  aliases?: Record<string, string>
+  shouldOverwrite?: (fileName: string) => Promise<boolean>
+}): Promise<string[]> {
+  const { iconSet, iconNames, iconSize, outputDir, aliases, shouldOverwrite } =
+    args
+
+  if (!iconSet) {
+    throw new Error(
+      'No icon set specified and no defaultIconSet configured in icons.json',
+    )
   }
 
-  console.log(`Fetching ${iconNames.length} icons from ${finalIconSet}...`)
+  console.log(`Fetching ${iconNames.length} icons from ${iconSet}...`)
 
-  const finalOutputDir = outputDir || config.outputDir || '/src/components/icons'
+  const finalOutputDir = outputDir || '/src/components/icons'
   const resolvedOutputDir = path.join(process.cwd(), finalOutputDir)
-  
+
   // Resolve icon aliases
-  const resolvedIconNames = resolveIconAliases(iconNames, config.aliases)
+  const resolvedIconNames = resolveIconAliases(iconNames, aliases)
 
   console.log(`Output directory: ${resolvedOutputDir}`)
 
@@ -87,23 +94,23 @@ export async function fetchAndWriteIcons(
 
   const allIconNames: string[] = []
 
-  const iconSetData = await fetchIconSet(finalIconSet)
+  const iconSetData = await fetchIconSet(iconSet)
 
   // Fetch and generate components for the icon set
-  const iconData = await fetchIconData(finalIconSet, resolvedIconNames)
+  const iconData = await fetchIconData(iconSet, resolvedIconNames)
 
   for (const iconName of iconNames) {
     if (iconData.icons[iconName]) {
       // Use alias as output name if it exists, otherwise use the requested name
-      const outputName = config.aliases?.[iconName] || iconName
-      
+      const outputName = aliases?.[iconName] || iconName
+
       const componentCode = generateIconComponent(
         outputName,
         iconData.icons[iconName],
         iconSetData,
         iconData.width,
         iconData.height,
-        config.iconSize,
+        iconSize,
       )
 
       const fileName = outputName
@@ -124,9 +131,11 @@ export async function fetchAndWriteIcons(
       await fs.writeFile(filePath, componentCode)
 
       allIconNames.push(outputName)
-      console.log(`Generated ${fileName}-icon.tsx${outputName !== iconName ? ` (${iconName} -> ${outputName})` : ''}`)
+      console.log(
+        `Generated ${fileName}-icon.tsx${outputName !== iconName ? ` (${iconName} -> ${outputName})` : ''}`,
+      )
     } else {
-      console.warn(`Icon ${iconName} not found in ${finalIconSet}`)
+      console.warn(`Icon ${iconName} not found in ${iconSet}`)
     }
   }
 
