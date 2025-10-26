@@ -5,7 +5,7 @@ import { z } from 'zod'
 
 import pkg from '../package.json' with { type: 'json' }
 
-import { fetchAndWriteIcons } from './fetch-icons.ts'
+import { fetchAndWriteIcons, readIconsConfig } from './fetch-icons.ts'
 
 /** Create server instance */
 const server = new McpServer({
@@ -91,11 +91,15 @@ server.tool(
       outputDir?: string
     }
 
-    const addedIconNames = await fetchAndWriteIcons(
+    const config = await readIconsConfig()
+
+    const addedIconNames = await fetchAndWriteIcons({
       iconSet,
       iconNames,
-      outputDir,
-    )
+      outputDir: outputDir ?? config.outputDir ,
+      aliases: config.aliases,
+      iconSize: config.iconSize,
+    })
 
     return {
       content: [
