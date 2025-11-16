@@ -12,6 +12,8 @@
     "noEmit": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": true
-  }
+    "strict": true,
+    "customConditions": ["@saas-js"]
+  },
+  "exclude": ["**/node_modules"]
 }

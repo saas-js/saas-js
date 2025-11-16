@@ -1,11 +1,13 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "module": "esnext",
     "target": "esnext",
     "moduleResolution": "bundler",
     "skipLibCheck": true,
     "isolatedModules": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "customConditions": ["@saas-js"]
   },
   "include": ["src"],
   "exclude": ["**/node_modules"]

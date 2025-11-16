@@ -1,6 +1,5 @@
-import { StateMachine as S, createMachine } from '@zag-js/core'
+import { createMachine } from '@zag-js/core'
 import { CommonProperties, LocaleProperties, RequiredBy } from '@zag-js/types'
-import { compact } from '@zag-js/utils'
 
 import { SlingshotClient } from './create-slingshot-client'
 import { SlingshotFile } from './slingshot.types'
@@ -12,164 +11,160 @@ interface PublicContext extends LocaleProperties, CommonProperties {
   direction?: 'ltr' | 'rtl'
 }
 
+export type UploadStatus = 'idle' | 'uploading' | 'done' | 'failed' | 'aborted'
+type UploadFiles = Map<string, SlingshotFile>
+
 interface PrivateContext {
-  files: Record<string, SlingshotFile>
-  status: 'idle' | 'uploading' | 'done' | 'failed' | 'aborted'
+  files: UploadFiles | null
+  status: UploadStatus
 }
 
 export type UserDefinedContext = RequiredBy<PublicContext, 'id'>
 
 export interface MachineContext extends PublicContext, PrivateContext {}
 
-export interface MachineState {
-  value: 'idle' | 'uploading' | 'success' | 'failed'
+type SlingshotEvent =
+  | { type: 'UPLOAD'; files: File[] }
+  | { type: 'SUCCESS' }
+  | { type: 'FAILED' }
+  | { type: 'ABORTED' }
+
+export interface SlingshotSchema {
+  state: 'idle' | 'uploading' | 'success' | 'failed'
+  props: PublicContext
+  context: PrivateContext
+  event: SlingshotEvent
+  action: string
+  guard: string
+  effect: string
 }
 
-export type State = S.State<MachineContext, MachineState>
+export const machine = createMachine<SlingshotSchema>({
+  initialState() {
+    return 'idle'
+  },
 
-export type Send = S.Send<S.AnyEventObject>
+  context({ bindable }) {
+    return {
+      files: bindable<UploadFiles>(() => ({
+        defaultValue: null,
+      })),
+      status: bindable<UploadStatus>(() => ({
+        defaultValue: 'idle',
+      })),
+    }
+  },
 
-export const machine = (userContext: UserDefinedContext) => {
-  const ctx = compact(userContext)
-
-  return createMachine<MachineContext, MachineState>(
-    {
-      id: 'slingshot-upload',
-      initial: 'idle',
-      context: {
-        status: 'idle',
-        client: null,
-        meta: {},
-        ...ctx,
-        files: {},
-      },
+  states: {
+    idle: {
       on: {
         UPLOAD: {
           actions: ['upload'],
         },
       },
-      states: {
-        idle: {
-          on: {
-            UPLOAD: {
-              actions: ['upload'],
-            },
-          },
+    },
+    uploading: {
+      on: {
+        SUCCESS: {
+          target: 'success',
         },
-        uploading: {
-          on: {
-            SUCCESS: 'success',
-            FAILED: 'failed',
-          },
-        },
-        success: {
-          type: 'final',
-        },
-        failed: {
-          type: 'final',
+        FAILED: {
+          target: 'failed',
         },
       },
     },
-    {
-      guards: {
-        isValidated: (context, event) => {
-          return true
-        },
+    success: {},
+    failed: {},
+  },
+  implementations: {
+    guards: {
+      isValidated: () => {
+        return true
       },
-      actions: {
-        setProgress(ctx, { key, progress }) {
-          set.progress(ctx, { key, progress })
-        },
-        setStatus(ctx, { status }) {
-          ctx.status = status
-        },
-        upload: async (ctx, event) => {
-          ctx.status = 'uploading'
+    },
+    actions: {
+      upload: async ({ context, prop, event }) => {
+        const client = prop('client')
+        const meta = prop('meta')
 
-          const files = await Promise.all<SlingshotFile>(
-            event.files.map(async (file) => {
-              // set.status(ctx, { key: file.key, status: 'authorizing' })
+        context.set('status', 'uploading')
 
-              const fileMeta = {
-                name: file.name,
-                type: file.type,
-                size: file.size,
-                data: file,
-              }
+        function setFile(file: SlingshotFile) {
+          context.set('files', (prev) => {
+            const newFiles = new Map(prev)
+            newFiles.set(file.name, file)
+            return newFiles
+          })
 
-              try {
-                const { key, url } = await ctx.client.request(file, ctx.meta)
+          return file
+        }
 
-                if (!key) {
-                  return {
-                    ...fileMeta,
-                    status: 'rejected',
-                  }
-                }
+        const files = await Promise.all<SlingshotFile>(
+          event.files.map(async (file) => {
+            const fileMeta = {
+              name: file.name,
+              type: file.type,
+              size: file.size,
+              data: file,
+            }
 
-                const acceptedFile: SlingshotFile = {
-                  key,
-                  url,
-                  ...fileMeta,
-                  status: 'accepted',
-                }
+            setFile({ ...fileMeta, status: 'authorizing' })
 
-                ctx.files[key] = acceptedFile
+            try {
+              const { key, url } = await client.request(file, meta)
 
-                return acceptedFile
-              } catch (err) {
+              if (!key) {
                 return {
                   ...fileMeta,
                   status: 'rejected',
-                  error: err.message,
                 }
               }
-            }),
-          )
 
-          for (const file of files) {
-            if (!file.key) {
-              continue
-            }
+              const acceptedFile: SlingshotFile = {
+                key,
+                url,
+                ...fileMeta,
+                status: 'accepted',
+              }
 
-            set.status(ctx, { key: file.key, status: 'uploading' })
+              setFile(acceptedFile)
 
-            try {
-              await ctx.client.upload(file.data, file.url, {
-                onProgress: ({ progress }) => {
-                  set.progress(ctx, {
-                    key: file.key,
-                    progress,
-                  })
-                },
-              })
+              return acceptedFile
+            } catch (err) {
+              setFile({ ...fileMeta, status: 'rejected', error: err.message })
 
-              set.status(ctx, {
+              return {
                 key: file.key,
-                status: 'done',
-              })
-            } catch (e) {
-              set.status(ctx, {
-                key: file.key,
-                status: 'failed',
-                error: e,
-              })
+                ...fileMeta,
+                status: 'rejected',
+                error: err.message as string,
+              }
             }
+          }),
+        )
+
+        for (const file of files) {
+          if (!file.key) {
+            continue
           }
 
-          ctx.status = 'done'
-        },
+          setFile({ ...file, status: 'uploading' })
+
+          try {
+            await client.upload(file.data, file.url, {
+              onProgress: ({ progress }) => {
+                setFile({ ...file, progress })
+              },
+            })
+
+            setFile({ ...file, status: 'done' })
+          } catch (e) {
+            setFile({ ...file, status: 'failed', error: e.message as string })
+          }
+        }
+
+        context.set('status', 'done')
       },
     },
-  )
-}
-
-const set = {
-  progress(ctx, { key, progress }) {
-    ctx.files[key].progress = progress
   },
-  status(ctx, { key, status, error = null }) {
-    ctx.files[key].status = status
-    ctx.files[key].error = error
-  },
-}
+})

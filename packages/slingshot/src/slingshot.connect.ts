@@ -1,13 +1,14 @@
+import type { Service } from '@zag-js/core'
 import { FileAcceptDetails } from '@zag-js/file-upload'
 import { NormalizeProps, PropTypes } from '@zag-js/types'
 
-import { Send, State } from './slingshot.machine'
+import type { SlingshotSchema, UploadStatus } from './slingshot.machine'
 import { SlingshotFile } from './slingshot.types'
 
 export interface MachineApi<T extends PropTypes> {
   upload(files: File[]): void
   getFiles(): SlingshotFile[]
-  status: 'idle' | 'uploading' | 'done' | 'failed' | 'aborted'
+  status: UploadStatus
   progress?: number
   rootProps: T['element'] & {
     onFileAccept?: (details: FileAcceptDetails) => void
@@ -15,12 +16,15 @@ export interface MachineApi<T extends PropTypes> {
 }
 
 export function connect<T extends PropTypes>(
-  state: State,
-  send: Send,
+  service: Service<SlingshotSchema>,
   normalize: NormalizeProps<T>,
 ): MachineApi<T> {
-  const status = state.context?.status
-  const uploadOnAccept = state.context?.uploadOnAccept
+  const { prop, context, send } = service
+
+  const status = context.get('status')
+
+  const uploadOnAccept = prop('uploadOnAccept')
+
   const progress = 0
 
   const upload = (files: File[]) => {
@@ -30,7 +34,8 @@ export function connect<T extends PropTypes>(
   return {
     upload,
     getFiles() {
-      return Object.values(state.context?.files ?? {})
+      const files = context.get('files')
+      return files ? Array.from(files.values()) : []
     },
     status,
     progress,

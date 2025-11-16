@@ -74,15 +74,6 @@ export const FileUpload = (props: Omit<FileUploadRootProps, 'children'>) => {
               </FileUploadBase.ItemGroup>
 
               <FileUploadBase.HiddenInput />
-
-              {slingshotFiles.map(({ url }) => (
-                <input
-                  key={url}
-                  type="hidden"
-                  name={props.profile}
-                  value={url?.split('?')[0]}
-                />
-              ))}
             </>
           )
         }}

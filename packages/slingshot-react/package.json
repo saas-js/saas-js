@@ -22,16 +22,16 @@
   },
   "dependencies": {
     "@saas-js/slingshot": "0.1.1",
-    "@zag-js/react": "0.79.3"
+    "@zag-js/react": "1.28.0"
   },
   "peerDependencies": {
-    "@ark-ui/react": ">=4.0.0",
-    "react": ">=18",
-    "react-dom": ">=18"
+    "@ark-ui/react": ">=5.28.0",
+    "react": ">=19.2.0",
+    "react-dom": ">=19.2.0"
   },
   "devDependencies": {
-    "@ark-ui/react": "4.6.0",
-    "tsup": "^8.3.5",
-    "typescript": "^5.7.2"
+    "@ark-ui/react": "5.28.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
   }
 }

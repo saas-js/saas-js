@@ -2,30 +2,33 @@ import { useId } from 'react'
 
 import { normalizeProps, useMachine } from '@zag-js/react'
 
-import * as slingshot from '@saas-js/slingshot/client'
+import {
+  type Context,
+  type SlingshotClient,
+  connect,
+  machine,
+} from '@saas-js/slingshot/client'
 
 export interface UseSlingshotProps
-  extends Omit<slingshot.Context, 'id' | 'dir' | 'getRootNode'> {
+  extends Omit<Context, 'id' | 'dir' | 'getRootNode'> {
   id?: string
-  client: slingshot.SlingshotClient
+  client: SlingshotClient
   meta: Record<string, string | number>
 }
 
 export const useSlingshot = (props: UseSlingshotProps) => {
-  const initialContext: slingshot.Context = {
+  const initialContext: Context = {
     id: useId(),
     ...props,
   }
 
-  const context: slingshot.Context = {
+  const context: Context = {
     ...initialContext,
   }
 
-  const [state, send] = useMachine(slingshot.machine(initialContext), {
-    context,
-  })
+  const service = useMachine(machine, context)
 
-  return slingshot.connect(state, send, normalizeProps)
+  return connect(service, normalizeProps)
 }
 
 export type UseSlingshotReturn = ReturnType<typeof useSlingshot>
