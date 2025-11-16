@@ -1,6 +1,6 @@
 {
   "name": "@saas-js/slingshot-adapter-s3",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "type": "module",
   "publishConfig": {
     "access": "public"
@@ -23,7 +23,7 @@
   "dependencies": {
     "@aws-sdk/s3-request-presigner": "^3.932.0",
     "@aws-sdk/util-format-url": "^3.930.0",
-    "@saas-js/slingshot": "0.1.1",
+    "@saas-js/slingshot": "0.2.0",
     "@smithy/hash-node": "^4.2.5",
     "@smithy/protocol-http": "^5.3.5",
     "@smithy/url-parser": "^4.2.5",

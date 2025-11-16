@@ -1,6 +1,6 @@
 {
   "name": "@saas-js/slingshot-react",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "type": "module",
   "publishConfig": {
     "access": "public"
@@ -21,7 +21,7 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "@saas-js/slingshot": "0.1.1",
+    "@saas-js/slingshot": "0.2.0",
     "@zag-js/react": "1.28.0"
   },
   "peerDependencies": {
