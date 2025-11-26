@@ -11,7 +11,8 @@ A CLI tool for fetching and generating type-safe React icon components from the 
 - ⚙️ Configurable output directory, icon sizes, and aliases
 - 🔧 CLI and MCP (Model Context Protocol) server support
 - 🎨 Customizable icon size with runtime override support
-- 🏷️ Icon aliasing for better naming conventions
+- 🏷️ Icon aliasing for better naming conventions (config or inline)
+- 📦 Automatic index.ts generation for easy imports
 
 This package wouldn't be possible without the great work of [Vjacheslav Trushkin](https://x.com/slava_trushkin).
 
@@ -77,9 +78,13 @@ npx iconx add --set lucide home user
 3. **Use generated components:**
 
    ```tsx
+   // Individual imports
    import { HomeIcon } from './components/icons/home-icon'
    import { SettingsIcon } from './components/icons/settings-icon'
    import { UserIcon } from './components/icons/user-icon'
+
+   // Or with generateIndex enabled, import from index
+   import { HomeIcon, UserIcon, SettingsIcon } from './components/icons'
 
    function App() {
      return (
@@ -127,12 +132,26 @@ icons add --set lucide --outdir ./src/icons home user
 
 # Short flags
 icons add -s lucide -o ./src/icons home user
+
+# Inline aliases using colon syntax
+icons add home:house user:profile settings
+
+# Multiple icons with mixed aliases
+icons add home:house user settings:gear
 ```
 
 **Options:**
 
 - `-s, --set <icon-set>`: Icon set to use (optional if defaultIconSet is configured)
 - `-o, --outdir <path>`: Output directory for generated icons
+
+**Inline Aliases:**
+
+You can specify aliases directly in the command using colon syntax (`icon-name:alias-name`). This is useful for one-off aliases without editing `icons.json`:
+
+- `home:house` - Fetches `home` icon, generates `house-icon.tsx` with `HouseIcon` component
+- Inline aliases take precedence over `icons.json` aliases
+- You can mix aliased and non-aliased icons in the same command
 
 ### `mcp`
 
@@ -152,6 +171,7 @@ Create an `icons.json` file in your project root to configure default settings:
   "outputDir": "/src/components/icons",
   "defaultIconSet": "lucide",
   "iconSize": "1em",
+  "generateIndex": true,
   "aliases": {
     "house": "home",
     "cog": "settings",
@@ -178,10 +198,17 @@ Create an `icons.json` file in your project root to configure default settings:
   - Examples: `"16px"`, `"1.5rem"`, `24`, `"2em"`
 
 - **`aliases`** (object): Icon name aliases for better naming
+
   - Format: `"actual-icon-name": "desired-alias"`
   - Example: When you run `icons add house`, it will:
     - Fetch the `house` icon from the API
     - Generate a component named `home-icon.tsx` (using the alias)
+  - Note: Inline aliases (using colon syntax) take precedence over config aliases
+
+- **`generateIndex`** (boolean): Automatically generate and maintain an `index.ts` file in the output directory
+  - Default: `false`
+  - When enabled, exports all icons from a single file for easier imports
+  - Example: `import { HomeIcon, UserIcon } from './components/icons'`
 
 ## Icon Sets
 
@@ -252,6 +279,8 @@ import { UserIcon } from './components/icons/user-icon'
 
 ### With Aliases
 
+**Using config aliases:**
+
 ```json
 {
   "defaultIconSet": "lucide",
@@ -266,6 +295,38 @@ import { UserIcon } from './components/icons/user-icon'
 # This will generate home-icon.tsx and settings-icon.tsx
 icons add house cog
 ```
+
+**Using inline aliases:**
+
+```bash
+# No need to edit icons.json - use colon syntax
+icons add home:house cog:settings
+
+# Mix of aliased and regular icons
+icons add home:house user settings:gear
+```
+
+### With Index Generation
+
+Enable automatic `index.ts` generation in your `icons.json`:
+
+```json
+{
+  "outputDir": "/src/components/icons",
+  "defaultIconSet": "lucide",
+  "generateIndex": true
+}
+```
+
+```bash
+# Add icons
+icons add home user settings
+
+# Now you can import from index.ts
+import { HomeIcon, UserIcon, SettingsIcon } from './components/icons'
+```
+
+The `index.ts` file is automatically maintained and updated whenever you add new icons.
 
 ### Custom Configuration
 

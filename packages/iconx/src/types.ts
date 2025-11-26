@@ -20,4 +20,5 @@ export interface IconifyConfig {
   defaultIconSet?: string
   iconSize?: string | number
   aliases?: Record<string, string>
+  generateIndex?: boolean
 }

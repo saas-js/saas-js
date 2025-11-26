@@ -6,6 +6,7 @@ import * as z from 'zod/v4'
 import pkg from '../package.json' with { type: 'json' }
 
 import { fetchAndWriteIcons, readIconsConfig } from './fetch-icons.ts'
+import { parseIconNamesWithAliases } from './commands/add.ts'
 
 /** Create server instance */
 const server = new McpServer({
@@ -76,7 +77,7 @@ server.registerTool(
     /** @ts-ignore */
     inputSchema: z.object({
       iconSet: z.string().optional().describe("The icon set to use. E.g. 'tabler' (optional if defaultIconSet is configured)"),
-      iconNames: z.array(z.string()).min(1).describe("The icon names to add. E.g. 'home'"),
+      iconNames: z.array(z.string()).min(1).describe("The icon names to add. E.g. 'home' or 'home:house' for inline aliases"),
       outputDir: z.string().optional().describe("Output directory for generated icons (optional)"),
     }),
   },
@@ -89,12 +90,23 @@ server.registerTool(
 
     const config = await readIconsConfig()
 
+    // Parse inline aliases from icon names (colon syntax: "home:house")
+    const { iconNames: actualIconNames, inlineAliases } =
+      parseIconNamesWithAliases(iconNames)
+
+    // Merge config aliases with inline aliases (inline aliases take precedence)
+    const mergedAliases = {
+      ...config.aliases,
+      ...inlineAliases,
+    }
+
     const addedIconNames = await fetchAndWriteIcons({
       iconSet,
-      iconNames,
-      outputDir: outputDir ?? config.outputDir ,
-      aliases: config.aliases,
+      iconNames: actualIconNames,
+      outputDir: outputDir ?? config.outputDir,
+      aliases: mergedAliases,
       iconSize: config.iconSize,
+      generateIndex: config.generateIndex,
     })
 
     return {

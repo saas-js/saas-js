@@ -1,6 +1,7 @@
 import { transform } from '@svgr/core'
 
-import babelPluginAddJSDoc from './babel-plugin-add-jsdoc.ts'
+import babelPluginAddJSDoc from './transformers/babel-plugin-add-jsdoc.ts'
+import { prettierTransformer } from './transformers/prettier.ts'
 import type { IconifyIcon, IconifyIconSet } from './types.ts'
 
 export async function generateIconComponent(
@@ -40,20 +41,13 @@ export const ${variables.componentName} = (props: ${propsName}) => {
   const svgCode = await transform(
     `<svg viewBox="${viewBox}" fill="none" xmlns="http://www.w3.org/2000/svg">${iconData.body}</svg>`,
     {
-      plugins: ['@svgr/plugin-jsx', '@svgr/plugin-prettier'],
+      plugins: ['@svgr/plugin-jsx'],
       typescript: true,
       exportType: 'named',
       template,
       jsx: {
         babelConfig: {
           plugins: [
-            [
-              '@svgr/babel-plugin-svg-em-dimensions',
-              {
-                width: defaultSize,
-                height: defaultSize,
-              },
-            ],
             [
               babelPluginAddJSDoc,
               {
@@ -73,5 +67,5 @@ export const ${variables.componentName} = (props: ${propsName}) => {
     },
   )
 
-  return svgCode
+  return prettierTransformer(svgCode)
 }

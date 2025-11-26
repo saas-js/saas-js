@@ -9,23 +9,13 @@
       "type": "string",
       "description": "Output directory for generated icon components",
       "default": "/src/components/icons",
-      "examples": [
-        "/src/components/icons",
-        "./components/icons",
-        "/app/icons"
-      ]
+      "examples": ["/src/components/icons", "./components/icons", "/app/icons"]
     },
     "defaultIconSet": {
       "type": "string",
       "description": "Default icon set to use when not specified",
       "default": "lucide",
-      "examples": [
-        "lucide",
-        "heroicons",
-        "tabler",
-        "feather",
-        "phosphor"
-      ]
+      "examples": ["lucide", "heroicons", "tabler", "feather", "phosphor"]
     },
     "iconSize": {
       "oneOf": [
@@ -59,6 +49,12 @@
           "user": "profile"
         }
       ]
+    },
+    "generateIndex": {
+      "type": "boolean",
+      "description": "Whether to generate and maintain an index.ts file that exports all icons",
+      "default": false,
+      "examples": [true, false]
     }
   },
   "additionalProperties": false,

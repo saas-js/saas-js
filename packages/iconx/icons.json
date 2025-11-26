@@ -1,6 +1,7 @@
 {
   "outputDir": "/test/components/icons",
   "defaultIconSet": "lucide",
+  "generateIndex": true,
   "iconSize": "1em",
   "aliases": {
     "house": "home"

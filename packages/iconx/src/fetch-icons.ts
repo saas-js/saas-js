@@ -2,6 +2,7 @@ import fs from 'fs/promises'
 import path from 'path'
 
 import { generateIconComponent } from './generate-icon-component.ts'
+import { prettierTransformer } from './transformers/prettier.ts'
 import type { IconifyConfig, IconifyIcon, IconifyIconSet } from './types.ts'
 
 export async function fetchIconSet(prefix: string): Promise<IconifyIconSet> {
@@ -62,6 +63,59 @@ function resolveIconAliases(
   return iconNames
 }
 
+function iconNameToComponentName(iconName: string): string {
+  return (
+    iconName
+      .split('-')
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join('') + 'Icon'
+  )
+}
+
+async function updateIndexFile(
+  outputDir: string,
+  iconNames: string[],
+): Promise<void> {
+  const indexPath = path.join(outputDir, 'index.ts')
+  const exports = new Map<string, string>()
+
+  // Read existing index.ts if it exists
+  try {
+    const existingContent = await fs.readFile(indexPath, 'utf-8')
+    // Parse existing exports using regex
+    // Matches: export { ComponentName } from './file-name' or './file-name'
+    const exportRegex =
+      /export\s+{\s*(\w+)\s*}\s+from\s+['"]\.\/([\w-]+)['"];?\s*$/gm
+    let match
+    while ((match = exportRegex.exec(existingContent)) !== null) {
+      const [, componentName, fileName] = match
+      exports.set(componentName, fileName)
+    }
+  } catch {
+    // File doesn't exist, start fresh
+  }
+
+  // Add new exports
+  for (const iconName of iconNames) {
+    const componentName = iconNameToComponentName(iconName)
+    const fileName = `${iconName}-icon`
+    exports.set(componentName, fileName)
+  }
+
+  // Generate index.ts content
+  const exportLines = Array.from(exports.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([componentName, fileName]) => {
+      return `export { ${componentName} } from './${fileName}'`
+    })
+
+  const indexContent = exportLines.join('\n') + '\n'
+
+  // Format with prettier
+  const formattedContent = await prettierTransformer(indexContent)
+  await fs.writeFile(indexPath, formattedContent)
+}
+
 export async function fetchAndWriteIcons(args: {
   iconSet: string | undefined
   iconNames: string[]
@@ -69,9 +123,17 @@ export async function fetchAndWriteIcons(args: {
   iconSize?: string | number
   aliases?: Record<string, string>
   shouldOverwrite?: (fileName: string) => Promise<boolean>
+  generateIndex?: boolean
 }): Promise<string[]> {
-  const { iconSet, iconNames, iconSize, outputDir, aliases, shouldOverwrite } =
-    args
+  const {
+    iconSet,
+    iconNames,
+    iconSize,
+    outputDir,
+    aliases,
+    shouldOverwrite,
+    generateIndex,
+  } = args
 
   if (!iconSet) {
     throw new Error(
@@ -137,6 +199,12 @@ export async function fetchAndWriteIcons(args: {
     } else {
       console.warn(`Icon ${iconName} not found in ${iconSet}`)
     }
+  }
+
+  // Update index.ts if generateIndex is enabled
+  if (generateIndex && allIconNames.length > 0) {
+    await updateIndexFile(resolvedOutputDir, allIconNames)
+    console.log('Updated index.ts')
   }
 
   return allIconNames

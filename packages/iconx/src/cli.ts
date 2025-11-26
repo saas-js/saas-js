@@ -5,8 +5,9 @@ import pkg from '../package.json' with { type: 'json' }
 const program = new Command()
 
 program
-  .name('iconify-react')
+  .name('iconx')
   .description('Install iconify icons into your project as React components')
+  .addHelpText('afterAll', '\nDocumentation: https://www.saas-js.com/docs/\nSupport Iconify: https://iconify.design/sponsors/')
   .version(pkg.version)
 
 program
@@ -27,6 +28,29 @@ program
     const { addCommand } = await import('./commands/add.ts')
 
     await addCommand({ iconSet: options.set, iconNames, outputDir: options.outdir })
+  })
+
+program
+  .command('list')
+  .description('List all available icon sets')
+  .action(async () => {
+    const { listCommand } = await import('./commands/list.ts')
+    await listCommand()
+  })
+
+program
+  .command('search')
+  .description('Search for icons by name')
+  .argument('<query>', 'The search query, e.g. "home"')
+  .option('-s, --set <icon-set>', 'Search within a specific icon set (optional)')
+  .option('-l, --limit <number>', 'Maximum number of results to show', '20')
+  .action(async (query: string, options: { set?: string; limit?: string }) => {
+    const { searchCommand } = await import('./commands/search.ts')
+    await searchCommand({
+      query,
+      iconSet: options.set,
+      limit: options.limit ? parseInt(options.limit, 10) : 20,
+    })
   })
 
 program

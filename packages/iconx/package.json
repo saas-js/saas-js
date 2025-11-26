@@ -1,7 +1,7 @@
 {
   "name": "iconx",
   "description": "A CLI tool for fetching and generating type-safe React icon components from the extensive Iconify icon library.",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "type": "module",
   "license": "Apache-2.0",
   "publishConfig": {
@@ -14,7 +14,7 @@
     "directory": "packages/iconx"
   },
   "scripts": {
-    "build": "bun build ./src/index.ts ./src/cli.ts ./src/mcp-server.ts --outdir dist --target node && bun run build:types",
+    "build": "bun build ./src/index.ts ./src/cli.ts ./src/mcp-server.ts --outdir dist --target node --production --minify && bun run build:types",
     "build:types": "tsc --project tsconfig.json --emitDeclarationOnly --outDir dist",
     "dev": "bun run ./src/cli.ts",
     "dev:mcp": "bun run ./src/mcp-server.ts"
@@ -38,11 +38,10 @@
   "dependencies": {
     "@babel/core": "^7.28.5",
     "@modelcontextprotocol/sdk": "^1.23.0",
-    "@svgr/babel-plugin-svg-em-dimensions": "^8.0.0",
     "@svgr/core": "^8.1.0",
     "@svgr/plugin-jsx": "^8.1.0",
-    "@svgr/plugin-prettier": "^8.1.0",
     "commander": "^14.0.0",
+    "prettier": "^3.6.2",
     "zod": "^3.25.76"
   },
   "devDependencies": {
