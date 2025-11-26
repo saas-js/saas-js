@@ -1,5 +1,12 @@
 # @saas-js/iconify
 
+## 0.2.0
+
+### Minor Changes
+
+- cba108b: Added list collections and search icons commands
+- cba108b: Added generateIndex option to generate a barrel file that exports all icons.
+
 ## 0.1.0
 
 ### Minor Changes

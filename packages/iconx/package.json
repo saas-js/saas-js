@@ -1,7 +1,7 @@
 {
   "name": "iconx",
   "description": "A CLI tool for fetching and generating type-safe React icon components from the extensive Iconify icon library.",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "type": "module",
   "license": "Apache-2.0",
   "publishConfig": {
@@ -14,7 +14,7 @@
     "directory": "packages/iconx"
   },
   "scripts": {
-    "build": "bun build ./src/index.ts ./src/cli.ts ./src/mcp-server.ts --outdir dist --target node --production --minify && bun run build:types",
+    "build": "bun build ./src/index.ts ./src/cli.ts ./src/mcp-server.ts --outdir dist --target node --production --packages=external && bun run build:types",
     "build:types": "tsc --project tsconfig.json --emitDeclarationOnly --outDir dist",
     "dev": "bun run ./src/cli.ts",
     "dev:mcp": "bun run ./src/mcp-server.ts"
