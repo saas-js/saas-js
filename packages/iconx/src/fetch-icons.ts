@@ -104,7 +104,7 @@ export async function fetchAndWriteIcons(args: {
       // Use alias as output name if it exists, otherwise use the requested name
       const outputName = aliases?.[iconName] || iconName
 
-      const componentCode = generateIconComponent(
+      const componentCode = await generateIconComponent(
         outputName,
         iconData.icons[iconName],
         iconSetData,

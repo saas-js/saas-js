@@ -1,4 +1,4 @@
-# @saas-js/iconify
+# Iconx
 
 A CLI tool for fetching and generating type-safe React icon components from the extensive [Iconify](https://iconify.design) icon library.
 
@@ -43,17 +43,17 @@ While there are definitely downsides to using [SVG-in-JS](https://kurtextrem.de/
 
 ```bash
 # Using npm
-npm install @saas-js/iconify
+npm install iconx
 
 # Using yarn
-yarn add @saas-js/iconify
+yarn add iconx
 
 # Using bun
-bun add @saas-js/iconify
+bun add iconx
 
 # Or run directly with npx (no installation needed)
-npx @saas-js/iconify init
-npx @saas-js/iconify add --set lucide home user
+npx iconx init
+npx iconx add --set lucide home user
 ```
 
 ## Quick Start
@@ -61,7 +61,7 @@ npx @saas-js/iconify add --set lucide home user
 1. **Initialize configuration:**
 
    ```bash
-   icons init
+   iconx init
    ```
 
 2. **Add icons to your project:**
