@@ -1,5 +1,11 @@
 # @saas-js/iconify
 
+## 0.1.0
+
+### Minor Changes
+
+- fa98928: Use svgr for transformations
+
 ## 0.0.4
 
 ### Patch Changes

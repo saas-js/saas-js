@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
-import { z } from 'zod'
+import * as z from 'zod/v4'
 
 import pkg from '../package.json' with { type: 'json' }
 
@@ -11,9 +11,6 @@ import { fetchAndWriteIcons, readIconsConfig } from './fetch-icons.ts'
 const server = new McpServer({
   name: 'iconify-mcp',
   version: pkg.version,
-  capabilities: {
-    tools: {},
-  },
 })
 
 async function main() {
@@ -44,12 +41,16 @@ async function searchIcons(
   }
 }
 
-server.tool(
+server.registerTool(
   'search_icons',
-  'search for icons',
   {
-    iconSet: z.string().describe("The icon set to use. E.g. 'lucide'"),
-    query: z.string().describe("The query to search for. E.g. 'home'"),
+    title: 'Search icons',
+    description: 'Search for icons in the Iconify library',
+    /** @ts-ignore */
+    inputSchema: z.object({
+      iconSet: z.string().describe("The icon set to use. E.g. 'lucide'"),
+      query: z.string().describe("The query to search for. E.g. 'home'"),
+    }),
   },
   async (args) => {
     const { iconSet, query } = args
@@ -67,22 +68,17 @@ server.tool(
   },
 )
 
-server.tool(
+server.registerTool(
   'add_icons',
-  'add icons to the project',
   {
-    iconSet: z
-      .string()
-      .optional()
-      .describe("The icon set to use. E.g. 'tabler' (optional if defaultIconSet is configured)"),
-    iconNames: z
-      .array(z.string())
-      .min(1)
-      .describe("The icon names to add. E.g. 'home'"),
-    outputDir: z
-      .string()
-      .optional()
-      .describe("Output directory for generated icons (optional)"),
+    title: 'Add icons',
+    description: 'Add icons to the project',
+    /** @ts-ignore */
+    inputSchema: z.object({
+      iconSet: z.string().optional().describe("The icon set to use. E.g. 'tabler' (optional if defaultIconSet is configured)"),
+      iconNames: z.array(z.string()).min(1).describe("The icon names to add. E.g. 'home'"),
+      outputDir: z.string().optional().describe("Output directory for generated icons (optional)"),
+    }),
   },
   async (args) => {
     const { iconSet, iconNames, outputDir } = args as {
