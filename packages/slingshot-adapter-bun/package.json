@@ -1,6 +1,6 @@
 {
   "name": "@saas-js/slingshot-adapter-bun",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "type": "module",
   "publishConfig": {
     "access": "public"
@@ -21,7 +21,7 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "@saas-js/slingshot": "0.1.1",
+    "@saas-js/slingshot": "0.2.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {

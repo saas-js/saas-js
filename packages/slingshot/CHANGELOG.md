@@ -1,5 +1,11 @@
 # @saas-js/slingshot
 
+## 0.2.0
+
+### Minor Changes
+
+- 5abe210: Updated dependencies
+
 ## 0.1.1
 
 ### Patch Changes

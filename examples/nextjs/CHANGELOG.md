@@ -1,5 +1,13 @@
 # nextjs
 
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies [5abe210]
+  - @saas-js/slingshot-react@0.1.0
+  - @saas-js/slingshot@0.2.0
+
 ## 0.1.4
 
 ### Patch Changes
