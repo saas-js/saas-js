@@ -1,7 +1,7 @@
 {
   "name": "better-auth-react-query",
   "description": "A TanStack React Query client for Better Auth.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "license": "Apache-2.0",
   "publishConfig": {
