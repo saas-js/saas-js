@@ -1,0 +1,130 @@
+# better-auth-query-client
+
+A TanStack Query client wrapper for [Better Auth](https://better-auth.com). This package transforms your Better Auth client into a TanStack Query-compatible client with full TypeScript support.
+
+## Installation
+
+```bash
+npm install better-auth-query-client
+# or
+yarn add better-auth-query-client
+# or
+pnpm add better-auth-query-client
+```
+
+## Requirements
+
+- `@tanstack/react-query` >= 5.0.0
+- `better-auth` >= 1.0.0
+
+## Usage
+
+### Setup
+
+First, create a query client from your Better Auth client:
+
+```ts
+import { createAuthClient } from 'better-auth/react'
+import { createAuthQueryClient } from 'better-auth-query-client'
+
+const authClient = createAuthClient()
+const auth = createAuthQueryClient(authClient)
+```
+
+### Queries
+
+Methods starting with `get` or `list` are automatically treated as queries. Use `queryOptions()` to get TanStack Query compatible options:
+
+```tsx
+import { useQuery } from '@tanstack/react-query'
+
+function Profile() {
+  const { data: session } = useQuery(auth.getSession.queryOptions())
+
+  return <div>Welcome, {session?.user.name}</div>
+}
+```
+
+For queries that require input parameters:
+
+```tsx
+const { data: user } = useQuery(auth.admin.getUser.queryOptions({ userId: '123' }))
+```
+
+### Query Keys
+
+You can access query keys directly for cache invalidation:
+
+```ts
+import { useQueryClient } from '@tanstack/react-query'
+
+const queryClient = useQueryClient()
+
+// Invalidate the session query
+queryClient.invalidateQueries({ queryKey: auth.getSession.queryKey() })
+
+// With parameters
+queryClient.invalidateQueries({ queryKey: auth.admin.getUser.queryKey({ userId: '123' }) })
+```
+
+### Mutations
+
+All other methods are treated as mutations. Use `mutationOptions()` to get TanStack Query compatible options:
+
+```tsx
+import { useMutation } from '@tanstack/react-query'
+
+function SignInForm() {
+  const signIn = useMutation(auth.signIn.email.mutationOptions())
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+
+    signIn.mutate({
+      email: formData.get('email') as string,
+      password: formData.get('password') as string,
+    })
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input name="email" type="email" />
+      <input name="password" type="password" />
+      <button type="submit" disabled={signIn.isPending}>
+        Sign In
+      </button>
+    </form>
+  )
+}
+```
+
+### Error Handling
+
+Errors from Better Auth are automatically thrown, making them compatible with TanStack Query's error handling:
+
+```tsx
+const signIn = useMutation({
+  ...auth.signIn.email.mutationOptions(),
+  onError: (error) => {
+    console.error('Sign in failed:', error.message)
+  },
+})
+```
+
+## TypeScript
+
+The package provides full type inference. All query and mutation options are properly typed based on your Better Auth client configuration:
+
+```ts
+// Types are inferred from your auth client
+const { data } = useQuery(auth.getSession.queryOptions())
+// data is typed as your session type
+
+const signUp = useMutation(auth.signUp.email.mutationOptions())
+// signUp.mutate() expects the correct input type
+```
+
+## License
+
+Apache-2.0
