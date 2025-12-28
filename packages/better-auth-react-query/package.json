@@ -1,6 +1,6 @@
 {
-  "name": "better-auth-query-client",
-  "description": "A TanStack Query client for Better Auth.",
+  "name": "better-auth-react-query",
+  "description": "A TanStack React Query client for Better Auth.",
   "version": "0.0.2",
   "type": "module",
   "license": "Apache-2.0",
@@ -11,11 +11,13 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/saas-js/saas-js.git",
-    "directory": "packages/better-auth-query-client"
+    "directory": "packages/better-auth-react-query"
   },
   "scripts": {
     "build": "bun build ./src/index.ts --outdir dist --target node --production --packages=external && bun run build:types",
-    "build:types": "tsc --project tsconfig.json --emitDeclarationOnly --outDir dist"
+    "build:types": "tsc --project tsconfig.json --emitDeclarationOnly --outDir dist",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "exports": {
     ".": {
@@ -28,7 +30,10 @@
     "dist",
     "package.json"
   ],
-  "dependencies": {},
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.69.0",
+    "better-auth": "^1.4.1"
+  },
   "devDependencies": {
     "@tanstack/react-query": "^5.69.0",
     "typescript": "^5.8.3",

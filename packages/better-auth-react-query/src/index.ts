@@ -37,8 +37,9 @@ export interface InferQueryOptions<
 export interface InferMutationOptions<
   TFn extends (...args: any[]) => any,
   TData = AuthData<TFn>,
-> extends MutationOptions<TData> {
-  mutationFn: (variables: Parameters<TFn>[0]) => Promise<TData>
+  TVariables = Parameters<TFn>[0],
+> extends MutationOptions<TData, Error, TVariables> {
+  mutationFn: (variables: TVariables) => Promise<TData>
 }
 
 export type TransformFunction<

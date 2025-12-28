@@ -1,21 +1,21 @@
-# better-auth-query-client
+# better-auth-react-query
 
-A TanStack Query client wrapper for [Better Auth](https://better-auth.com). This package transforms your Better Auth client into a TanStack Query-compatible client with full TypeScript support.
+A TanStack React Query client wrapper for [Better Auth](https://better-auth.com). This package transforms your Better Auth client into a TanStack Query-compatible client with full TypeScript support.
 
 ## Installation
 
 ```bash
-npm install better-auth-query-client
+npm install better-auth-react-query
 # or
-yarn add better-auth-query-client
+yarn add better-auth-react-query
 # or
-pnpm add better-auth-query-client
+pnpm add better-auth-react-query
 ```
 
 ## Requirements
 
 - `@tanstack/react-query` >= 5.0.0
-- `better-auth` >= 1.0.0
+- `better-auth` >= 1.4.0
 
 ## Usage
 
@@ -24,8 +24,8 @@ pnpm add better-auth-query-client
 First, create a query client from your Better Auth client:
 
 ```ts
+import { createAuthQueryClient } from 'better-auth-react-query'
 import { createAuthClient } from 'better-auth/react'
-import { createAuthQueryClient } from 'better-auth-query-client'
 
 const authClient = createAuthClient()
 const auth = createAuthQueryClient(authClient)
@@ -48,7 +48,9 @@ function Profile() {
 For queries that require input parameters:
 
 ```tsx
-const { data: user } = useQuery(auth.admin.getUser.queryOptions({ userId: '123' }))
+const { data: user } = useQuery(
+  auth.admin.getUser.queryOptions({ userId: '123' }),
+)
 ```
 
 ### Query Keys
@@ -64,7 +66,9 @@ const queryClient = useQueryClient()
 queryClient.invalidateQueries({ queryKey: auth.getSession.queryKey() })
 
 // With parameters
-queryClient.invalidateQueries({ queryKey: auth.admin.getUser.queryKey({ userId: '123' }) })
+queryClient.invalidateQueries({
+  queryKey: auth.admin.getUser.queryKey({ userId: '123' }),
+})
 ```
 
 ### Mutations
