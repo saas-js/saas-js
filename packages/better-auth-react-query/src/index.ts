@@ -1,4 +1,5 @@
 import type { MutationOptions, QueryOptions } from '@tanstack/react-query'
+import { HasRequiredKeys } from 'type-fest'
 
 type OMIT_BETTER_AUTH_CLIENT_KEYS =
   | '$ERROR_CODES'
@@ -45,17 +46,40 @@ export interface InferMutationOptions<
 export type TransformFunction<
   TFn extends (...args: any[]) => any,
   Path extends string[],
+  TParams extends Parameters<TFn>[0] = Parameters<TFn>[0],
+  TData = AuthData<TFn>,
 > = Path extends [...any[], QueryMethod]
   ? {
-      queryOptions: Parameters<TFn> extends [] | [undefined?]
+      queryOptions: TParams extends undefined
         ? () => InferQueryOptions<TFn, Path>
-        : (input: Parameters<TFn>[0]) => InferQueryOptions<TFn, Path>
-      queryKey: Parameters<TFn> extends [] | [undefined?]
+        : TParams extends HasRequiredKeys<TParams>
+          ? (
+              input: TParams,
+              options?: Omit<
+                QueryOptions<TData, Error, TData, Path>,
+                'queryKey' | 'queryFn'
+              >,
+            ) => InferQueryOptions<TFn, Path>
+          : (
+              input?: TParams,
+              options?: Omit<
+                QueryOptions<TData, Error, TData, Path>,
+                'queryKey' | 'queryFn'
+              >,
+            ) => InferQueryOptions<TFn, Path>
+      queryKey: TParams extends undefined
         ? () => Path
-        : (input: Parameters<TFn>[0]) => [...Path, Parameters<TFn>[0]]
+        : TParams extends HasRequiredKeys<TParams>
+          ? (input: TParams) => [...Path, TParams]
+          : (input?: TParams) => [...Path, TParams]
     }
   : {
-      mutationOptions: () => InferMutationOptions<TFn>
+      mutationOptions: (
+        options?: Omit<
+          MutationOptions<AuthData<TFn>, Error, TParams>,
+          'mutationFn'
+        >,
+      ) => InferMutationOptions<TFn>
     }
 
 export type AuthClientToQuery<T, Path extends string[] = []> = {
@@ -93,7 +117,8 @@ export function createAuthQueryClient<TClient extends Record<string, any>>(
 
       if (key === 'queryOptions') {
         const target = getTarget()
-        return (input?: unknown) => ({
+        return (input?: unknown, options?: object) => ({
+          ...options,
           queryKey: input !== undefined ? [...path, input] : path,
           queryFn: async () => {
             const result = await target(input)
@@ -105,7 +130,8 @@ export function createAuthQueryClient<TClient extends Record<string, any>>(
 
       if (key === 'mutationOptions') {
         const target = getTarget()
-        return () => ({
+        return (options?: object) => ({
+          ...options,
           mutationKey: path,
           mutationFn: async (variables: unknown) => {
             const result = await target(variables)

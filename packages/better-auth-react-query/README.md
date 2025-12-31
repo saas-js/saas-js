@@ -49,7 +49,20 @@ For queries that require input parameters:
 
 ```tsx
 const { data: user } = useQuery(
-  auth.admin.getUser.queryOptions({ userId: '123' }),
+  auth.admin.getUser.queryOptions({ query: { id: '123' } }),
+)
+```
+
+Passing query options:
+
+```tsx
+const { data: user } = useQuery(
+  auth.admin.getUser.queryOptions(
+    { query: { id: '123' } },
+    {
+      staleTime: 100,
+    },
+  ),
 )
 ```
 
@@ -67,7 +80,7 @@ queryClient.invalidateQueries({ queryKey: auth.getSession.queryKey() })
 
 // With parameters
 queryClient.invalidateQueries({
-  queryKey: auth.admin.getUser.queryKey({ userId: '123' }),
+  queryKey: auth.admin.getUser.queryKey({ query: { id: : '123'} }),
 })
 ```
 
@@ -108,12 +121,13 @@ function SignInForm() {
 Errors from Better Auth are automatically thrown, making them compatible with TanStack Query's error handling:
 
 ```tsx
-const signIn = useMutation({
-  ...auth.signIn.email.mutationOptions(),
-  onError: (error) => {
-    console.error('Sign in failed:', error.message)
-  },
-})
+const signIn = useMutation(
+  auth.signIn.email.mutationOptions({
+    onError: (error) => {
+      console.error('Sign in failed:', error.message)
+    },
+  }),
+)
 ```
 
 ## TypeScript

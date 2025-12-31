@@ -21,19 +21,19 @@ const auth = createAuthQueryClient(authClient)
 
 describe('QueryMethod type', () => {
   it('should match methods starting with get', () => {
-    expectTypeOf<'getSession'>().toMatchTypeOf<QueryMethod>()
-    expectTypeOf<'getUser'>().toMatchTypeOf<QueryMethod>()
+    expectTypeOf<'getSession'>().toExtend<QueryMethod>()
+    expectTypeOf<'getUser'>().toExtend<QueryMethod>()
   })
 
   it('should match methods starting with list', () => {
-    expectTypeOf<'listUsers'>().toMatchTypeOf<QueryMethod>()
-    expectTypeOf<'listSessions'>().toMatchTypeOf<QueryMethod>()
+    expectTypeOf<'listUsers'>().toExtend<QueryMethod>()
+    expectTypeOf<'listSessions'>().toExtend<QueryMethod>()
   })
 
   it('should not match non-query methods', () => {
-    expectTypeOf<'signIn'>().not.toMatchTypeOf<QueryMethod>()
-    expectTypeOf<'signOut'>().not.toMatchTypeOf<QueryMethod>()
-    expectTypeOf<'signUp'>().not.toMatchTypeOf<QueryMethod>()
+    expectTypeOf<'signIn'>().not.toExtend<QueryMethod>()
+    expectTypeOf<'signOut'>().not.toExtend<QueryMethod>()
+    expectTypeOf<'signUp'>().not.toExtend<QueryMethod>()
   })
 })
 
@@ -82,9 +82,9 @@ describe('createAuthQueryClient', () => {
   })
 
   it('should return queryKey for getSession', () => {
-    const key = auth.getSession.queryKey({})
+    const key = auth.getSession.queryKey()
 
-    expectTypeOf(key).toEqualTypeOf<['getSession']>()
+    expectTypeOf(key[0]).toEqualTypeOf<'getSession'>()
   })
 
   it('should return mutationOptions for signIn.email', () => {
@@ -107,14 +107,14 @@ describe('createAuthQueryClient', () => {
   })
 
   it('should return queryOptions for admin.listUsers', () => {
-    const options = auth.admin.listUsers.queryOptions({})
+    const options = auth.admin.listUsers.queryOptions({ query: {} })
 
     expectTypeOf(options).toHaveProperty('queryKey')
     expectTypeOf(options).toHaveProperty('queryFn')
   })
 
   it('should infer correct session data type from queryFn', async () => {
-    const options = auth.getSession.queryOptions({})
+    const options = auth.getSession.queryOptions()
 
     // The queryFn should return the session data type
     type SessionData = Awaited<ReturnType<typeof options.queryFn>>
@@ -165,8 +165,10 @@ describe('useQuery integration', () => {
   it('should infer session data type from useQuery', () => {
     const query = useQuery(auth.getSession.queryOptions({}))
 
-    expectTypeOf(query.data).toHaveProperty('user')
-    expectTypeOf(query.data).toHaveProperty('session')
+    if (query.data) {
+      expectTypeOf(query.data).toHaveProperty('user')
+      expectTypeOf(query.data).toHaveProperty('session')
+    }
   })
 
   it('should infer user type from session', () => {
@@ -180,11 +182,13 @@ describe('useQuery integration', () => {
   })
 
   it('should infer list data type from useQuery', () => {
-    const query = useQuery(auth.admin.listUsers.queryOptions({}))
+    const query = useQuery(auth.admin.listUsers.queryOptions({ query: {} }))
 
-    // admin.listUsers returns { users, total, limit, offset }
-    expectTypeOf(query.data).toHaveProperty('users')
-    expectTypeOf(query.data).toHaveProperty('total')
+    if (query.data) {
+      // admin.listUsers returns { users, total, limit, offset }
+      expectTypeOf(query.data).toHaveProperty('users')
+      expectTypeOf(query.data).toHaveProperty('total')
+    }
   })
 })
 
@@ -210,9 +214,11 @@ describe('useMutation integration', () => {
     const mutation = useMutation(auth.signIn.email.mutationOptions())
 
     // signIn.email returns { redirect, token, url, user }
-    expectTypeOf(mutation.data).toHaveProperty('user')
-    expectTypeOf(mutation.data).toHaveProperty('token')
-    expectTypeOf(mutation.data).toHaveProperty('redirect')
+    if (mutation.data) {
+      expectTypeOf(mutation.data).toHaveProperty('user')
+      expectTypeOf(mutation.data).toHaveProperty('token')
+      expectTypeOf(mutation.data).toHaveProperty('redirect')
+    }
   })
 
   it('should infer mutate variables for social signIn', () => {

@@ -1,5 +1,11 @@
 # better-auth-query-client
 
+## 0.0.4
+
+### Patch Changes
+
+- Add support for passing query and mutation options
+
 ## 0.0.3
 
 ### Patch Changes
