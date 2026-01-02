@@ -1,5 +1,11 @@
 # better-auth-query-client
 
+## 0.0.5
+
+### Patch Changes
+
+- 30168a5: Add Better Auth error type inference
+
 ## 0.0.4
 
 ### Patch Changes
