@@ -238,4 +238,13 @@ describe('useMutation integration', () => {
 
     expectTypeOf(mutation.mutate).parameter(0).toHaveProperty('userId')
   })
+
+  it('should infer error type for signIn.email', () => {
+    const mutation = useMutation(auth.signIn.email.mutationOptions())
+
+    type Error = NonNullable<typeof mutation.error>
+
+    expectTypeOf<Error>().toHaveProperty('message')
+    expectTypeOf<Error>().toHaveProperty('code')
+  })
 })

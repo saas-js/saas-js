@@ -14,7 +14,7 @@ export type QueryMethod = `get${string}` | `list${string}`
 
 // Extract data type from better-auth's generic functions
 // Constrain the options arg to throw: false to resolve the conditional return type
-export type ExtractBetterAuthData<TFn> = TFn extends (
+export type InferBetterAuthData<TFn> = TFn extends (
   data: any,
   options?: { throw?: false },
 ) => Promise<infer R>
@@ -23,23 +23,31 @@ export type ExtractBetterAuthData<TFn> = TFn extends (
     : R
   : never
 
-export type AuthData<TFn extends (...args: any[]) => any> =
-  ExtractBetterAuthData<TFn>
+export type InferBetterAuthError<TFn> = TFn extends (
+  data: any,
+  options?: { throw?: true },
+) => Promise<infer R>
+  ? R extends { error: infer E }
+    ? NonNullable<E>
+    : R
+  : never
 
 export interface InferQueryOptions<
   TFn extends (...args: any[]) => any,
   TPath extends readonly string[],
-  TData = AuthData<TFn>,
-> extends QueryOptions<TData, Error, TData, TPath> {
+  TData = InferBetterAuthData<TFn>,
+  TError = InferBetterAuthError<TFn>,
+> extends QueryOptions<TData, TError, TData, TPath> {
   queryKey: TPath
   queryFn: () => Promise<TData>
 }
 
 export interface InferMutationOptions<
   TFn extends (...args: any[]) => any,
-  TData = AuthData<TFn>,
+  TData = InferBetterAuthData<TFn>,
+  TError = InferBetterAuthError<TFn>,
   TVariables = Parameters<TFn>[0],
-> extends MutationOptions<TData, Error, TVariables> {
+> extends MutationOptions<TData, TError, TVariables> {
   mutationFn: (variables: TVariables) => Promise<TData>
 }
 
@@ -47,7 +55,8 @@ export type TransformFunction<
   TFn extends (...args: any[]) => any,
   Path extends string[],
   TParams extends Parameters<TFn>[0] = Parameters<TFn>[0],
-  TData = AuthData<TFn>,
+  TData = InferBetterAuthData<TFn>,
+  TError = InferBetterAuthError<TFn>,
 > = Path extends [...any[], QueryMethod]
   ? {
       queryOptions: TParams extends undefined
@@ -56,14 +65,14 @@ export type TransformFunction<
           ? (
               input: TParams,
               options?: Omit<
-                QueryOptions<TData, Error, TData, Path>,
+                QueryOptions<TData, TError, TData, Path>,
                 'queryKey' | 'queryFn'
               >,
             ) => InferQueryOptions<TFn, Path>
           : (
               input?: TParams,
               options?: Omit<
-                QueryOptions<TData, Error, TData, Path>,
+                QueryOptions<TData, TError, TData, Path>,
                 'queryKey' | 'queryFn'
               >,
             ) => InferQueryOptions<TFn, Path>
@@ -75,11 +84,8 @@ export type TransformFunction<
     }
   : {
       mutationOptions: (
-        options?: Omit<
-          MutationOptions<AuthData<TFn>, Error, TParams>,
-          'mutationFn'
-        >,
-      ) => InferMutationOptions<TFn>
+        options?: Omit<MutationOptions<TData, TError, TParams>, 'mutationFn'>,
+      ) => InferMutationOptions<TFn, TData, TError, TParams>
     }
 
 export type AuthClientToQuery<T, Path extends string[] = []> = {
