@@ -6,7 +6,7 @@ Saas.js is a collection of utilities and full-stack/unstyled React components fo
 
 ## Packages
 
-- [better-auth-query-client](/packages/better-auth-query-client/) TanStack Query Better Auth client
+- [better-auth-query-query](/packages/better-auth-react-query/) TanStack Query Better Auth client
 - [drizzle-crud](/packages/drizzle-crud/) generate CRUD operations from drizzle schemas.
 - [iconx](/packages/iconx) cli and mcp server to install iconify icons as React components
 - [Slingshot](/packages/slingshot-react/) full-stack file upload component with support for drag-and-drop, progress bars, and more.
