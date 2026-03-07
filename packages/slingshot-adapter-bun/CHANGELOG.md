@@ -1,5 +1,12 @@
 # @saas-js/slingshot-adapter-bun
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [af317c4]
+  - @saas-js/slingshot@0.3.0
+
 ## 0.2.0
 
 ### Minor Changes

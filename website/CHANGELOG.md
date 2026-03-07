@@ -1,5 +1,11 @@
 # website
 
+## 0.0.6
+
+### Patch Changes
+
+- @saas-js/slingshot-react@0.1.1
+
 ## 0.0.5
 
 ### Patch Changes
