@@ -1,7 +1,7 @@
 import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
-import type { BlankEnv } from 'hono/types'
+import type { BlankEnv, ErrorHandler } from 'hono/types'
 import { z } from 'zod'
 
 import { AdapterInstance } from './slingshot.types'
@@ -38,10 +38,11 @@ export interface CreateSlingshotOptions<Env extends BlankEnv = BlankEnv> {
   }) => void | Promise<void>
   key?: (ctx: { file: FileSchema; meta?: UploadSchema['meta'] }) => string
   adapter?: AdapterInstance
+  onError?: ErrorHandler<Env>
 }
 
 export const createSlingshotServer = <Env extends BlankEnv = BlankEnv>(
-  options: CreateSlingshotOptions,
+  options: CreateSlingshotOptions<Env>,
 ) => {
   if (!options.adapter) {
     throw new Error('Slingshot adapter is required')
@@ -107,6 +108,10 @@ export const createSlingshotServer = <Env extends BlankEnv = BlankEnv>(
     })
 
   app.onError((err, c) => {
+    if (options.onError) {
+      return options.onError(err as Error, c)
+    }
+
     if (err instanceof HTTPException) {
       return c.json(
         {
