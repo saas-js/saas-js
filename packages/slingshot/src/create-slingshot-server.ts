@@ -86,29 +86,25 @@ export const createSlingshotServer = <Env extends BlankEnv = BlankEnv>(
         throw new HTTPException(400, { message: err.message })
       }
     })
-    .get(
-      '/:key',
-      zValidator('param', z.object({ key: z.string() })),
-      async (c) => {
-        const { key } = await c.req.valid('param')
+    .get('/*', async (c) => {
+      const key = c.req.param('*')
 
-        await options.authorize?.({
-          req: c.req.raw,
-          key,
-        })
+      await options.authorize?.({
+        req: c.req.raw,
+        key,
+      })
 
-        const signedResult = await options.adapter.createSignedUrl({
-          key,
-          method: 'GET',
-        })
+      const signedResult = await options.adapter.createSignedUrl({
+        key,
+        method: 'GET',
+      })
 
-        if (!signedResult.url) {
-          throw new HTTPException(404, { message: 'File not found' })
-        }
+      if (!signedResult.url) {
+        throw new HTTPException(404, { message: 'File not found' })
+      }
 
-        return c.redirect(signedResult.url, 302)
-      },
-    )
+      return c.redirect(signedResult.url, 302)
+    })
 
   app.onError((err, c) => {
     if (err instanceof HTTPException) {
