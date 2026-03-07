@@ -80,6 +80,7 @@ export const createSlingshotServer = <Env extends BlankEnv = BlankEnv>(
         const signedResult = await options.adapter.createSignedUrl({
           key,
           method: 'PUT',
+          contentType: file.type,
         })
 
         return c.json(signedResult, 200)

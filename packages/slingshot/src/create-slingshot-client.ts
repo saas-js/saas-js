@@ -38,10 +38,6 @@ export const createSlingshotClient = (props: CreateSlingshotClientProps) => {
         onProgress?: (args: { progress: number }) => void
       },
     ) => {
-      const data = new FormData()
-
-      data.append('file', file)
-
       const response = await new Promise<{
         status: number
         responseText: string
@@ -73,7 +69,8 @@ export const createSlingshotClient = (props: CreateSlingshotClientProps) => {
         })
 
         xhr.open('PUT', url, true)
-        xhr.send(data)
+        xhr.setRequestHeader('Content-Type', file.type)
+        xhr.send(file)
       })
 
       if (response.status >= 400) {

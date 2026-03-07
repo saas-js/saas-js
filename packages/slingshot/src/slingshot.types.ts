@@ -21,6 +21,14 @@ export type SlingshotAdapter<
      */
     method: 'PUT' | 'GET'
     /**
+     * The content type of the file.
+     */
+    contentType?: string
+    /**
+     * The content disposition of the file.
+     */
+    contentDisposition?: string
+    /**
      * The number of seconds the signed URL should be valid for.
      */
     expiresIn?: number
