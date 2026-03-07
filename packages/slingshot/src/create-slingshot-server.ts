@@ -87,8 +87,8 @@ export const createSlingshotServer = <Env extends BlankEnv = BlankEnv>(
         throw new HTTPException(400, { message: err.message })
       }
     })
-    .get('/*', async (c) => {
-      const key = c.req.path.slice(1)
+    .get('/:key{.+}', async (c) => {
+      const key = c.req.param('key')
 
       await options.authorize?.({
         req: c.req.raw,
