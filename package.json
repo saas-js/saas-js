@@ -11,15 +11,12 @@
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "prettier": "^3.4.2",
     "tailwind-variants": "^0.3.0",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "bun": "^1.3.10"
   },
   "workspaces": [
     "website",
     "packages/*",
     "examples/*"
-  ],
-  "packageManager": "bun@1.1.42",
-  "resolutions": {
-    "bun-types": "1.1.42-canary.20241231T140524"
-  }
+  ]
 }
