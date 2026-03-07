@@ -1,5 +1,11 @@
 # @saas-js/slingshot
 
+## 0.3.0
+
+### Minor Changes
+
+- af317c4: Slingshot server handler now supports paths as keys
+
 ## 0.2.0
 
 ### Minor Changes
