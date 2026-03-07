@@ -1,5 +1,15 @@
 # nextjs
 
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies [9c5d8af]
+- Updated dependencies [af317c4]
+  - @saas-js/slingshot-adapter-bun@0.3.0
+  - @saas-js/slingshot@0.3.0
+  - @saas-js/slingshot-react@0.1.1
+
 ## 0.1.5
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @saas-js/slingshot-react
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [af317c4]
+  - @saas-js/slingshot@0.3.0
+
 ## 0.1.0
 
 ### Minor Changes

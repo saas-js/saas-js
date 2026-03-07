@@ -1,5 +1,16 @@
 # @saas-js/slingshot-adapter-bun
 
+## 0.3.0
+
+### Minor Changes
+
+- 9c5d8af: Updated Bun s3 client and forward all options
+
+### Patch Changes
+
+- Updated dependencies [af317c4]
+  - @saas-js/slingshot@0.3.0
+
 ## 0.2.0
 
 ### Minor Changes
