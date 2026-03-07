@@ -7,6 +7,7 @@ export interface CreateSignedUrlArgs {
   region: string
   key: string
   method?: 'PUT' | 'GET'
+  contentType?: string
   expiresIn?: number
 }
 

@@ -17,6 +17,7 @@ export const createSignedUrl = ({
   region,
   key,
   method = 'PUT',
+  contentType,
   expiresIn = 3600,
   ...options
 }: CreateSignedUrlArgs & BunS3Options) => {
@@ -31,17 +32,26 @@ export const createSignedUrl = ({
   return file.presign({
     method,
     expiresIn,
+    type: contentType,
   })
 }
 
 export const adapter: SlingshotAdapter<BunS3AdapterArgs> = (options) => {
   return {
-    createSignedUrl: async ({ key, method = 'PUT', expiresIn = 3600 }) => ({
+    createSignedUrl: async ({
+      key,
+      method = 'PUT',
+      contentType,
+      contentDisposition,
+      expiresIn = 3600,
+    }) => ({
       key,
       url: createSignedUrl({
         ...options,
         key,
         method,
+        contentType,
+        contentDisposition,
         expiresIn,
       }),
     }),
