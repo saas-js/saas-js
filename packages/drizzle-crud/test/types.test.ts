@@ -1,57 +1,29 @@
 import {
   type BuildQueryResult,
   type DBQueryConfig,
-  type ExtractTablesWithRelations,
   type KnownKeysOnly,
-  relations,
 } from 'drizzle-orm'
-import { integer, pgTable, text } from 'drizzle-orm/pg-core'
 import { drizzle } from 'drizzle-orm/postgres-js'
-import { assertType, describe, it } from 'vitest'
+import { describe, it } from 'vitest'
+
+// bun:test doesn't export assertType, use a type-level helper
+function assertType<T>(_value: T): void {}
 
 import type { FilterParams } from '../src/types.ts'
-
-// Define test table and relations
-const users = pgTable('users', {
-  id: integer('id').primaryKey(),
-  name: text('name').notNull(),
-  email: text('email').notNull(),
-})
-
-const posts = pgTable('posts', {
-  id: integer('id').primaryKey(),
-  title: text('title').notNull(),
-  content: text('content'),
-  authorId: integer('author_id').references(() => users.id),
-})
-
-const usersRelations = relations(users, ({ many }) => ({
-  posts: many(posts),
-}))
-
-const postsRelations = relations(posts, ({ one }) => ({
-  author: one(users, {
-    fields: [posts.authorId],
-    references: [users.id],
-  }),
-}))
+import { posts, users } from './schema.ts'
+import { relations } from './relations.ts'
 
 const db = drizzle({
-  schema: {
-    users,
-    posts,
-    usersRelations,
-    postsRelations,
-  },
+  relations,
 })
 
 type TDatabase = typeof db
 
-type TSchema = ExtractTablesWithRelations<TDatabase['_']['fullSchema']>
+type TSchema = TDatabase['_']['relations']
 type TFields = TSchema[typeof users._.name]
 
-type QueryOneGeneric = DBQueryConfig<'one', true, TSchema, TFields>
-type QueryManyGeneric = DBQueryConfig<'many', true, TSchema, TFields>
+type QueryOneGeneric = DBQueryConfig<'one', TSchema, TFields>
+type QueryManyGeneric = DBQueryConfig<'many', TSchema, TFields>
 
 type QueryOneInput<TInput extends QueryOneGeneric> = KnownKeysOnly<
   TInput,

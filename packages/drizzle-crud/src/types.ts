@@ -1,18 +1,20 @@
-import type {
-  Column as DrizzleColumn,
-  Table as DrizzleTable,
-  SQL,
-} from 'drizzle-orm'
-import type { PgDatabase } from 'drizzle-orm/pg-core'
+import type { Column as DrizzleColumn, SQL } from 'drizzle-orm'
+import type { PgAsyncDatabase, PgTable } from 'drizzle-orm/pg-core'
 
 import type { StandardSchemaV1 } from './standard-schema.ts'
 
-export type DrizzleDatabase = PgDatabase<any, any, any>
+export type DrizzleDatabase = PgAsyncDatabase<any, any>
 
-export type { DrizzleTable, DrizzleColumn }
+export type { DrizzleColumn }
+
+export type DrizzleTable = PgTable<any> & {
+  $inferSelect: Record<string, any>
+  $inferInsert: Record<string, any>
+}
 
 export type DrizzleTableWithId = DrizzleTable & {
   id: DrizzleColumn<any>
+  $inferSelect: Record<string, any> & { id: any }
 }
 
 export type FilterOperator =

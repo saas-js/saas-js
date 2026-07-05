@@ -1,21 +1,16 @@
-import { pgTable, serial, text } from 'drizzle-orm/pg-core'
+import { defineRelations } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod/v4'
 
 import { drizzleCrud, filtersToWhere } from '../src/index.ts'
 import { zod } from '../src/zod.ts'
+import { usersTable } from './schema.ts'
 
-const usersTable = pgTable('users', {
-  id: serial('id').primaryKey(),
-  name: text('name'),
-  email: text('email'),
-})
+const relations = defineRelations({ users: usersTable })
 
 const db = drizzle({
-  schema: {
-    users: usersTable,
-  },
+  relations,
 })
 
 describe('drizzleCrud', () => {
