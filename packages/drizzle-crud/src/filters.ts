@@ -94,7 +94,7 @@ export function parseFilterGroup<T extends DrizzleTableWithId>(
       return
     }
 
-    const column = table[key as keyof T] as DrizzleColumn<any, any, any>
+    const column = table[key as keyof T] as DrizzleColumn<any, any>
 
     if (
       typeof filterValue === 'object' &&

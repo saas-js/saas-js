@@ -143,7 +143,7 @@ export function crudFactory<
   }
 
   const getColumn = (key: keyof T['$inferInsert']) => {
-    return table[key as keyof T] as DrizzleColumn<any, any, any>
+    return table[key as keyof T] as DrizzleColumn<any, any>
   }
 
   const applyFilters = (
