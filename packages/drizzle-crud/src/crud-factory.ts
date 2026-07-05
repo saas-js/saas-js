@@ -14,7 +14,6 @@ import { RelationalQueryBuilder } from 'drizzle-orm/pg-core/query-builders/query
 import type {
   BuildQueryResult,
   DBQueryConfig,
-  ExtractTablesWithRelations,
 } from 'drizzle-orm/relations'
 
 import { parseFilters } from './filters.ts'
@@ -92,13 +91,13 @@ export function crudFactory<
     validation,
   } = options
 
-  const tableName = table._.name as keyof TDatabase['_']['fullSchema']
+  const tableName = table._.name as keyof TDatabase['_']['relations']
 
-  type TSchema = ExtractTablesWithRelations<TDatabase['_']['fullSchema']>
+  type TSchema = TDatabase['_']['relations']
   type TFields = TSchema[typeof tableName]
 
-  type QueryOneGeneric = DBQueryConfig<'one', true, TSchema, TFields>
-  type QueryManyGeneric = DBQueryConfig<'many', true, TSchema, TFields>
+  type QueryOneGeneric = DBQueryConfig<'one', TSchema, TFields>
+  type QueryManyGeneric = DBQueryConfig<'many', TSchema, TFields>
 
   type FindOneInput<TSelections extends QueryOneGeneric> = KnownKeysOnly<
     TSelections,
@@ -121,7 +120,7 @@ export function crudFactory<
     TSelections
   >
 
-  type ListResult<TSelections extends QueryManyGeneric> = BuildQueryResult<
+  type ListResult<TSelections extends ListGeneric> = BuildQueryResult<
     TSchema,
     TFields,
     TSelections
@@ -142,7 +141,7 @@ export function crudFactory<
     ] as unknown as RelationalQueryBuilder<TSchema, TFields>
   }
 
-  const getColumn = (key: keyof T['$inferInsert']) => {
+  const getColumn = (key: keyof T['$inferSelect'] | keyof T['$inferInsert']) => {
     return table[key as keyof T] as DrizzleColumn<any, any>
   }
 
@@ -235,10 +234,10 @@ export function crudFactory<
 
     const dbInstance = getDb(context)
 
-    const [result] = await dbInstance
+    const [result] = (await dbInstance
       .insert(table)
       .values(transformed)
-      .returning()
+      .returning()) as any[]
 
     return result
   }
@@ -263,10 +262,10 @@ export function crudFactory<
 
     const result = await builder.findFirst({
       columns: params?.columns,
-      with: params?.with,
-      where: whereClause,
+      with: (params as any)?.with,
+      where: whereClause ? { RAW: whereClause } : undefined,
       extras: params?.extras,
-    })
+    } as any)
 
     return result as FindOneResult<TSelections> | null
   }
@@ -310,13 +309,13 @@ export function crudFactory<
 
     const data = await builder.findMany({
       columns: params.columns,
-      with: params.with,
-      where: whereClause,
+      with: (params as any).with,
+      where: whereClause ? { RAW: whereClause } : undefined,
       orderBy,
       limit,
       offset,
       extras: params.extras,
-    })
+    } as any)
 
     let countQuery = (dbInstance as any).select({ count: count() }).from(table)
 
@@ -335,7 +334,7 @@ export function crudFactory<
       page,
       limit,
       total,
-    } as {
+    } as unknown as {
       results: ListResult<TSelections>
       page: number
       limit: number
@@ -366,11 +365,11 @@ export function crudFactory<
     const whereClause =
       conditions.length > 1 ? and(...conditions) : conditions[0]
 
-    const [result] = await dbInstance
+    const [result] = (await dbInstance
       .update(table)
       .set(transformed)
       .where(whereClause)
-      .returning()
+      .returning()) as any[]
 
     return result
   }
@@ -425,11 +424,11 @@ export function crudFactory<
     const whereClause =
       conditions.length > 1 ? and(...conditions) : conditions[0]
 
-    const [result] = await dbInstance
+    const [result] = (await dbInstance
       .update(table)
       .set({ [softDelete.field]: deleteValues.notDeletedValue } as any)
       .where(whereClause)
-      .returning()
+      .returning()) as any[]
 
     return { success: !!result }
   }
