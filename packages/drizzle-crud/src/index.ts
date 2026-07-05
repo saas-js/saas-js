@@ -25,10 +25,12 @@ export function drizzleCrud<TDatabase extends DrizzleDatabase>(
     table: T,
     crudOptions: CrudOptions<TDatabase, T, TActor, TScopeFilters> = {},
   ) {
-    const validation = {
-      ...options.validation,
-      ...crudOptions.validation,
-    } as ValidationAdapter<T>
+    const validation = (crudOptions.validation || options.validation)
+      ? ({
+          ...options.validation,
+          ...crudOptions.validation,
+        } as ValidationAdapter<T>)
+      : undefined
 
     return crudFactory(db, table, {
       ...options,

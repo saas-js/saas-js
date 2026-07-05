@@ -6,6 +6,7 @@ import {
   count,
   desc,
   eq,
+  getTableName,
   ilike,
   inArray,
   or,
@@ -91,7 +92,7 @@ export function crudFactory<
     validation,
   } = options
 
-  const tableName = table._.name as keyof TDatabase['_']['relations']
+  const tableName = getTableName(table) as keyof TDatabase['_']['relations']
 
   type TSchema = TDatabase['_']['relations']
   type TFields = TSchema[typeof tableName]
