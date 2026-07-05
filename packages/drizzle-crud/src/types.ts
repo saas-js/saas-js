@@ -3,11 +3,11 @@ import type {
   Table as DrizzleTable,
   SQL,
 } from 'drizzle-orm'
-import type { PgDatabase } from 'drizzle-orm/pg-core'
+import type { PgAsyncDatabase } from 'drizzle-orm/pg-core'
 
 import type { StandardSchemaV1 } from './standard-schema.ts'
 
-export type DrizzleDatabase = PgDatabase<any, any, any>
+export type DrizzleDatabase = PgAsyncDatabase<any, any>
 
 export type { DrizzleTable, DrizzleColumn }
 
