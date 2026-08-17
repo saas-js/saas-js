@@ -1,0 +1,7 @@
+
+! Corepack is about to download https://registry.npmjs.org/pnpm/-/pnpm-10.15.1.tgz
+? Do you want to continue? [Y/n] 
+
+> @saas-js/conditions@0.0.1 clean /Users/eelco/Development/saas-ui/packages/pro/packages/conditions
+> rm -rf dist
+

@@ -11,3 +11,4 @@ lambda.zip
 .env.*
 
 **/test/.output
+.DS_Store
