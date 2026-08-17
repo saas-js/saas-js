@@ -4,16 +4,19 @@
   "version": "0.0.1",
   "license": "MIT",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     ".": {
       "sjs": "./src/index.ts",
       "types": "./dist/index.d.ts",
-      "require": "./dist/index.cjs",
       "import": "./dist/index.js"
     }
   },
   "scripts": {
-    "build": "NODE_OPTIONS='--max-old-space-size=16384' tsup --config tsup.config.ts",
+    "build": "bun build ./src/index.ts --outdir dist --target node --production --packages=external && bun run build:types",
+    "build:types": "tsc --project tsconfig.json --emitDeclarationOnly --outDir dist",
     "lint": "TIMING=1 eslint src/**/*.ts* --fix",
     "clean": "rm -rf dist",
     "test": "vitest run",

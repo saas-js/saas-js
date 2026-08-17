@@ -1,10 +1,17 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "#*": ["src/*"]
-    }
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "skipLibCheck": true,
+    "baseUrl": "."
   },
-  "include": ["./src/**/*.ts"]
+  "include": ["src/**/*"],
+  "exclude": ["**/node_modules", "src/**/*.test.ts"]
 }
