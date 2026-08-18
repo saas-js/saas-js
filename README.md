@@ -1,4 +1,4 @@
-# Building blocks for SaaS apps
+# Building blocks and utilities for developers and agents
 
 [Documentation](https://saas-js.com/docs)
 
