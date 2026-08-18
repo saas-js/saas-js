@@ -46,6 +46,42 @@ export function visitConditionExpression<TCondition extends Condition>(
   }
 }
 
+export interface ConditionQueryFolder<TCondition extends Condition, TResult> {
+  /** Map one condition to a result, or return `undefined` to skip it. */
+  condition(condition: TCondition): TResult | undefined
+  /**
+   * Combine the mapped results of a group's items. Skipped items are already
+   * filtered out; `results` may be empty when every item was skipped.
+   */
+  group(
+    combinator: ConditionCombinator,
+    results: TResult[],
+    group: ConditionGroup<TCondition>,
+  ): TResult | undefined
+}
+
+/**
+ * Fold a condition query bottom-up into another representation (a SQL where
+ * clause, a predicate, an OData string, …). Conditions map through
+ * `folder.condition`; each group combines its mapped items through
+ * `folder.group`. Returns `undefined` for an empty query.
+ */
+export function foldConditionQuery<TCondition extends Condition, TResult>(
+  query: ConditionQuery<TCondition> | ConditionGroup<TCondition>,
+  folder: ConditionQueryFolder<TCondition, TResult>,
+): TResult | undefined {
+  const foldExpression = (
+    expression: ConditionExpression<TCondition>,
+  ): TResult | undefined => {
+    if (!isConditionGroup(expression)) return folder.condition(expression)
+    const results = expression.items
+      .map(foldExpression)
+      .filter((result): result is TResult => result !== undefined)
+    return folder.group(expression.combinator, results, expression)
+  }
+  return foldExpression('root' in query ? query.root : query)
+}
+
 export function findConditionExpression<TCondition extends Condition>(
   root: ConditionGroup<TCondition>,
   id: string,

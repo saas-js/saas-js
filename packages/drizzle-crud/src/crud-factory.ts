@@ -1,21 +1,17 @@
 import {
   type KnownKeysOnly,
   SQL,
+  type Table,
   and,
-  asc,
   count,
-  desc,
   eq,
+  getTableName,
   ilike,
   inArray,
+  isNull,
+  mapColumnsInSQLToAlias,
   or,
 } from 'drizzle-orm'
-import { RelationalQueryBuilder } from 'drizzle-orm/pg-core/query-builders/query'
-import type {
-  BuildQueryResult,
-  DBQueryConfig,
-  ExtractTablesWithRelations,
-} from 'drizzle-orm/relations'
 
 import { parseFilters } from './filters.ts'
 import { type StandardSchemaV1, standardValidate } from './standard-schema.ts'
@@ -43,7 +39,7 @@ function createSchemas<
   TValidation extends ValidationAdapter<T> = ValidationAdapter<T>,
 >(
   table: T,
-  options: CrudOptions<TDatabase, T, TActor, TScopeFilters>,
+  options: CrudOptions<TDatabase, T, TActor, TScopeFilters, any>,
   validation?: TValidation,
 ) {
   if (!validation) {
@@ -61,6 +57,7 @@ function createSchemas<
     defaultLimit: options.defaultLimit,
     maxLimit: options.maxLimit,
     allowIncludeDeleted: !!options.softDelete,
+    customFilters: !!options.filterFn,
   }
 
   return {
@@ -76,37 +73,42 @@ export function crudFactory<
   T extends DrizzleTableWithId,
   TActor extends Actor = Actor,
   TScopeFilters extends ScopeFilters<T, TActor> = ScopeFilters<T, TActor>,
+  TFilterInput = FilterParams<T['$inferSelect']>,
 >(
   db: TDatabase,
   table: T,
-  options: CrudOptions<TDatabase, T, TActor, TScopeFilters> = {},
+  options: CrudOptions<TDatabase, T, TActor, TScopeFilters, TFilterInput> = {},
 ) {
   const {
     searchFields = [],
     defaultLimit = 20,
     maxLimit = 100,
     allowedFilters = [],
+    filterFn,
     softDelete,
     scopeFilters = {} as TScopeFilters,
     hooks = {},
     validation,
   } = options
 
-  const tableName = table._.name as keyof TDatabase['_']['fullSchema']
+  const tableName = getTableName(table)
 
-  type TSchema = ExtractTablesWithRelations<TDatabase['_']['fullSchema']>
-  type TFields = TSchema[typeof tableName]
-
-  type QueryOneGeneric = DBQueryConfig<'one', true, TSchema, TFields>
-  type QueryManyGeneric = DBQueryConfig<'many', true, TSchema, TFields>
+  // drizzle 1.0 RQB v2: selections are plain config objects; results carry
+  // the table's select model (relational `with`/`extras` keys stay loose).
+  type QueryOneGeneric = {
+    columns?: Record<string, boolean | undefined>
+    with?: Record<string, unknown>
+    extras?: Record<string, unknown>
+  }
+  type QueryManyGeneric = QueryOneGeneric
 
   type FindOneInput<TSelections extends QueryOneGeneric> = KnownKeysOnly<
     TSelections,
     QueryOneGeneric
   >
 
-  type ListGeneric = Omit<QueryManyGeneric, 'offset' | 'where'> &
-    ListParams<T> & {
+  type ListGeneric = QueryManyGeneric &
+    ListParams<T, TFilterInput> & {
       where?: SQL
     }
 
@@ -115,17 +117,18 @@ export function crudFactory<
     ListGeneric
   >
 
-  type FindOneResult<TSelections extends QueryOneGeneric> = BuildQueryResult<
-    TSchema,
-    TFields,
-    TSelections
-  >
+  type FindOneResult<TSelections extends QueryOneGeneric> =
+    TSelections extends { columns: Record<string, boolean | undefined> }
+      ? Partial<T['$inferSelect']> & Record<string, unknown>
+      : T['$inferSelect'] & Record<string, unknown>
 
-  type ListResult<TSelections extends QueryManyGeneric> = BuildQueryResult<
-    TSchema,
-    TFields,
-    TSelections
-  >[]
+  type ListResult<TSelections extends QueryManyGeneric> =
+    FindOneResult<TSelections>[]
+
+  interface RelationalBuilder {
+    findFirst(config: Record<string, unknown>): Promise<unknown>
+    findMany(config: Record<string, unknown>): Promise<unknown[]>
+  }
 
   const schemas = createSchemas(table, options, validation)
 
@@ -137,21 +140,50 @@ export function crudFactory<
     context?: OperationContext<TDatabase, T, TActor, TScopeFilters>,
   ) => {
     const dbInstance = getDb(context)
-    return (dbInstance as any).query[
-      tableName
-    ] as unknown as RelationalQueryBuilder<TSchema, TFields>
+    const builder = (dbInstance as any).query?.[tableName]
+    if (!builder) {
+      throw new Error(
+        `No relational query builder found for table "${tableName}". ` +
+          'With drizzle 1.0, create the database with relations: ' +
+          'drizzle(client, { relations: defineRelations(schema) }).',
+      )
+    }
+    return builder as RelationalBuilder
   }
 
-  const getColumn = (key: keyof T['$inferInsert']) => {
-    return table[key as keyof T] as DrizzleColumn<any, any, any>
+  const getColumn = (key: keyof T['$inferSelect'] | keyof T['$inferInsert']) => {
+    return table[key as keyof T] as DrizzleColumn
   }
 
-  const applyFilters = (
-    conditions: SQL[],
-    filters?: FilterParams<T['$inferSelect']>,
-  ) => {
-    const parsedFilters = parseFilters(table, filters, allowedFilters)
+  /**
+   * RQB v2 aliases the root table in relational queries, so a prebuilt SQL
+   * where clause (which references the original table) must be remapped onto
+   * the alias the query engine passes to the RAW filter callback.
+   */
+  const rawWhere = (whereClause: SQL | undefined) =>
+    whereClause
+      ? {
+          RAW: (aliasedTable: Table) =>
+            mapColumnsInSQLToAlias(whereClause, getTableName(aliasedTable)),
+        }
+      : undefined
 
+  const applyFilters = (conditions: SQL[], filters?: TFilterInput) => {
+    if (filters === undefined || filters === null) return
+
+    if (filterFn) {
+      const where = filterFn(filters, { table, allowedFilters })
+      if (where) {
+        conditions.push(where)
+      }
+      return
+    }
+
+    const parsedFilters = parseFilters(
+      table,
+      filters as FilterParams<T['$inferSelect']>,
+      allowedFilters,
+    )
     conditions.push(...parsedFilters)
   }
 
@@ -188,7 +220,10 @@ export function crudFactory<
     const column = getColumn(softDelete.field)
     const notDeletedValue = softDelete.notDeletedValue ?? null
 
-    conditions.push(eq(column, notDeletedValue))
+    // SQL equality never matches NULL; a null sentinel needs IS NULL.
+    conditions.push(
+      notDeletedValue === null ? isNull(column) : eq(column, notDeletedValue),
+    )
     return conditions
   }
 
@@ -264,11 +299,11 @@ export function crudFactory<
     const result = await builder.findFirst({
       columns: params?.columns,
       with: params?.with,
-      where: whereClause,
+      where: rawWhere(whereClause),
       extras: params?.extras,
     })
 
-    return result as FindOneResult<TSelections> | null
+    return (result ?? null) as FindOneResult<TSelections> | null
   }
 
   const list = async <TSelections extends ListGeneric>(
@@ -281,7 +316,9 @@ export function crudFactory<
     const validatedParams = await validate(
       'list',
       params,
-      schemas.listSchema,
+      schemas.listSchema as
+        | StandardSchemaV1<ListInput<TSelections>, ListParams<T, TFilterInput>>
+        | undefined,
       context,
     )
 
@@ -292,7 +329,12 @@ export function crudFactory<
       conditions.push(params.where)
     }
 
-    applyFilters(conditions, validatedParams.filters)
+    applyFilters(
+      conditions,
+      (validatedParams.filters ?? (params as ListGeneric).filters) as
+        | TFilterInput
+        | undefined,
+    )
     applySearch(conditions, validatedParams.search)
     applyScopeFilters(conditions, context)
     applySoftDeleteFilter(conditions, validatedParams.includeDeleted)
@@ -303,15 +345,20 @@ export function crudFactory<
     const page = validatedParams.page || 1
     const offset = (page - 1) * limit
 
-    const orderBy = validatedParams.orderBy?.map(({ field, direction }) => {
-      const column = getColumn(field as keyof T['$inferInsert'])
-      return direction === 'desc' ? desc(column) : asc(column)
-    })
+    // RQB v2 orderBy: an object of field -> direction.
+    const orderBy = validatedParams.orderBy?.length
+      ? Object.fromEntries(
+          validatedParams.orderBy.map(({ field, direction }) => [
+            field,
+            direction,
+          ]),
+        )
+      : undefined
 
     const data = await builder.findMany({
       columns: params.columns,
       with: params.with,
-      where: whereClause,
+      where: rawWhere(whereClause),
       orderBy,
       limit,
       offset,
@@ -366,11 +413,11 @@ export function crudFactory<
     const whereClause =
       conditions.length > 1 ? and(...conditions) : conditions[0]
 
-    const [result] = await dbInstance
+    const [result] = (await dbInstance
       .update(table)
       .set(transformed)
       .where(whereClause)
-      .returning()
+      .returning()) as T['$inferSelect'][]
 
     return result
   }
@@ -425,11 +472,11 @@ export function crudFactory<
     const whereClause =
       conditions.length > 1 ? and(...conditions) : conditions[0]
 
-    const [result] = await dbInstance
+    const [result] = (await dbInstance
       .update(table)
       .set({ [softDelete.field]: deleteValues.notDeletedValue } as any)
       .where(whereClause)
-      .returning()
+      .returning()) as T['$inferSelect'][]
 
     return { success: !!result }
   }

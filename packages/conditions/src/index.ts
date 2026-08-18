@@ -54,9 +54,11 @@ export {
 
 export {
   ConditionTreeError,
+  type ConditionQueryFolder,
   countConditions,
   createConditionQuery,
   findConditionExpression,
+  foldConditionQuery,
   findParentConditionGroup,
   flattenConditions,
   groupConditionExpressions,
@@ -73,6 +75,7 @@ export {
   InvalidConditionQueryError,
   AsyncConditionSchemaError,
   assertValidConditionQuery,
+  getConditionField,
   getConditionFieldOperators,
   getConditionOperator,
   validateConditionQuery,

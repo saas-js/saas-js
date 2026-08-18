@@ -2,9 +2,9 @@ import type {
   Condition,
   ConditionExpression,
   ConditionFieldDefinition,
+  ConditionFieldId,
   ConditionFields,
   ConditionForFields,
-  ConditionOperator,
   ConditionOperators,
   ConditionQuery,
   ConditionStandardSchema,
@@ -35,17 +35,35 @@ export class AsyncConditionSchemaError extends Error {
   }
 }
 
-export function getConditionOperator(
-  definition: ConditionsDefinition<any, any>,
+export function getConditionField<
+  TFields extends ConditionFields,
+  TOperators extends ConditionOperators,
+>(
+  definition: ConditionsDefinition<TFields, TOperators>,
   id: string,
-): ConditionOperator<any, any, any, any, any> | undefined {
+): (TFields[ConditionFieldId<TFields>] & ConditionFieldDefinition) | undefined {
+  return definition.fields[id] as
+    | (TFields[ConditionFieldId<TFields>] & ConditionFieldDefinition)
+    | undefined
+}
+
+export function getConditionOperator<
+  TFields extends ConditionFields,
+  TOperators extends ConditionOperators,
+>(
+  definition: ConditionsDefinition<TFields, TOperators>,
+  id: string,
+): TOperators[number] | undefined {
   return definition.operators.find((operator) => operator.id === id)
 }
 
-export function getConditionFieldOperators(
-  definition: ConditionsDefinition<any, any>,
+export function getConditionFieldOperators<
+  TFields extends ConditionFields,
+  TOperators extends ConditionOperators,
+>(
+  definition: ConditionsDefinition<TFields, TOperators>,
   field: ConditionFieldDefinition<any, any, any, any, any>,
-) {
+): TOperators[number][] {
   const allowed = field.operators
   return definition.operators.filter(
     (operator) =>
@@ -307,12 +325,7 @@ export function parseStandardSchema(
 }
 
 function normalizeStandardSchemaPath(
-  path:
-    | readonly (
-        | PropertyKey
-        | { readonly key: PropertyKey }
-      )[]
-    | undefined,
+  path: readonly (PropertyKey | { readonly key: PropertyKey })[] | undefined,
 ): readonly (string | number)[] {
   if (!path) return []
   return path.map((segment) => {

@@ -9,6 +9,7 @@ import type {
   DrizzleColumn,
   DrizzleTable,
   DrizzleTableWithId,
+  DrizzleTableWithModels,
   FilterParams,
   ListParams,
   ListSchemaOptions,
@@ -123,7 +124,7 @@ export function createDefaultIdSchema<T extends DrizzleTableWithId>(table: T) {
   return z.string()
 }
 
-export function createDefaultFilterSchema<T extends DrizzleTable>(
+export function createDefaultFilterSchema<T extends DrizzleTableWithModels>(
   allowedFilters?: (keyof T['$inferSelect'])[],
 ) {
   if (!allowedFilters || allowedFilters.length === 0) {
@@ -165,7 +166,7 @@ export function createDefaultFilterSchema<T extends DrizzleTable>(
     .optional()
 }
 
-export function createDefaultOrderBySchema<T extends DrizzleTable>(
+export function createDefaultOrderBySchema<T extends DrizzleTableWithModels>(
   table: T,
   allowedFields?: (keyof T['$inferSelect'])[],
 ) {
@@ -182,7 +183,7 @@ export function createDefaultOrderBySchema<T extends DrizzleTable>(
     .optional()
 }
 
-export function createDefaultListSchema<T extends DrizzleTable>(
+export function createDefaultListSchema<T extends DrizzleTableWithModels>(
   table: T,
   options: ListSchemaOptions<T>,
 ) {
@@ -193,6 +194,7 @@ export function createDefaultListSchema<T extends DrizzleTable>(
     defaultLimit = 20,
     maxLimit = 100,
     allowIncludeDeleted = false,
+    customFilters = false,
   } = options
 
   const paginationSchema = createDefaultPaginationSchema({
@@ -210,7 +212,8 @@ export function createDefaultListSchema<T extends DrizzleTable>(
   const baseSchema = z.object({
     ...paginationSchema.shape,
     search: searchSchema,
-    where: filterSchema,
+    // A custom filterFn owns the filters parameter and validates it itself.
+    filters: customFilters ? z.unknown().optional() : filterSchema,
     orderBy: orderBySchema,
   })
 

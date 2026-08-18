@@ -3,16 +3,35 @@ import type {
   Table as DrizzleTable,
   SQL,
 } from 'drizzle-orm'
-import type { PgDatabase } from 'drizzle-orm/pg-core'
+import type { PgAsyncDatabase, PgTable } from 'drizzle-orm/pg-core'
 
 import type { StandardSchemaV1 } from './standard-schema.ts'
 
-export type DrizzleDatabase = PgDatabase<any, any, any>
+/**
+ * Any Postgres database instance. Relational operations (`findById`, `list`)
+ * require the db to be created with `relations` (drizzle 1.0 RQB v2):
+ * `drizzle(client, { relations: defineRelations(schema) })`.
+ */
+export type DrizzleDatabase = PgAsyncDatabase<any, any>
 
 export type { DrizzleTable, DrizzleColumn }
 
-export type DrizzleTableWithId = DrizzleTable & {
-  id: DrizzleColumn<any>
+/**
+ * A table carrying its inferred models. drizzle 1.0 declares
+ * `$inferSelect`/`$inferInsert` on concrete tables only, so generic helpers
+ * constrain to this instead of the bare `Table` type.
+ */
+export type DrizzleTableWithModels = DrizzleTable & {
+  $inferSelect: Record<string, any>
+  $inferInsert: Record<string, any>
+}
+
+export type DrizzleTableWithId = PgTable & {
+  id: DrizzleColumn
+  // drizzle 1.0 moved $inferSelect/$inferInsert off the base Table type onto
+  // concrete tables; declare them structurally so generics can index them.
+  $inferSelect: Record<string, any> & { id: any }
+  $inferInsert: Record<string, any>
 }
 
 export type FilterOperator =
@@ -42,7 +61,7 @@ type WithRelations<T extends DrizzleTableWithId> = Record<
   true | { columns?: ColumnsSelection<T>; with?: WithRelations<T> }
 >
 
-export type SoftDeleteConfig<T extends DrizzleTable> = {
+export type SoftDeleteConfig<T extends DrizzleTableWithModels> = {
   field: keyof T['$inferSelect'] // e.g., 'deletedAt' or 'isDeleted'
   deletedValue?: any // What to set when soft deleting (defaults to new Date() for timestamps, true for booleans)
   notDeletedValue?: any // What represents "not deleted" (defaults to null for timestamps, false for booleans)
@@ -64,11 +83,33 @@ export type CrudOperation =
   | 'bulkDelete'
   | 'bulkRestore'
 
+export interface FilterFnContext<
+  T extends DrizzleTableWithId = DrizzleTableWithId,
+> {
+  table: T
+  /** The crud's `allowedFilters` allowlist; empty when unrestricted. */
+  allowedFilters: (keyof T['$inferSelect'])[]
+}
+
+/**
+ * A pluggable filter for the `list` operation: converts the `filters`
+ * parameter into a where clause. The input type of the configured `filterFn`
+ * becomes the type of `list({ filters })`, so the filter language is defined
+ * by the adapter — e.g. `conditionsCrudFilter` from
+ * `@saas-js/conditions-drizzle` accepts serialized condition queries.
+ * Implementations must treat the input as untrusted and validate it.
+ */
+export type FilterFn<
+  T extends DrizzleTableWithId = DrizzleTableWithId,
+  TInput = unknown,
+> = (input: TInput, context: FilterFnContext<T>) => SQL | undefined
+
 export type CrudOptions<
   TDatabase extends DrizzleDatabase,
   T extends DrizzleTableWithId,
   TActor extends Actor = Actor,
   TScopeFilters extends ScopeFilters<T, TActor> = ScopeFilters<T, TActor>,
+  TFilterInput = FilterParams<T['$inferSelect']>,
 > = {
   searchFields?: (keyof T['$inferSelect'])[]
   /**
@@ -86,6 +127,16 @@ export type CrudOptions<
    * e.g., ['name', 'email']
    */
   allowedFilters?: (keyof T['$inferSelect'])[]
+  /**
+   * Plug in the filter language for `list({ filters })`. The function's
+   * input type becomes the `filters` parameter type, and the function owns
+   * validation and conversion to SQL — e.g. `conditionsCrudFilter` from
+   * @saas-js/conditions-drizzle accepts serialized condition queries (saved
+   * segments built with @saas-js/conditions). It receives `allowedFilters`
+   * so the same allowlist applies. When omitted, `filters` uses the built-in
+   * `FilterParams` object language.
+   */
+  filterFn?: FilterFn<T, TFilterInput>
   /**
    * Enable soft delete for the table.
    * e.g., { field: 'deletedAt', deletedValue: new Date(), notDeletedValue: null }
@@ -116,11 +167,19 @@ export type CrudOptions<
   validation?: ValidationAdapter<T>
 }
 
-export type ListParams<T extends DrizzleTableWithId> = {
+export type ListParams<
+  T extends DrizzleTableWithId,
+  TFilterInput = FilterParams<T['$inferSelect']>,
+> = {
   page?: number
   limit?: number
   search?: string
-  filters?: FilterParams<T['$inferSelect']>
+  /**
+   * Row filters, converted to SQL by the crud's `filterFn`. Typed by the
+   * configured filter function's input — the built-in `FilterParams` object
+   * language when no `filterFn` is configured.
+   */
+  filters?: TFilterInput
   orderBy?: {
     field: keyof T['$inferSelect']
     direction: 'asc' | 'desc'
@@ -143,7 +202,7 @@ export interface Actor<
 }
 
 export type ScopeFilters<
-  T extends DrizzleTable,
+  T extends DrizzleTableWithModels,
   TActor extends Actor = Actor,
 > = Partial<{
   [K in keyof T['$inferSelect']]: (
@@ -158,7 +217,7 @@ type ScopeFromFilters<T> =
 
 export type OperationContext<
   TDatabase extends DrizzleDatabase,
-  T extends DrizzleTable,
+  T extends DrizzleTableWithModels,
   TActor extends Actor = Actor,
   TScopeFilters extends ScopeFilters<T, TActor> = ScopeFilters<T, TActor>,
 > = {
@@ -173,7 +232,7 @@ export type PaginationParams = {
   limit?: number
 }
 
-export type OrderByParams<T extends DrizzleTable> = {
+export type OrderByParams<T extends DrizzleTableWithModels> = {
   field: keyof T['$inferSelect']
   direction: 'asc' | 'desc'
 }
@@ -232,11 +291,17 @@ export interface PaginationOptions {
   maxLimit: number
 }
 
-export interface ListSchemaOptions<T extends DrizzleTable> {
+export interface ListSchemaOptions<T extends DrizzleTableWithModels> {
   searchFields?: (keyof T['$inferSelect'])[]
   allowedFilters?: (keyof T['$inferSelect'])[]
   allowedOrderFields?: (keyof T['$inferSelect'])[]
   defaultLimit?: number
   maxLimit?: number
   allowIncludeDeleted?: boolean
+  /**
+   * `true` when a custom `filterFn` owns the `filters` parameter: the list
+   * schema passes `filters` through untouched and the filter function
+   * validates it.
+   */
+  customFilters?: boolean
 }

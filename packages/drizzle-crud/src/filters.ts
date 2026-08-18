@@ -36,8 +36,22 @@ export function parseFilters<T extends DrizzleTableWithId>(
 ): SQL[] {
   if (!filters) return []
 
+  if (typeof filters !== 'object' || Array.isArray(filters)) {
+    throw new Error(
+      'filters must be a FilterParams object. To accept another filter ' +
+        'language (e.g. serialized condition queries), configure a `filterFn` ' +
+        'on the crud — see conditionsCrudFilter from @saas-js/conditions-drizzle.',
+    )
+  }
+
   if ('AND' in filters || 'OR' in filters) {
-    const conditions: SQL[] = []
+    // Field filters next to AND/OR combine with them.
+    const { AND: _and, OR: _or, ...fieldFilters } = filters
+    const conditions: SQL[] = parseFilterGroup(
+      table,
+      fieldFilters,
+      allowedFilters,
+    )
 
     if (filters.AND && Array.isArray(filters.AND)) {
       const andConditions = filters.AND.map((filterGroup) => {
@@ -94,7 +108,7 @@ export function parseFilterGroup<T extends DrizzleTableWithId>(
       return
     }
 
-    const column = table[key as keyof T] as DrizzleColumn<any, any, any>
+    const column = table[key as keyof T] as DrizzleColumn
 
     if (
       typeof filterValue === 'object' &&

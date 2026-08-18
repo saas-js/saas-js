@@ -5,10 +5,19 @@
 ## Packages
 
 - [conditions](/packages/conditions/) A framework-agnostic condition expression engine
+- [conditions-react](/packages/conditions-react/) Headless React bindings and composition helpers for conditions
 - [better-auth-query-query](/packages/better-auth-react-query/) TanStack Query Better Auth client
 - [drizzle-crud](/packages/drizzle-crud/) generate CRUD operations from drizzle schemas.
 - [iconx](/packages/iconx) CLI and MCP server to install iconify icons as React components
 - [Slingshot](/packages/slingshot-react/) full-stack file upload component with support for drag-and-drop, progress bars, s3 integration and more.
+
+## Storybook
+
+Stories from `packages` and `examples` are loaded by the workspace Storybook:
+
+```sh
+bun storybook
+```
 
 ## Starter kits
 

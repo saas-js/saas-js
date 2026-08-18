@@ -5,6 +5,7 @@ import type {
   DrizzleCrudOptions,
   DrizzleDatabase,
   DrizzleTableWithId,
+  FilterParams,
   ScopeFilters,
   ValidationAdapter,
 } from './types.ts'
@@ -21,17 +22,28 @@ export function drizzleCrud<TDatabase extends DrizzleDatabase>(
     T extends DrizzleTableWithId,
     TActor extends Actor = Actor,
     TScopeFilters extends ScopeFilters<T, TActor> = ScopeFilters<T, TActor>,
+    TFilterInput = FilterParams<T['$inferSelect']>,
   >(
     table: T,
-    crudOptions: CrudOptions<TDatabase, T, TActor, TScopeFilters> = {},
+    crudOptions: CrudOptions<
+      TDatabase,
+      T,
+      TActor,
+      TScopeFilters,
+      TFilterInput
+    > = {},
   ) {
-    const validation = {
-      ...options.validation,
-      ...crudOptions.validation,
-    } as ValidationAdapter<T>
+    const validation =
+      options.validation || crudOptions.validation
+        ? ({
+            ...options.validation,
+            ...crudOptions.validation,
+          } as ValidationAdapter<T>)
+        : undefined
 
     return crudFactory(db, table, {
       ...options,
+      ...crudOptions,
       validation,
     })
   }

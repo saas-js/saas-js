@@ -19,12 +19,21 @@ A powerful TypeScript package that automatically generates CRUD operations for y
 - 📊 **Bulk operations** for efficient data manipulation
 - 🎯 **Type-safe** with full TypeScript support
 
-## Integrations (TBD)
+## Integrations
+
+- **@saas-js/conditions** — filter `list()` with user-built condition
+  queries (saved segments) via
+  [`@saas-js/conditions-drizzle`](../conditions-drizzle)'s
+  `conditionsCrudFilter`. See
+  [Pluggable filters](#pluggable-filters-filterfn).
+
+### TBD
 
 - **tRPC** generate crud procedures
 - **Hono RPC** generate hono RPC procedures
 - **oRPC** generate oRPC procedures
-- **Tanstack Table** Integrate pagination and filtering
+- **Tanstack Table** Integrate pagination and filtering (see
+  `@saas-js/conditions-tanstack-table` for condition-query filtering)
 
 ## Roadmap
 
@@ -46,11 +55,16 @@ yarn add drizzle-crud
 pnpm add drizzle-crud
 ```
 
+Requires `drizzle-orm` 1.0 (currently `1.0.0-rc`). The relational operations
+(`findById`, `list`) use drizzle's relational queries v2, so create the
+database with `relations` (see Quick Start).
+
 ## Quick Start
 
 ```typescript
 import { drizzleCrud } from 'drizzle-crud'
 import { zod } from 'drizzle-crud/zod'
+import { defineRelations } from 'drizzle-orm'
 import { boolean, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
 import { drizzle } from 'drizzle-orm/postgres-js'
 
@@ -72,8 +86,12 @@ const posts = pgTable('posts', {
   deletedAt: timestamp('deleted_at'),
 })
 
-// Initialize database and CRUD factory
-const db = drizzle(/* your database connection */)
+// Initialize database and CRUD factory. drizzle 1.0: relational queries
+// are configured through relations (defineRelations covers plain tables).
+const db = drizzle({
+  connection: process.env.DATABASE_URL!,
+  relations: defineRelations({ users, posts }),
+})
 const createCrud = drizzleCrud(db, {
   validation: zod(),
 })
@@ -217,6 +235,51 @@ const users = await userCrud.list({
 ```
 
 Available operators: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `in`, `like`, `ilike`
+
+### Pluggable filters (`filterFn`)
+
+The `filters` language is pluggable. Configure a `filterFn` and it owns the
+`list({ filters })` parameter: its input type becomes the parameter's type,
+and it converts (and validates) the input into a WHERE clause. Without a
+`filterFn`, `filters` uses the built-in `FilterParams` object language shown
+above.
+
+For user-built filters — segment builders, saved views, rule UIs — use the
+[`@saas-js/conditions`](../conditions) adapter from
+[`@saas-js/conditions-drizzle`](../conditions-drizzle). Condition queries
+support arbitrarily nested AND/OR groups, are validated against a shared
+definition (field allowlist + value schemas), and serialize to versioned
+JSON that a client can round-trip:
+
+```typescript
+import { conditionsCrudFilter } from '@saas-js/conditions-drizzle'
+
+import { contactConditions } from './conditions' // defineConditions(...)
+
+const contactsCrud = createCrud(contactsTable, {
+  allowedFilters: ['status', 'arr', 'createdAt'],
+  filterFn: conditionsCrudFilter(contactConditions),
+})
+
+// `filters` is now typed as a (serialized) condition query. The client
+// sends contactConditions.stringify(query) — e.g. from the
+// @saas-js/conditions-react filter builder:
+const { results, total } = await contactsCrud.list({
+  filters: request.body.conditions,
+  orderBy: [{ field: 'arr', direction: 'desc' }],
+  page: 1,
+})
+```
+
+The payload is treated as untrusted: the adapter validates it with the
+definition before any SQL is built, and `allowedFilters` gates which fields
+may be queried (a condition on a disallowed field throws). The converted
+filter composes with `search`, scope filters, soft delete, and pagination —
+it contributes one more WHERE conjunct.
+
+A `filterFn` is just `(input, { table, allowedFilters }) => SQL | undefined`,
+so any filter language can plug in the same way; when one is configured, the
+zod list schema passes `filters` through for the function to validate.
 
 ### Access Control with Actors
 
