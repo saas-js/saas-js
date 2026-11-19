@@ -34,6 +34,18 @@ describe('SecretValue', () => {
     expect(sv.masked).toBe('••••1234')
   })
 
+  it('accepts mask options', () => {
+    const custom = new SecretValue('sk-live-abcdef1234', { visible: 0 })
+    expect(custom.masked).toBe('••••')
+    expect(`${custom}`).toBe('••••')
+  })
+
+  it('fully masks short values like PINs', () => {
+    const pin = new SecretValue('482913')
+    expect(pin.masked).toBe('••••')
+    expect(JSON.stringify({ pin })).toBe('{"pin":"••••"}')
+  })
+
   it('masks short values completely', () => {
     const short = new SecretValue('abc')
     expect(short.toJSON()).toBe('••••')
