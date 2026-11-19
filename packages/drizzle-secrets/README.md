@@ -8,7 +8,7 @@ get `••••1234` by default, so a stray `console.log(row)` or
 `Response.json(row)` doesn't leak the plaintext.
 
 - 🔐 AES-256-GCM, with a fresh IV for every write
-- 🙈 Masked reads by default
+- 🙈 Masked reads by default, with configurable masking
 - 🧯 `SecretValue` stays masked in `JSON.stringify`, `console.log`, and
   template strings. Only `expose()` returns the plaintext.
 - 🔁 Key IDs stored in every ciphertext, for zero-downtime key rotation
@@ -49,6 +49,24 @@ const token = expose(row.refreshToken) // plaintext
 | `'masked'` (default) | `'••••1234'`            |
 | `'decrypt'`          | `SecretValue(••••1234)` |
 | `'encrypted'`        | `'enc$v1$...'`          |
+
+### Masking
+
+Values of 12+ characters show their last 4 (`••••1234`); shorter values
+such as PINs are fully masked (`••••`). Configure it for every column, per
+column, or with your own function:
+
+```ts
+const secret = createDrizzleSecret(process.env.ENCRYPTION_KEY!, {
+  mask: { visible: 4, minLength: 12, placeholder: '••••' }, // defaults
+})
+
+pgTable('accounts', {
+  pin: secret('pin', { mask: { visible: 0 } }), // never reveal anything
+  card: secret('card', { mask: { minLength: 8, placeholder: '**** ' } }),
+  webhook: secret('webhook', { mask: (v) => `whsec_…${v.slice(-2)}` }),
+})
+```
 
 > Don't write a masked read back to the database. Saving `'••••1234'`
 > encrypts the mask in place of the real secret.

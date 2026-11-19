@@ -34,8 +34,63 @@ describe('mask', () => {
     expect(mask('abcd')).toBe('••••')
   })
 
-  it('works for 5+ char values', () => {
-    expect(mask('12345')).toBe('••••2345')
+  it('fully masks values shorter than 12 characters by default', () => {
+    expect(mask('12345')).toBe('••••')
+    expect(mask('hunter2')).toBe('••••')
+    expect(mask('abcdefghijk')).toBe('••••') // 11
+    expect(mask('abcdefghijkl')).toBe('••••ijkl') // 12
+  })
+
+  it('never reveals more than the configured number of characters', () => {
+    expect(mask('sk-live-abcdef1234', { visible: 2 })).toBe('••••34')
+    expect(mask('sk-live-abcdef1234', { visible: 0 })).toBe('••••')
+    expect(mask('abcd', { visible: 4, minLength: 0 })).toBe('••••')
+  })
+
+  it('supports minLength and placeholder', () => {
+    expect(mask('12345', { minLength: 5 })).toBe('••••2345')
+    expect(
+      mask('4242424242424242', { minLength: 8, placeholder: '**** ' }),
+    ).toBe('**** 4242')
+  })
+
+  it('accepts a custom mask function', () => {
+    expect(mask('sk-live-abcdef1234', (v) => `[${v.length} chars]`)).toBe(
+      '[18 chars]',
+    )
+  })
+})
+
+describe('mask configuration', () => {
+  function mappers(col: unknown) {
+    // @ts-expect-error - accessing protected config for testing
+    return col.config.customTypeParams as {
+      toDriver: (value: string) => string
+      fromDriver: (value: string) => string | SecretValue
+    }
+  }
+
+  it('applies the factory default to every column', () => {
+    const s = createDrizzleSecret(key, { mask: { visible: 0 } })
+    const { toDriver, fromDriver } = mappers(s('col'))
+    expect(fromDriver(toDriver('sk-live-abcdef1234'))).toBe('••••')
+  })
+
+  it('lets a column override the factory default', () => {
+    const s = createDrizzleSecret(key, { mask: { visible: 0 } })
+    const { toDriver, fromDriver } = mappers(
+      s('col', { mask: { visible: 4, placeholder: '…' } }),
+    )
+    expect(fromDriver(toDriver('sk-live-abcdef1234'))).toBe('…1234')
+  })
+
+  it('uses the mask for SecretValue in decrypt mode', () => {
+    const s = createDrizzleSecret(key, { mask: (v) => `${v.slice(0, 3)}…` })
+    const { toDriver, fromDriver } = mappers(s('col', { mode: 'decrypt' }))
+    const value = fromDriver(toDriver('sk-live-abcdef1234')) as SecretValue
+    expect(String(value)).toBe('sk-…')
+    expect(JSON.stringify({ value })).toBe('{"value":"sk-…"}')
+    expect(expose(value)).toBe('sk-live-abcdef1234')
   })
 })
 
