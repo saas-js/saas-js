@@ -1,10 +1,58 @@
-const MASK = '••••'
+export interface MaskOptions {
+  /**
+   * Number of trailing characters to reveal, e.g. `4` → `••••1234`.
+   * `0` never reveals anything. Defaults to `4`.
+   */
+  visible?: number
+  /**
+   * Secrets shorter than this are fully masked, so short values like PINs
+   * never leak most of their characters. Defaults to `12`.
+   */
+  minLength?: number
+  /** Replaces the hidden part of the value. Defaults to `'••••'`. */
+  placeholder?: string
+}
 
-function mask(value: string): string {
-  if (value.length <= 4) {
-    return MASK
+/**
+ * How a secret is masked: options for the built-in masker, or your own
+ * function that receives the plaintext and returns the display value.
+ */
+export type Mask = MaskOptions | ((value: string) => string)
+
+export const DEFAULT_MASK: Required<MaskOptions> = {
+  visible: 4,
+  minLength: 12,
+  placeholder: '••••',
+}
+
+/**
+ * Masks a plaintext value for display.
+ *
+ * With the defaults, values of 12+ characters show their last 4
+ * (`••••1234`) and anything shorter is fully masked (`••••`).
+ *
+ * @example
+ * ```ts
+ * mask('sk-live-abcdef1234') // '••••1234'
+ * mask('12345')              // '••••'
+ * mask('sk-live-abcdef1234', { visible: 0 }) // '••••'
+ * mask('4242424242424242', { visible: 4, minLength: 8, placeholder: '**** ' })
+ * // '**** 4242'
+ * ```
+ */
+function mask(value: string, options?: Mask): string {
+  if (typeof options === 'function') {
+    return options(value)
   }
-  return MASK + value.slice(-4)
+
+  const { visible, minLength, placeholder } = { ...DEFAULT_MASK, ...options }
+  const reveal = Math.max(0, Math.floor(visible))
+
+  if (reveal === 0 || value.length < minLength || value.length <= reveal) {
+    return placeholder
+  }
+
+  return placeholder + value.slice(-reveal)
 }
 
 /**
@@ -19,7 +67,8 @@ function mask(value: string): string {
  * const token = expose(row.accessToken) // explicit opt-in
  * ```
  *
- * All other paths return a masked representation (`••••xxxx`):
+ * All other paths return a masked representation (`••••xxxx` by default,
+ * configurable with a {@link Mask}):
  *
  * - `JSON.stringify(secretValue)` → `"••••xxxx"`
  * - `console.log(secretValue)` → `SecretValue(••••xxxx)`
@@ -29,9 +78,9 @@ export class SecretValue {
   readonly #value: string
   readonly masked: string
 
-  constructor(value: string) {
+  constructor(value: string, options?: Mask) {
     this.#value = value
-    this.masked = mask(value)
+    this.masked = mask(value, options)
   }
 
   /** @internal — use `expose()` instead. Named to discourage casual use. */

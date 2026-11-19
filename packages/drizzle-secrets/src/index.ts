@@ -1,4 +1,5 @@
 export { Secrets, createSecrets } from './secrets'
 export type { SecretsConfig } from './secrets'
 export { generateKey, isEncrypted } from './crypto'
-export { SecretValue, expose } from './secret-value'
+export { SecretValue, expose, mask, DEFAULT_MASK } from './secret-value'
+export type { Mask, MaskOptions } from './secret-value'
