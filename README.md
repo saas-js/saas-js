@@ -8,6 +8,7 @@
 - [conditions-react](/packages/conditions-react/) Headless React bindings and composition helpers for conditions
 - [better-auth-query-query](/packages/better-auth-react-query/) TanStack Query Better Auth client
 - [drizzle-crud](/packages/drizzle-crud/) generate CRUD operations from drizzle schemas.
+- [drizzle-secrets](/packages/drizzle-secrets/) encrypted Drizzle columns with masked reads and key rotation
 - [iconx](/packages/iconx) CLI and MCP server to install iconify icons as React components
 - [Slingshot](/packages/slingshot-react/) full-stack file upload component with support for drag-and-drop, progress bars, s3 integration and more.
 

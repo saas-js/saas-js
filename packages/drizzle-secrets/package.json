@@ -1,0 +1,60 @@
+{
+  "name": "drizzle-secrets",
+  "description": "Encrypted columns for Drizzle ORM, with masked reads by default",
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "author": "Eelco Wiersma",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "drizzle",
+    "drizzle-orm",
+    "encryption",
+    "secrets",
+    "aes-256-gcm",
+    "postgres"
+  ],
+  "bin": {
+    "drizzle-secrets": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "@saas-js": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./drizzle": {
+      "@saas-js": "./src/drizzle.ts",
+      "types": "./dist/drizzle.d.ts",
+      "import": "./dist/drizzle.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "scripts": {
+    "build": "bun build ./src/index.ts ./src/drizzle.ts ./src/cli.ts --outdir dist --target node --splitting --packages=external && bun run build:types",
+    "build:types": "tsc --project tsconfig.json --emitDeclarationOnly --outDir dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --project tsconfig.test.json --noEmit"
+  },
+  "peerDependencies": {
+    "drizzle-orm": ">=1.0.0-rc.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "drizzle-orm": "1.0.0-rc.4",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/saas-js/saas-js.git",
+    "directory": "packages/drizzle-secrets"
+  }
+}
