@@ -1,8 +1,8 @@
 {
   "name": "@saas-js/conditions",
   "description": "A headless condition expression engine for filters and rule builders",
-  "version": "0.0.1",
-  "license": "MIT",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
   "type": "module",
   "publishConfig": {
     "access": "public"
@@ -16,6 +16,7 @@
   },
   "scripts": {
     "build": "bun build ./src/index.ts --outdir dist --target node --production --packages=external && bun run build:types",
+    "release": "bun publish",
     "build:types": "tsc --project tsconfig.json --emitDeclarationOnly --outDir dist",
     "lint": "TIMING=1 eslint src/**/*.ts* --fix",
     "clean": "rm -rf dist",

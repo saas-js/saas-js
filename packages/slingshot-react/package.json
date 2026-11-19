@@ -21,7 +21,7 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "@saas-js/slingshot": "0.3.0",
+    "@saas-js/slingshot": "workspace:*",
     "@zag-js/react": "1.28.0"
   },
   "peerDependencies": {

@@ -21,7 +21,7 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "@saas-js/slingshot": "0.3.0",
+    "@saas-js/slingshot": "workspace:*",
     "zod": "^4.3.6"
   },
   "devDependencies": {

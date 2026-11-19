@@ -15,6 +15,7 @@
   },
   "scripts": {
     "build": "bun build ./src/index.ts --outdir dist --target node --production --packages=external && bun run build:types",
+    "release": "bun publish",
     "build:types": "tsc --project tsconfig.json --emitDeclarationOnly --outDir dist",
     "test": "vitest run",
     "test:watch": "vitest"

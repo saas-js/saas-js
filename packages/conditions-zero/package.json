@@ -1,8 +1,8 @@
 {
   "name": "@saas-js/conditions-zero",
   "description": "Convert @saas-js/conditions queries to Zero (ZQL) where expressions",
-  "version": "0.0.1",
-  "license": "MIT",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
   "type": "module",
   "publishConfig": {
     "access": "public"
@@ -20,6 +20,7 @@
   ],
   "scripts": {
     "build": "bun build ./src/index.ts --outdir dist --target browser --production --packages=external && bun run build:types",
+    "release": "bun publish",
     "build:types": "tsc --project tsconfig.json --emitDeclarationOnly --outDir dist",
     "test": "vitest run",
     "test:watch": "vitest",

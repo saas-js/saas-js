@@ -1,6 +1,6 @@
 {
   "name": "drizzle-crud",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "type": "module",
   "license": "Apache-2.0",
   "author": "Eelco Wiersma <eelco@appulse.nl>",
@@ -14,6 +14,7 @@
   },
   "scripts": {
     "build": "tsc --project tsconfig.json",
+    "release": "bun publish",
     "test": "vitest run",
     "test:watch": "vitest"
   },
