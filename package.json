@@ -2,8 +2,9 @@
   "type": "module",
   "scripts": {
     "dev:website": "bun --filter website dev",
-    "build:packages": "bun --filter './packages/drizzle-crud' --filter './packages/saas-js-iconify' build",
-    "release": "bun run build:packages && bun changeset publish",
+    "build:packages": "bun --filter './packages/*' build",
+    "release:packages": "bun run --sequential --filter './packages/*' release",
+    "release": "bun run build:packages && bun run release:packages",
     "copy-schema": "bun run scripts/copy-schema.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build --disable-telemetry"
